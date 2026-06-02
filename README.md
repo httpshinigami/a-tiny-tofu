@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# a tiny tofu
 
-## Getting Started
+A cute guide to art events and kawaii shops in Melbourne. Browse events by month with an integrated map, filter shops by Monchhichi, desserts, brunch, or Smiskis, and submit listings for admin review.
 
-First, run the development server:
+## Features
+
+- **Events** — left sidebar with expandable months; map zooms when you select an event; details below the map
+- **Shops** — same layout with category filters and shop list
+- **Submissions** — public forms; content hidden until approved
+- **Admin** — review queue and direct publishing
+
+## Quick start
 
 ```bash
+cd a-tiny-tofu
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Without Supabase, demo seed data is used.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Supabase setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a project at [supabase.com](https://supabase.com).
+2. Run [`supabase/migrations/001_initial.sql`](supabase/migrations/001_initial.sql) in the SQL Editor.
+3. Copy `.env.example` to `.env.local` and fill in keys plus `ADMIN_EMAILS`.
+4. Create an admin user in Authentication matching `ADMIN_EMAILS`.
 
-## Learn More
+## Deploy (Vercel)
 
-To learn more about Next.js, take a look at the following resources:
+Import the `a-tiny-tofu` folder, add environment variables, and deploy.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Note on older folder name
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+If you still have a `melbourne-kawaii` folder from an earlier version, you can remove it — the active project is **`a-tiny-tofu`**.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
