@@ -30,10 +30,6 @@ Open [http://localhost:3000](http://localhost:3000). Without Supabase, demo seed
 
 Import the `a-tiny-tofu` folder, add environment variables, and deploy.
 
-## Note on older folder name
-
-If you still have a `melbourne-kawaii` folder from an earlier version, you can remove it — the active project is **`a-tiny-tofu`**.
-
 ## License
 
 MIT
