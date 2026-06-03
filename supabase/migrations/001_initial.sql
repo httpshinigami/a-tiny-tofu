@@ -3,10 +3,17 @@
 create type public.content_status as enum ('pending', 'approved', 'rejected');
 
 create type public.shop_tag as enum (
-  'monchhichi',
-  'desserts',
-  'brunch',
-  'smiskis'
+  "brunch",
+  "desserts",
+  "photo_booths",
+  "artist_goods",
+  "anime_goods",
+  "monchhichi",
+  "blind_boxes",
+  "sanrio",
+  "smiski",
+  "sonny_angel",
+  "sylvanian_families",
 );
 
 create table public.events (

@@ -53,7 +53,8 @@ export function EventsExplorer({ events }: { events: Event[] }) {
               >
                 <span>{label.split(" ")[0]}</span>
                 <span className="text-sm text-ink-muted">
-                  {open ? "−" : "+"} {items.length}
+                  {/* {open ? "−" : "+"}  */}
+                  {items.length}
                 </span>
               </button>
               {open && (
