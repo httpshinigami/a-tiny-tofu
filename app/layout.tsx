@@ -1,31 +1,26 @@
 import type { Metadata } from "next";
-import { Fredoka, Nunito } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { PeekingFooter } from "@/components/layout/PeekingFooter";
 import "./globals.css";
 
-const fredoka = Fredoka({
-  variable: "--font-fredoka",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-const nunito = Nunito({
-  variable: "--font-nunito",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
 export const metadata: Metadata = {
   title: {
-    default: "a tiny tofu — Cute art events & shops in Melbourne",
-    template: "%s | a tiny tofu",
+    default: "World of Tiny Tofu — Melbourne's cutest hidden gems",
+    template: "%s | World of Tiny Tofu",
   },
   description:
-    "Discover cute art events and kawaii shops in Melbourne. Browse events by month, explore the map, and find Monchhichi, desserts, brunch, and Smiskis.",
+    "Discover local artist markets, collectible stores, themed events, and whimsical experiences across Melbourne.",
   openGraph: {
-    title: "a tiny tofu",
-    description: "Cute art events and shops across Melbourne.",
+    title: "World of Tiny Tofu",
+    description:
+      "Explore Melbourne's cutest hidden gems — markets, cafes, stores, and events.",
     locale: "en_AU",
   },
 };
@@ -36,13 +31,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${fredoka.variable} ${nunito.variable} h-full`}
-    >
+    <html lang="en" className={`${dmSans.variable} h-full`}>
       <body className="flex min-h-full flex-col font-body antialiased">
         <Header />
-        <main className="flex flex-1 flex-col px-4 pb-8">{children}</main>
+        <main className="flex flex-1 flex-col">{children}</main>
         <PeekingFooter />
       </body>
     </html>

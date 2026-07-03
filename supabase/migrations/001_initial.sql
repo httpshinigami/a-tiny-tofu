@@ -3,17 +3,17 @@
 create type public.content_status as enum ('pending', 'approved', 'rejected');
 
 create type public.shop_tag as enum (
-  "brunch",
-  "desserts",
-  "photo_booths",
-  "artist_goods",
-  "anime_goods",
-  "monchhichi",
-  "blind_boxes",
-  "sanrio",
-  "smiski",
-  "sonny_angel",
-  "sylvanian_families",
+  'brunch',
+  'desserts',
+  'photo_booths',
+  'artist_goods',
+  'anime_goods',
+  'monchhichi',
+  'blind_boxes',
+  'sanrio',
+  'smiski',
+  'sonny_angel',
+  'sylvanian_families'
 );
 
 create table public.events (
@@ -131,6 +131,6 @@ insert into public.shop_tags (shop_id, tag)
 select id, 'monchhichi'::public.shop_tag from public.shops where slug = 'monchhichi-and-co'
 union all select id, 'desserts' from public.shops where slug = 'pastel-parfait-house'
 union all select id, 'brunch' from public.shops where slug = 'pastel-parfait-house'
-union all select id, 'smiskis' from public.shops where slug = 'smiski-corner'
+union all select id, 'smiski' from public.shops where slug = 'smiski-corner'
 union all select id, 'brunch' from public.shops where slug = 'smiski-corner'
 union all select id, 'desserts' from public.shops where slug = 'smiski-corner';

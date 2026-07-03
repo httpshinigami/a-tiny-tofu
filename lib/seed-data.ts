@@ -104,6 +104,6 @@ export const SEED_SHOPS: Shop[] = [
     status: "approved",
     admin_note: null,
     created_at: new Date().toISOString(),
-    shop_tags: ["smiskis", "brunch", "desserts"],
+    shop_tags: ["smiski", "brunch", "desserts"],
   },
 ];

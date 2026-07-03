@@ -167,10 +167,10 @@ export function EventsExplorer({ events }: { events: Event[] }) {
 
   return (
     <ExplorerLayout
-      title="Events"
+      title="Markets & Events"
       subtitle="Browse by month — select an event to zoom the map"
       headerExtra={
-        <KawaiiButton href="/submit/event" variant="secondary">
+        <KawaiiButton href="/submit/event" variant="sage">
           Submit event
         </KawaiiButton>
       }

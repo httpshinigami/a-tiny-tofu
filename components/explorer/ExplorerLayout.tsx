@@ -18,25 +18,25 @@ export function ExplorerLayout({
   headerExtra,
 }: Props) {
   return (
-    <div className="mx-auto w-full max-w-7xl">
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-8">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-bold text-ink md:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-periwinkle md:text-4xl">
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-1 text-ink-muted">{subtitle}</p>
+            <p className="mt-2 text-ink-muted">{subtitle}</p>
           )}
         </div>
         {headerExtra}
       </div>
-      <div className="grid min-h-[640px] gap-4 rounded-[2rem] border-4 border-white/50 bg-cream p-4 shadow-xl md:grid-cols-[minmax(220px,280px)_1fr] md:p-5">
-        <aside className="flex max-h-[70vh] flex-col overflow-hidden rounded-2xl border-2 border-peach-dark/25 bg-white/60 md:max-h-none md:min-h-[600px]">
+      <div className="grid min-h-[640px] gap-4 rounded-2xl border border-border bg-surface p-4 shadow-sm md:grid-cols-[minmax(220px,280px)_1fr] md:p-5">
+        <aside className="flex max-h-[70vh] flex-col overflow-hidden rounded-xl border border-border bg-cream md:max-h-none md:min-h-[600px]">
           {sidebar}
         </aside>
         <div className="flex min-h-0 flex-col gap-4">
           <div className="min-h-[280px] flex-1 md:min-h-[320px]">{map}</div>
-          <div className="shrink-0 rounded-2xl border-2 border-peach-dark/25 bg-white/70 p-4 md:p-5">
+          <div className="shrink-0 rounded-xl border border-border bg-cream p-4 md:p-5">
             {detail}
           </div>
         </div>

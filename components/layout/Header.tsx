@@ -1,53 +1,42 @@
 import Link from "next/link";
 
-const leftLinks = [{ href: "/events", label: "Events" }];
-
-const rightLinks = [
-  { href: "/shops", label: "Shops" },
-  { href: "/submit/event", label: "Submit" },
+const navLinks = [
+  { href: "/events", label: "Markets & Events" },
+  { href: "/shops", label: "Cafes & Restaurants" },
+  { href: "/shops", label: "Stores" },
+  { href: "/about", label: "About" },
 ];
-
-function Logo() {
-  return (
-    <Link
-      href="/"
-      className="flex h-12 w-12 items-center justify-center rounded-full bg-coral font-display text-sm font-bold text-white shadow-md transition hover:scale-105"
-      aria-label="a tiny tofu home"
-    >
-      tofu
-    </Link>
-  );
-}
 
 export function Header() {
   return (
-    <header className="px-4 py-6">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-        <ul className="flex flex-1 flex-wrap gap-4 text-sm font-semibold text-ink md:gap-6 md:text-base">
-          {leftLinks.map((l) => (
-            <li key={l.href}>
+    <header className="border-b border-border/60 bg-surface px-4 py-5 md:px-8">
+      <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+        <Link
+          href="/"
+          className="text-base font-semibold tracking-tight text-ink transition hover:text-sage-dark md:text-lg"
+        >
+          World of Tiny Tofu
+        </Link>
+
+        <ul className="order-3 flex w-full flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium text-ink md:order-none md:w-auto md:flex-1 md:justify-center md:gap-8">
+          {navLinks.map((l) => (
+            <li key={l.label}>
               <Link
                 href={l.href}
-                className="transition hover:text-coral focus-visible:outline focus-visible:outline-2 focus-visible:outline-coral"
+                className="transition hover:text-sage-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-sage"
               >
                 {l.label}
               </Link>
             </li>
           ))}
         </ul>
-        <Logo />
-        <ul className="flex flex-1 flex-wrap justify-end gap-4 text-sm font-semibold text-ink md:gap-6 md:text-base">
-          {rightLinks.map((l) => (
-            <li key={l.href}>
-              <Link
-                href={l.href}
-                className="transition hover:text-coral focus-visible:outline focus-visible:outline-2 focus-visible:outline-coral"
-              >
-                {l.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+
+        <Link
+          href="/submit/event"
+          className="rounded-xl bg-sage px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sage-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
+        >
+          Submit your hidden gem
+        </Link>
       </nav>
     </header>
   );

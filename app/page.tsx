@@ -1,33 +1,36 @@
-import { PageFrame } from "@/components/layout/PageFrame";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
-    <PageFrame className="mx-auto max-w-3xl text-center">
-      <p className="font-display text-sm font-semibold uppercase tracking-widest text-coral">
-        Melbourne
-      </p>
-      <h1 className="mt-2 font-display text-4xl font-bold text-ink md:text-5xl">
-        a tiny tofu
-      </h1>
-      <p className="mx-auto mt-4 max-w-lg text-lg text-ink-muted">
-        Your cosy guide to cute art events and kawaii shops across Melbourne —
-        browse by month, explore the map, and find your next adventure.
-      </p>
-      <div className="mt-8 flex flex-wrap justify-center gap-4">
-        <KawaiiButton href="/events">Events</KawaiiButton>
-        <KawaiiButton href="/shops" variant="secondary">
-          Shops
-        </KawaiiButton>
-      </div>
-      <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm">
-        <KawaiiButton href="/submit/event" variant="ghost">
-          Submit event
-        </KawaiiButton>
-        <KawaiiButton href="/submit/shop" variant="ghost">
-          Submit shop
-        </KawaiiButton>
-      </div>
-    </PageFrame>
+    <div className="mx-auto w-full max-w-4xl px-4 py-12 md:px-8 md:py-16">
+      <section className="text-center">
+        <h1 className="text-4xl font-bold leading-tight tracking-tight text-periwinkle md:text-5xl lg:text-6xl">
+          Discover Melbourne&apos;s Cutest Hidden Gems
+        </h1>
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-ink md:text-lg">
+          Explore local artist markets, collectible stores, themed events, and
+          whimsical experiences across Melbourne.
+        </p>
+        <div className="mt-8">
+          <KawaiiButton href="/events" variant="sage">
+            Explore
+          </KawaiiButton>
+        </div>
+      </section>
+
+      <section className="mt-12 md:mt-16">
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl bg-gradient-to-b from-sky/40 via-periwinkle-light/30 to-butter/50">
+          <Image
+            src="/hero-illustration.png"
+            alt="Tiny characters exploring a beach together"
+            fill
+            className="object-cover object-center"
+            priority
+            sizes="(max-width: 896px) 100vw, 896px"
+          />
+        </div>
+      </section>
+    </div>
   );
 }

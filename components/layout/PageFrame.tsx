@@ -8,9 +8,11 @@ interface Props {
 export function PageFrame({ children, className = "" }: Props) {
   return (
     <div
-      className={`mx-auto w-full max-w-5xl flex-1 rounded-[2rem] border-4 border-white/50 bg-cream p-6 shadow-xl md:p-10 ${className}`}
+      className={`mx-auto w-full max-w-5xl flex-1 px-4 py-8 md:px-8 md:py-10 ${className}`}
     >
-      {children}
+      <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm md:p-10">
+        {children}
+      </div>
     </div>
   );
 }
