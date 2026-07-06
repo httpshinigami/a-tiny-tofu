@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     template: "%s | World of Tiny Tofu",
   },
   description:
-    "Discover local artist markets, collectible stores, themed events, and whimsical experiences across Melbourne.",
+    "Discover local artist markets, collectible shops, themed events, and whimsical experiences across Melbourne.",
   openGraph: {
     title: "World of Tiny Tofu",
     description:
-      "Explore Melbourne's cutest hidden gems — markets, cafes, stores, and events.",
+      "Explore Melbourne's cutest hidden gems — markets, cafes, shops, and events.",
     locale: "en_AU",
   },
 };

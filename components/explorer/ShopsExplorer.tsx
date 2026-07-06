@@ -99,7 +99,7 @@ export function ShopsExplorer({ shops }: { shops: Shop[] }) {
 
   return (
     <ExplorerLayout
-      title="Stores & Cafes"
+      title="Shops"
       subtitle="Filter by what they offer — select a shop to zoom the map"
       headerExtra={
         <KawaiiButton href="/submit/shop" variant="sage">

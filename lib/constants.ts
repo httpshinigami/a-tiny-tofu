@@ -1,11 +1,13 @@
 export const SHOP_TAGS = [
-  "brunch",
   "desserts",
+  "drinks",
+  "restaurant",
   "photo_booths",
   "artist_goods",
   "anime_goods",
-  "monchhichi",
   "blind_boxes",
+  "gachas",
+  "monchhichi",
   "sanrio",
   "smiski",
   "sonny_angel",
@@ -15,12 +17,14 @@ export const SHOP_TAGS = [
 export type ShopTag = (typeof SHOP_TAGS)[number];
 
 export const SHOP_TAG_LABELS: Record<ShopTag, string> = {
-  brunch: "Brunch",
   desserts: "Desserts",
+  drinks: "Drinks",
+  restaurant: "Restaurant",
   photo_booths: "Photo Booths",
   artist_goods: "Artist Goods",
   anime_goods: "Anime Goods",
   blind_boxes: "Blind Boxes",
+  gachas: "Gachas",
   monchhichi: "Monchhichi",
   sanrio: "Sanrio/San-X",
   smiski: "Smiski",
@@ -29,17 +33,19 @@ export const SHOP_TAG_LABELS: Record<ShopTag, string> = {
 };
 
 export const TAG_COLORS: Record<ShopTag, string> = {
-  brunch: "#FFE9A8",
-  desserts: "#FFE9A8",
-  photo_booths: "#A8FFD8",
+  desserts: "#F5E8DD",
+  drinks: "#F5E8DD",
+  restaurant: "#F5E8DD",
+  photo_booths: "#CCD3CA",
   artist_goods: "#D8A8FF",
   anime_goods: "#FFA8D8",
-  blind_boxes: "#D8FFA8",
-  monchhichi: "#D8FFA8",
-  sanrio: "#D8FFA8",
-  smiski: "#D8FFA8",
-  sonny_angel: "#D8FFA8",
-  sylvanian_families: "#D8FFA8",
+  blind_boxes: "#B5C0D0",
+  gachas: "#B5C0D0",
+  monchhichi: "#EED3D9",
+  sanrio: "#EED3D9",
+  smiski: "#EED3D9",
+  sonny_angel: "#EED3D9",
+  sylvanian_families: "#EED3D9",
 };
 
 export const MELBOURNE_CENTER = { lat: -37.8136, lng: 144.9631 } as const;

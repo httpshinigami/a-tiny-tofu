@@ -13,7 +13,7 @@ export default function AboutPage() {
       </h1>
       <p className="mt-4 max-w-2xl leading-relaxed text-ink-muted">
         World of Tiny Tofu is your cosy guide to Melbourne&apos;s cutest hidden
-        gems — from artist markets and collectible stores to themed events and
+        gems — from artist markets and collectible shops to themed events and
         whimsical cafes. Browse by month, explore the map, and find your next
         adventure.
       </p>

@@ -9,7 +9,7 @@ export default function HomePage() {
           Discover Melbourne&apos;s Cutest Hidden Gems
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-ink md:text-lg">
-          Explore local artist markets, collectible stores, themed events, and
+          Explore local artist markets, collectible shops, themed events, and
           whimsical experiences across Melbourne.
         </p>
         <div className="mt-8">

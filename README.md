@@ -1,6 +1,6 @@
 # World of Tiny Tofu
 
-Explore local artist markets, collectible stores, themed events, and whimsical experiences across Melbourne.
+Explore local artist markets, collectible shops, themed events, and whimsical experiences across Melbourne.
 
 ## Features
 
