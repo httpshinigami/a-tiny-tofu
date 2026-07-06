@@ -2,11 +2,21 @@
 
 import { AdminEventRow, AdminShopRow } from "@/components/admin/AdminListRows";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
-import { SHOP_TAG_LABELS } from "@/lib/constants";
+import { FOOD_DRINK_TAGS, RETAIL_SHOP_TAGS, SHOP_TAG_LABELS } from "@/lib/constants";
+import { filterShopsByTags } from "@/lib/shop-categories";
 import type { Event, Shop } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+type Tab = "queue" | "events" | "shops" | "food";
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "queue", label: "Queue" },
+  { id: "events", label: "All events" },
+  { id: "shops", label: "All shops" },
+  { id: "food", label: "All food & drink" },
+];
 
 export function AdminDashboard({
   pendingEvents,
@@ -22,7 +32,24 @@ export function AdminDashboard({
   isAdmin: boolean;
 }) {
   const router = useRouter();
-  const [tab, setTab] = useState<"queue" | "events" | "shops">("queue");
+  const [tab, setTab] = useState<Tab>("queue");
+
+  const pendingRetailShops = useMemo(
+    () => filterShopsByTags(pendingShops, RETAIL_SHOP_TAGS),
+    [pendingShops]
+  );
+  const pendingFoodShops = useMemo(
+    () => filterShopsByTags(pendingShops, FOOD_DRINK_TAGS),
+    [pendingShops]
+  );
+  const retailShops = useMemo(
+    () => filterShopsByTags(allShops, RETAIL_SHOP_TAGS),
+    [allShops]
+  );
+  const foodShops = useMemo(
+    () => filterShopsByTags(allShops, FOOD_DRINK_TAGS),
+    [allShops]
+  );
 
   async function signOut() {
     const supabase = createClient();
@@ -35,6 +62,17 @@ export function AdminDashboard({
     router.refresh();
   }
 
+  function shopRow(shop: Shop) {
+    return (
+      <AdminShopRow
+        key={shop.id}
+        shop={shop}
+        tagLabels={shop.shop_tags.map((t) => SHOP_TAG_LABELS[t]).join(", ")}
+        onDone={refresh}
+      />
+    );
+  }
+
   if (!isAdmin) {
     return (
       <p className="text-red-600">
@@ -44,35 +82,36 @@ export function AdminDashboard({
     );
   }
 
+  const queueCount = pendingEvents.length + pendingShops.length;
+
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex gap-2">
-          {(["queue", "events", "shops"] as const).map((t) => (
+        <div className="flex flex-wrap gap-2">
+          {TABS.map(({ id, label }) => (
             <button
-              key={t}
+              key={id}
               type="button"
-              onClick={() => setTab(t)}
+              onClick={() => setTab(id)}
               className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                tab === t
+                tab === id
                   ? "bg-sage text-white"
                   : "border border-border bg-surface text-ink"
               }`}
             >
-              {t === "queue"
-                ? `Queue (${pendingEvents.length + pendingShops.length})`
-                : t === "events"
-                  ? "All events"
-                  : "All shops"}
+              {id === "queue" ? `${label} (${queueCount})` : label}
             </button>
           ))}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <KawaiiButton href="/admin/create/event" variant="secondary">
             New event
           </KawaiiButton>
           <KawaiiButton href="/admin/create/shop" variant="secondary">
             New shop
+          </KawaiiButton>
+          <KawaiiButton href="/admin/create/food" variant="secondary">
+            New food & drink
           </KawaiiButton>
           <KawaiiButton onClick={signOut} variant="ghost">
             Sign out
@@ -96,18 +135,23 @@ export function AdminDashboard({
           </section>
           <section>
             <h2 className="text-xl font-bold text-periwinkle">Pending shops</h2>
-            {pendingShops.length === 0 ? (
+            {pendingRetailShops.length === 0 ? (
               <p className="mt-2 text-sm text-ink-muted">None waiting</p>
             ) : (
               <ul className="mt-3 space-y-2">
-                {pendingShops.map((s) => (
-                  <AdminShopRow
-                    key={s.id}
-                    shop={s}
-                    tagLabels={s.shop_tags.map((t) => SHOP_TAG_LABELS[t]).join(", ")}
-                    onDone={refresh}
-                  />
-                ))}
+                {pendingRetailShops.map(shopRow)}
+              </ul>
+            )}
+          </section>
+          <section>
+            <h2 className="text-xl font-bold text-periwinkle">
+              Pending food & drink
+            </h2>
+            {pendingFoodShops.length === 0 ? (
+              <p className="mt-2 text-sm text-ink-muted">None waiting</p>
+            ) : (
+              <ul className="mt-3 space-y-2">
+                {pendingFoodShops.map(shopRow)}
               </ul>
             )}
           </section>
@@ -124,14 +168,21 @@ export function AdminDashboard({
 
       {tab === "shops" && (
         <ul className="space-y-2">
-          {allShops.map((s) => (
-            <AdminShopRow
-              key={s.id}
-              shop={s}
-              tagLabels={s.shop_tags.map((t) => SHOP_TAG_LABELS[t]).join(", ")}
-              onDone={refresh}
-            />
-          ))}
+          {retailShops.length === 0 ? (
+            <p className="text-sm text-ink-muted">No shops yet</p>
+          ) : (
+            retailShops.map(shopRow)
+          )}
+        </ul>
+      )}
+
+      {tab === "food" && (
+        <ul className="space-y-2">
+          {foodShops.length === 0 ? (
+            <p className="text-sm text-ink-muted">No food & drink spots yet</p>
+          ) : (
+            foodShops.map(shopRow)
+          )}
         </ul>
       )}
     </div>

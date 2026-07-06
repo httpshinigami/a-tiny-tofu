@@ -3,7 +3,8 @@
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
-  SHOP_TAGS,
+  FOOD_DRINK_TAGS,
+  RETAIL_SHOP_TAGS,
   SHOP_TAG_LABELS,
   TAG_COLORS,
   type ShopTag,
@@ -12,7 +13,17 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 
-export function AdminCreateShopForm() {
+interface Props {
+  tagOptions: readonly ShopTag[];
+  tagPrompt?: string;
+  submitLabel?: string;
+}
+
+export function AdminCreateShopForm({
+  tagOptions,
+  tagPrompt = "Tags",
+  submitLabel = "Save shop",
+}: Props) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [selected, setSelected] = useState<ShopTag[]>([]);
@@ -75,11 +86,11 @@ export function AdminCreateShopForm() {
       </div>
       <div>
         <p className="kawaii-label">
-          Tags
+          {tagPrompt}
           <RequiredMark />
         </p>
         <div className="flex flex-wrap gap-2">
-          {SHOP_TAGS.map((tag) => (
+          {tagOptions.map((tag) => (
             <button
               key={tag}
               type="button"
@@ -126,7 +137,7 @@ export function AdminCreateShopForm() {
         </select>
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <KawaiiButton type="submit">Save shop</KawaiiButton>
+      <KawaiiButton type="submit">{submitLabel}</KawaiiButton>
     </form>
   );
 }
