@@ -157,13 +157,16 @@ export function AdminEventRow({
 export function AdminShopRow({
   shop,
   tagLabels,
+  editHref,
   onDone,
 }: {
   shop: Shop;
   tagLabels: string;
+  editHref?: string;
   onDone: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const href = editHref ?? `/admin/shops/${shop.id}`;
 
   return (
     <li className="overflow-hidden rounded-xl border border-border bg-surface">
@@ -180,7 +183,7 @@ export function AdminShopRow({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <Link
-              href={`/admin/shops/${shop.id}`}
+              href={href}
               className="font-semibold text-ink transition hover:text-sage-dark"
             >
               {shop.name}
@@ -193,7 +196,7 @@ export function AdminShopRow({
           </p>
         </div>
         <Link
-          href={`/admin/shops/${shop.id}`}
+          href={href}
           className="shrink-0 text-xs font-semibold text-sage-dark hover:underline"
         >
           Edit

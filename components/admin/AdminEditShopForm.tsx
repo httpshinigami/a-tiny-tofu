@@ -4,7 +4,6 @@ import { patchStatus, SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
-  RETAIL_SHOP_TAGS,
   SHOP_TAG_LABELS,
   TAG_COLORS,
   type ShopTag,
@@ -13,19 +12,31 @@ import type { Shop } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-const RETAIL_TAG_SET = new Set<string>(RETAIL_SHOP_TAGS);
+interface Props {
+  shop: Shop;
+  tagOptions: readonly ShopTag[];
+  tagPrompt?: string;
+  deleteConfirmMessage?: string;
+}
 
-export function AdminEditShopForm({ shop }: { shop: Shop }) {
+export function AdminEditShopForm({
+  shop,
+  tagOptions,
+  tagPrompt = "Tags",
+  deleteConfirmMessage = "Delete this shop permanently?",
+}: Props) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const tagOptionSet = useMemo(() => new Set<string>(tagOptions), [tagOptions]);
+
   const preservedTags = useMemo(
-    () => shop.shop_tags.filter((t) => !RETAIL_TAG_SET.has(t)),
-    [shop.shop_tags]
+    () => shop.shop_tags.filter((t) => !tagOptionSet.has(t)),
+    [shop.shop_tags, tagOptionSet]
   );
   const [selected, setSelected] = useState<ShopTag[]>(() =>
-    shop.shop_tags.filter((t) => RETAIL_TAG_SET.has(t))
+    shop.shop_tags.filter((t) => tagOptionSet.has(t))
   );
 
   function allTags() {
@@ -91,7 +102,7 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
   }
 
   async function remove() {
-    if (!confirm("Delete this shop permanently?")) return;
+    if (!confirm(deleteConfirmMessage)) return;
     const result = await patchStatus({
       type: "shop",
       id: shop.id,
@@ -145,11 +156,11 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
       </div>
       <div>
         <p className="kawaii-label">
-          Tags
+          {tagPrompt}
           <RequiredMark />
         </p>
         <div className="flex flex-wrap gap-2">
-          {RETAIL_SHOP_TAGS.map((tag) => (
+          {tagOptions.map((tag) => (
             <button
               key={tag}
               type="button"

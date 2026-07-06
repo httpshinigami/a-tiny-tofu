@@ -62,11 +62,24 @@ export function AdminDashboard({
     router.refresh();
   }
 
-  function shopRow(shop: Shop) {
+  function retailShopRow(shop: Shop) {
     return (
       <AdminShopRow
         key={shop.id}
         shop={shop}
+        editHref={`/admin/shops/${shop.id}`}
+        tagLabels={shop.shop_tags.map((t) => SHOP_TAG_LABELS[t]).join(", ")}
+        onDone={refresh}
+      />
+    );
+  }
+
+  function foodShopRow(shop: Shop) {
+    return (
+      <AdminShopRow
+        key={shop.id}
+        shop={shop}
+        editHref={`/admin/food/${shop.id}`}
         tagLabels={shop.shop_tags.map((t) => SHOP_TAG_LABELS[t]).join(", ")}
         onDone={refresh}
       />
@@ -139,7 +152,7 @@ export function AdminDashboard({
               <p className="mt-2 text-sm text-ink-muted">None waiting</p>
             ) : (
               <ul className="mt-3 space-y-2">
-                {pendingRetailShops.map(shopRow)}
+                {pendingRetailShops.map(retailShopRow)}
               </ul>
             )}
           </section>
@@ -151,7 +164,7 @@ export function AdminDashboard({
               <p className="mt-2 text-sm text-ink-muted">None waiting</p>
             ) : (
               <ul className="mt-3 space-y-2">
-                {pendingFoodShops.map(shopRow)}
+                {pendingFoodShops.map(foodShopRow)}
               </ul>
             )}
           </section>
@@ -171,7 +184,7 @@ export function AdminDashboard({
           {retailShops.length === 0 ? (
             <p className="text-sm text-ink-muted">No shops yet</p>
           ) : (
-            retailShops.map(shopRow)
+            retailShops.map(retailShopRow)
           )}
         </ul>
       )}
@@ -181,7 +194,7 @@ export function AdminDashboard({
           {foodShops.length === 0 ? (
             <p className="text-sm text-ink-muted">No food & drink spots yet</p>
           ) : (
-            foodShops.map(shopRow)
+            foodShops.map(foodShopRow)
           )}
         </ul>
       )}
