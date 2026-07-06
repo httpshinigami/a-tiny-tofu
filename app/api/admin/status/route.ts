@@ -1,6 +1,7 @@
 import {
   deleteEvent,
   deleteShop,
+  getShopById,
   updateEventStatus,
   updateShopStatus,
 } from "@/lib/queries";
@@ -36,6 +37,19 @@ export async function PATCH(request: Request) {
     const result =
       type === "event" ? await deleteEvent(id) : await deleteShop(id);
     return NextResponse.json({ ok: result.ok });
+  }
+
+  if (type === "shop" && action === "approve") {
+    const shop = await getShopById(id);
+    if (!shop) {
+      return NextResponse.json({ error: "Shop not found" }, { status: 404 });
+    }
+    if (!shop.shop_tags.length) {
+      return NextResponse.json(
+        { error: "Add at least one tag before approving" },
+        { status: 400 }
+      );
+    }
   }
 
   const status = action === "approve" ? "approved" : "rejected";

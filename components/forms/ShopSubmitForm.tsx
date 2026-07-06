@@ -1,6 +1,8 @@
 "use client";
 
+import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
+import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
   SHOP_TAGS,
   SHOP_TAG_LABELS,
@@ -25,7 +27,7 @@ export function ShopSubmitForm() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!selected.length) {
-      setError("Pick at least one tag");
+      setError(SHOP_TAG_REQUIRED_MESSAGE);
       return;
     }
     setStatus("loading");
@@ -75,12 +77,14 @@ export function ShopSubmitForm() {
       <div>
         <label className="kawaii-label" htmlFor="name">
           Shop name
+          <RequiredMark />
         </label>
         <input id="name" name="name" required className="kawaii-input" />
       </div>
       <div>
         <label className="kawaii-label" htmlFor="description">
           Description
+          <RequiredMark />
         </label>
         <textarea
           id="description"
@@ -93,11 +97,15 @@ export function ShopSubmitForm() {
       <div>
         <label className="kawaii-label" htmlFor="address">
           Address
+          <RequiredMark />
         </label>
         <input id="address" name="address" required className="kawaii-input" />
       </div>
       <div>
-        <p className="kawaii-label">What do they sell?</p>
+        <p className="kawaii-label">
+          What do they sell?
+          <RequiredMark />
+        </p>
         <div className="flex flex-wrap gap-2">
           {SHOP_TAGS.map((tag) => (
             <button

@@ -54,12 +54,12 @@ export function AdminEditEventForm({ event }: { event: Event }) {
   }
 
   async function approve() {
-    const ok = await patchStatus({
+    const result = await patchStatus({
       type: "event",
       id: event.id,
       action: "approve",
     });
-    if (ok) {
+    if (result.ok) {
       router.push("/admin");
       router.refresh();
     }
@@ -67,12 +67,12 @@ export function AdminEditEventForm({ event }: { event: Event }) {
 
   async function remove() {
     if (!confirm("Delete this event permanently?")) return;
-    const ok = await patchStatus({
+    const result = await patchStatus({
       type: "event",
       id: event.id,
       action: "delete",
     });
-    if (ok) {
+    if (result.ok) {
       router.push("/admin");
       router.refresh();
     }

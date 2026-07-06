@@ -1,11 +1,10 @@
 "use client";
 
-import { patchStatus } from "@/components/admin/admin-actions";
+import { patchStatus, SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 import type { Status } from "@/lib/constants";
 import type { Event, Shop } from "@/lib/types";
 import { formatEventDate } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 function StatusBadge({ status }: { status: Status }) {
@@ -27,27 +26,40 @@ function QuickActions({
   type,
   id,
   status,
+  tagCount,
   onDone,
 }: {
   type: "event" | "shop";
   id: string;
   status: Status;
+  tagCount?: number;
   onDone: () => void;
 }) {
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
   async function run(action: "approve" | "delete") {
+    if (action === "approve" && type === "shop" && !tagCount) {
+      setError(SHOP_TAG_REQUIRED_MESSAGE);
+      return;
+    }
     if (action === "delete" && !confirm("Delete this listing permanently?")) {
       return;
     }
+    setError("");
     setBusy(true);
-    const ok = await patchStatus({ type, id, action });
+    const result = await patchStatus({ type, id, action });
     setBusy(false);
-    if (ok) onDone();
+    if (!result.ok) {
+      setError(result.error ?? "Request failed");
+      return;
+    }
+    onDone();
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
       {status !== "approved" && (
         <button
           type="button"
@@ -66,6 +78,8 @@ function QuickActions({
       >
         Delete
       </button>
+      </div>
+      {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
   );
 }
@@ -201,6 +215,7 @@ export function AdminShopRow({
               type="shop"
               id={shop.id}
               status={shop.status}
+              tagCount={shop.shop_tags.length}
               onDone={onDone}
             />
           </div>

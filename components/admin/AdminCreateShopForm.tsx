@@ -1,6 +1,7 @@
 "use client";
 
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
+import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
   SHOP_TAGS,
   SHOP_TAG_LABELS,
@@ -9,14 +10,20 @@ import {
 } from "@/lib/constants";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 
 export function AdminCreateShopForm() {
   const router = useRouter();
   const [error, setError] = useState("");
-  const [selected, setSelected] = useState<ShopTag[]>(["monchhichi"]);
+  const [selected, setSelected] = useState<ShopTag[]>([]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!selected.length) {
+      setError(SHOP_TAG_REQUIRED_MESSAGE);
+      return;
+    }
+    setError("");
     const fd = new FormData(e.currentTarget);
     const body = {
       name: fd.get("name"),
@@ -49,19 +56,31 @@ export function AdminCreateShopForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="kawaii-label" htmlFor="name">Name</label>
+        <label className="kawaii-label" htmlFor="name">
+          Name
+          <RequiredMark />
+        </label>
         <input id="name" name="name" required className="kawaii-input" />
       </div>
       <div>
-        <label className="kawaii-label" htmlFor="description">Description</label>
+        <label className="kawaii-label" htmlFor="description">
+          Description
+          <RequiredMark />
+        </label>
         <textarea id="description" name="description" required rows={3} className="kawaii-input" />
       </div>
       <div>
-        <label className="kawaii-label" htmlFor="address">Address</label>
+        <label className="kawaii-label" htmlFor="address">
+          Address
+          <RequiredMark />
+        </label>
         <input id="address" name="address" required className="kawaii-input" />
       </div>
       <div>
-        <p className="kawaii-label">Tags</p>
+        <p className="kawaii-label">
+          Tags
+          <RequiredMark />
+        </p>
         <div className="flex flex-wrap gap-2">
           {SHOP_TAGS.map((tag) => (
             <button
@@ -84,11 +103,17 @@ export function AdminCreateShopForm() {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="kawaii-label" htmlFor="lat">Lat</label>
+          <label className="kawaii-label" htmlFor="lat">
+            Lat
+            <RequiredMark />
+          </label>
           <input id="lat" name="lat" type="number" step="any" defaultValue={-37.8136} required className="kawaii-input" />
         </div>
         <div>
-          <label className="kawaii-label" htmlFor="lng">Lng</label>
+          <label className="kawaii-label" htmlFor="lng">
+            Lng
+            <RequiredMark />
+          </label>
           <input id="lng" name="lng" type="number" step="any" defaultValue={144.9631} required className="kawaii-input" />
         </div>
       </div>

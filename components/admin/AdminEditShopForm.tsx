@@ -1,7 +1,8 @@
 "use client";
 
-import { patchStatus } from "@/components/admin/admin-actions";
+import { patchStatus, SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
+import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
   SHOP_TAGS,
   SHOP_TAG_LABELS,
@@ -39,7 +40,7 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!selected.length) {
-      setError("Pick at least one tag");
+      setError(SHOP_TAG_REQUIRED_MESSAGE);
       return;
     }
     const fd = new FormData(e.currentTarget);
@@ -61,25 +62,31 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
   }
 
   async function approve() {
-    const ok = await patchStatus({
+    if (!selected.length) {
+      setError(SHOP_TAG_REQUIRED_MESSAGE);
+      return;
+    }
+    const result = await patchStatus({
       type: "shop",
       id: shop.id,
       action: "approve",
     });
-    if (ok) {
-      router.push("/admin");
-      router.refresh();
+    if (!result.ok) {
+      setError(result.error ?? "Failed to approve");
+      return;
     }
+    router.push("/admin");
+    router.refresh();
   }
 
   async function remove() {
     if (!confirm("Delete this shop permanently?")) return;
-    const ok = await patchStatus({
+    const result = await patchStatus({
       type: "shop",
       id: shop.id,
       action: "delete",
     });
-    if (ok) {
+    if (result.ok) {
       router.push("/admin");
       router.refresh();
     }
@@ -90,6 +97,7 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
       <div>
         <label className="kawaii-label" htmlFor="name">
           Name
+          <RequiredMark />
         </label>
         <input
           id="name"
@@ -102,6 +110,7 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
       <div>
         <label className="kawaii-label" htmlFor="description">
           Description
+          <RequiredMark />
         </label>
         <textarea
           id="description"
@@ -115,6 +124,7 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
       <div>
         <label className="kawaii-label" htmlFor="address">
           Address
+          <RequiredMark />
         </label>
         <input
           id="address"
@@ -125,7 +135,10 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
         />
       </div>
       <div>
-        <p className="kawaii-label">Tags</p>
+        <p className="kawaii-label">
+          Tags
+          <RequiredMark />
+        </p>
         <div className="flex flex-wrap gap-2">
           {SHOP_TAGS.map((tag) => (
             <button
@@ -175,6 +188,7 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
         <div>
           <label className="kawaii-label" htmlFor="lat">
             Lat
+            <RequiredMark />
           </label>
           <input
             id="lat"
@@ -189,6 +203,7 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
         <div>
           <label className="kawaii-label" htmlFor="lng">
             Lng
+            <RequiredMark />
           </label>
           <input
             id="lng"
