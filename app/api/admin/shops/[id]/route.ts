@@ -1,3 +1,4 @@
+import { fallbackCoords, geocodeAddress } from "@/lib/geocode";
 import { updateShop } from "@/lib/queries";
 import { requireAdmin } from "@/lib/admin-auth";
 import { adminShopSchema } from "@/lib/validators";
@@ -18,12 +19,13 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   const d = parsed.data;
+  const coords = (await geocodeAddress(d.address)) ?? fallbackCoords();
   const result = await updateShop(id, {
     name: d.name,
     description: d.description ?? "",
     address: d.address,
-    lat: d.lat,
-    lng: d.lng,
+    lat: coords.lat,
+    lng: coords.lng,
     website: d.website || null,
     hours: d.hours || null,
     image_url: d.image_url || null,

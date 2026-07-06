@@ -29,8 +29,6 @@ export function AdminCreateShopForm() {
       name: fd.get("name"),
       description: fd.get("description"),
       address: fd.get("address"),
-      lat: parseFloat(fd.get("lat") as string),
-      lng: parseFloat(fd.get("lng") as string),
       website: fd.get("website") || "",
       hours: fd.get("hours") || "",
       image_url: fd.get("image_url") || "",
@@ -102,19 +100,23 @@ export function AdminCreateShopForm() {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="kawaii-label" htmlFor="lat">
-            Lat
-            <RequiredMark />
+          <label className="kawaii-label" htmlFor="hours">
+            Hours <span className="font-normal text-ink-muted">(optional)</span>
           </label>
-          <input id="lat" name="lat" type="number" step="any" defaultValue={-37.8136} required className="kawaii-input" />
+          <input id="hours" name="hours" className="kawaii-input" />
         </div>
         <div>
-          <label className="kawaii-label" htmlFor="lng">
-            Lng
-            <RequiredMark />
+          <label className="kawaii-label" htmlFor="website">
+            Website <span className="font-normal text-ink-muted">(optional)</span>
           </label>
-          <input id="lng" name="lng" type="number" step="any" defaultValue={144.9631} required className="kawaii-input" />
+          <input id="website" name="website" type="url" className="kawaii-input" />
         </div>
+      </div>
+      <div>
+        <label className="kawaii-label" htmlFor="image_url">
+          Image URL <span className="font-normal text-ink-muted">(optional)</span>
+        </label>
+        <input id="image_url" name="image_url" type="url" className="kawaii-input" />
       </div>
       <div>
         <label className="kawaii-label" htmlFor="status">Status</label>

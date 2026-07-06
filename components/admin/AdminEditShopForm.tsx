@@ -48,8 +48,6 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
       name: fd.get("name"),
       description: fd.get("description"),
       address: fd.get("address"),
-      lat: parseFloat(fd.get("lat") as string),
-      lng: parseFloat(fd.get("lng") as string),
       website: fd.get("website") || "",
       hours: fd.get("hours") || "",
       image_url: fd.get("image_url") || "",
@@ -178,38 +176,6 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
             name="website"
             type="url"
             defaultValue={shop.website ?? ""}
-            className="kawaii-input"
-          />
-        </div>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label className="kawaii-label" htmlFor="lat">
-            Lat
-            <RequiredMark />
-          </label>
-          <input
-            id="lat"
-            name="lat"
-            type="number"
-            step="any"
-            required
-            defaultValue={shop.lat}
-            className="kawaii-input"
-          />
-        </div>
-        <div>
-          <label className="kawaii-label" htmlFor="lng">
-            Lng
-            <RequiredMark />
-          </label>
-          <input
-            id="lng"
-            name="lng"
-            type="number"
-            step="any"
-            required
-            defaultValue={shop.lng}
             className="kawaii-input"
           />
         </div>

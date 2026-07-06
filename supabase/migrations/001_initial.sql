@@ -13,6 +13,7 @@ create type public.shop_tag as enum (
   'monchhichi',
   'blind_boxes',
   'gachas',
+  'ichiban_kuji',
   'sanrio',
   'smiski',
   'sonny_angel',
