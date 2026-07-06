@@ -1,6 +1,7 @@
 "use client";
 
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
+import { RequiredMark } from "@/components/ui/RequiredMark";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -20,8 +21,6 @@ export function AdminCreateEventForm() {
         : "",
       venue_name: fd.get("venue_name"),
       address: fd.get("address"),
-      lat: parseFloat(fd.get("lat") as string),
-      lng: parseFloat(fd.get("lng") as string),
       external_url: fd.get("external_url") || "",
       image_url: fd.get("image_url") || "",
       status: fd.get("status"),
@@ -45,39 +44,60 @@ export function AdminCreateEventForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <label className="kawaii-label" htmlFor="title">Title</label>
+        <label className="kawaii-label" htmlFor="title">
+          Title
+          <RequiredMark />
+        </label>
         <input id="title" name="title" required className="kawaii-input" />
       </div>
       <div>
-        <label className="kawaii-label" htmlFor="description">Description</label>
+        <label className="kawaii-label" htmlFor="description">
+          Description
+          <RequiredMark />
+        </label>
         <textarea id="description" name="description" required rows={3} className="kawaii-input" />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="kawaii-label" htmlFor="start_at">Start</label>
+          <label className="kawaii-label" htmlFor="start_at">
+            Start
+            <RequiredMark />
+          </label>
           <input id="start_at" name="start_at" type="datetime-local" required className="kawaii-input" />
         </div>
         <div>
-          <label className="kawaii-label" htmlFor="end_at">End</label>
+          <label className="kawaii-label" htmlFor="end_at">
+            End <span className="font-normal text-ink-muted">(optional)</span>
+          </label>
           <input id="end_at" name="end_at" type="datetime-local" className="kawaii-input" />
         </div>
       </div>
       <div>
-        <label className="kawaii-label" htmlFor="venue_name">Venue</label>
+        <label className="kawaii-label" htmlFor="venue_name">
+          Venue
+          <RequiredMark />
+        </label>
         <input id="venue_name" name="venue_name" required className="kawaii-input" />
       </div>
       <div>
-        <label className="kawaii-label" htmlFor="address">Address</label>
+        <label className="kawaii-label" htmlFor="address">
+          Address
+          <RequiredMark />
+        </label>
         <input id="address" name="address" required className="kawaii-input" />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="kawaii-label" htmlFor="lat">Lat</label>
-          <input id="lat" name="lat" type="number" step="any" defaultValue={-37.8136} required className="kawaii-input" />
+          <label className="kawaii-label" htmlFor="external_url">
+            External URL <span className="font-normal text-ink-muted">(optional)</span>
+          </label>
+          <input id="external_url" name="external_url" type="url" className="kawaii-input" />
         </div>
         <div>
-          <label className="kawaii-label" htmlFor="lng">Lng</label>
-          <input id="lng" name="lng" type="number" step="any" defaultValue={144.9631} required className="kawaii-input" />
+          <label className="kawaii-label" htmlFor="image_url">
+            Image URL <span className="font-normal text-ink-muted">(optional)</span>
+          </label>
+          <input id="image_url" name="image_url" type="url" className="kawaii-input" />
         </div>
       </div>
       <div>

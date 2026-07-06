@@ -1,6 +1,7 @@
 "use client";
 
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
+import { RequiredMark } from "@/components/ui/RequiredMark";
 import { patchStatus } from "@/components/admin/admin-actions";
 import { toDatetimeLocal } from "@/lib/datetime-local";
 import type { Event } from "@/lib/types";
@@ -42,8 +43,6 @@ export function AdminEditEventForm({ event }: { event: Event }) {
         : "",
       venue_name: fd.get("venue_name"),
       address: fd.get("address"),
-      lat: parseFloat(fd.get("lat") as string),
-      lng: parseFloat(fd.get("lng") as string),
       external_url: fd.get("external_url") || "",
       image_url: fd.get("image_url") || "",
       status: fd.get("status"),
@@ -83,6 +82,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
       <div>
         <label className="kawaii-label" htmlFor="title">
           Title
+          <RequiredMark />
         </label>
         <input
           id="title"
@@ -95,6 +95,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
       <div>
         <label className="kawaii-label" htmlFor="description">
           Description
+          <RequiredMark />
         </label>
         <textarea
           id="description"
@@ -109,6 +110,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
         <div>
           <label className="kawaii-label" htmlFor="start_at">
             Start
+            <RequiredMark />
           </label>
           <input
             id="start_at"
@@ -121,7 +123,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
         </div>
         <div>
           <label className="kawaii-label" htmlFor="end_at">
-            End
+            End <span className="font-normal text-ink-muted">(optional)</span>
           </label>
           <input
             id="end_at"
@@ -135,6 +137,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
       <div>
         <label className="kawaii-label" htmlFor="venue_name">
           Venue
+          <RequiredMark />
         </label>
         <input
           id="venue_name"
@@ -147,6 +150,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
       <div>
         <label className="kawaii-label" htmlFor="address">
           Address
+          <RequiredMark />
         </label>
         <input
           id="address"
@@ -158,38 +162,8 @@ export function AdminEditEventForm({ event }: { event: Event }) {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="kawaii-label" htmlFor="lat">
-            Lat
-          </label>
-          <input
-            id="lat"
-            name="lat"
-            type="number"
-            step="any"
-            required
-            defaultValue={event.lat}
-            className="kawaii-input"
-          />
-        </div>
-        <div>
-          <label className="kawaii-label" htmlFor="lng">
-            Lng
-          </label>
-          <input
-            id="lng"
-            name="lng"
-            type="number"
-            step="any"
-            required
-            defaultValue={event.lng}
-            className="kawaii-input"
-          />
-        </div>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
           <label className="kawaii-label" htmlFor="external_url">
-            External URL
+            External URL <span className="font-normal text-ink-muted">(optional)</span>
           </label>
           <input
             id="external_url"
@@ -201,7 +175,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
         </div>
         <div>
           <label className="kawaii-label" htmlFor="image_url">
-            Image URL
+            Image URL <span className="font-normal text-ink-muted">(optional)</span>
           </label>
           <input
             id="image_url"
@@ -230,7 +204,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
         </div>
         <div>
           <label className="kawaii-label" htmlFor="admin_note">
-            Admin note
+            Admin note <span className="font-normal text-ink-muted">(optional)</span>
           </label>
           <input
             id="admin_note"

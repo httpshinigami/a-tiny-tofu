@@ -1,5 +1,6 @@
 import { updateEvent } from "@/lib/queries";
 import { requireAdmin } from "@/lib/admin-auth";
+import { fallbackCoords, geocodeAddress } from "@/lib/geocode";
 import { adminEventSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
 
@@ -18,6 +19,7 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   const d = parsed.data;
+  const coords = (await geocodeAddress(d.address)) ?? fallbackCoords();
   const result = await updateEvent(id, {
     title: d.title,
     description: d.description,
@@ -25,8 +27,8 @@ export async function PATCH(request: Request, { params }: Params) {
     end_at: d.end_at || null,
     venue_name: d.venue_name,
     address: d.address,
-    lat: d.lat,
-    lng: d.lng,
+    lat: coords.lat,
+    lng: coords.lng,
     image_url: d.image_url || null,
     external_url: d.external_url || null,
     status: d.status,

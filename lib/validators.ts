@@ -26,8 +26,6 @@ export const shopSubmitSchema = z.object({
 });
 
 export const adminEventSchema = eventSubmitSchema.extend({
-  lat: z.number(),
-  lng: z.number(),
   status: z.enum(["pending", "approved", "rejected"]),
   admin_note: z.string().max(500).optional().or(z.literal("")),
 });
