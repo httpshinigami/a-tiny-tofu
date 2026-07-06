@@ -5,11 +5,14 @@ create type public.content_status as enum ('pending', 'approved', 'rejected');
 create type public.shop_tag as enum (
   'brunch',
   'desserts',
+  'drinks',
+  'restaurant',
   'photo_booths',
   'artist_goods',
   'anime_goods',
   'monchhichi',
   'blind_boxes',
+  'gachas',
   'sanrio',
   'smiski',
   'sonny_angel',
@@ -130,7 +133,7 @@ insert into public.shops (name, slug, description, address, lat, lng, hours, sta
 insert into public.shop_tags (shop_id, tag)
 select id, 'monchhichi'::public.shop_tag from public.shops where slug = 'monchhichi-and-co'
 union all select id, 'desserts' from public.shops where slug = 'pastel-parfait-house'
-union all select id, 'brunch' from public.shops where slug = 'pastel-parfait-house'
+union all select id, 'restaurant' from public.shops where slug = 'pastel-parfait-house'
 union all select id, 'smiski' from public.shops where slug = 'smiski-corner'
-union all select id, 'brunch' from public.shops where slug = 'smiski-corner'
+union all select id, 'restaurant' from public.shops where slug = 'smiski-corner'
 union all select id, 'desserts' from public.shops where slug = 'smiski-corner';
