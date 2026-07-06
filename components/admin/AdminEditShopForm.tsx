@@ -4,20 +4,33 @@ import { patchStatus, SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
-  SHOP_TAGS,
+  RETAIL_SHOP_TAGS,
   SHOP_TAG_LABELS,
   TAG_COLORS,
   type ShopTag,
 } from "@/lib/constants";
 import type { Shop } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+const RETAIL_TAG_SET = new Set<string>(RETAIL_SHOP_TAGS);
 
 export function AdminEditShopForm({ shop }: { shop: Shop }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [selected, setSelected] = useState<ShopTag[]>(shop.shop_tags);
+
+  const preservedTags = useMemo(
+    () => shop.shop_tags.filter((t) => !RETAIL_TAG_SET.has(t)),
+    [shop.shop_tags]
+  );
+  const [selected, setSelected] = useState<ShopTag[]>(() =>
+    shop.shop_tags.filter((t) => RETAIL_TAG_SET.has(t))
+  );
+
+  function allTags() {
+    return [...selected, ...preservedTags];
+  }
 
   async function save(body: object) {
     setBusy(true);
@@ -39,7 +52,7 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!selected.length) {
+    if (!selected.length && !preservedTags.length) {
       setError(SHOP_TAG_REQUIRED_MESSAGE);
       return;
     }
@@ -53,14 +66,14 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
       image_url: fd.get("image_url") || "",
       status: fd.get("status"),
       admin_note: fd.get("admin_note") || "",
-      tags: selected,
+      tags: allTags(),
       honeypot: "",
     });
     if (ok) router.push("/admin");
   }
 
   async function approve() {
-    if (!selected.length) {
+    if (!selected.length && !preservedTags.length) {
       setError(SHOP_TAG_REQUIRED_MESSAGE);
       return;
     }
@@ -136,7 +149,7 @@ export function AdminEditShopForm({ shop }: { shop: Shop }) {
           <RequiredMark />
         </p>
         <div className="flex flex-wrap gap-2">
-          {SHOP_TAGS.map((tag) => (
+          {RETAIL_SHOP_TAGS.map((tag) => (
             <button
               key={tag}
               type="button"
