@@ -16,7 +16,7 @@ export const eventSubmitSchema = z.object({
 
 export const shopSubmitSchema = z.object({
   name: z.string().min(2).max(200),
-  description: z.string().min(10).max(5000),
+  description: z.string().max(5000).optional().or(z.literal("")),
   address: z.string().min(5).max(500),
   website: z.string().url().optional().or(z.literal("")),
   hours: z.string().max(200).optional().or(z.literal("")),

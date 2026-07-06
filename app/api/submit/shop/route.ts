@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
   const result = await insertShop({
     name: data.name,
-    description: data.description,
+    description: data.description ?? "",
     address: data.address,
     lat: coords.lat,
     lng: coords.lng,

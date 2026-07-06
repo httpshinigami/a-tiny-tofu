@@ -37,6 +37,19 @@ export function KawaiiButton({
   const cn = `${base} ${styles[variant]} ${className}`;
 
   if (href) {
+    const isExternal = /^https?:\/\//i.test(href);
+    if (isExternal) {
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn}
+        >
+          {children}
+        </a>
+      );
+    }
     return (
       <Link href={href} className={cn}>
         {children}

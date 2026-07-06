@@ -20,7 +20,7 @@ export async function PATCH(request: Request, { params }: Params) {
   const d = parsed.data;
   const result = await updateShop(id, {
     name: d.name,
-    description: d.description,
+    description: d.description ?? "",
     address: d.address,
     lat: d.lat,
     lng: d.lng,
