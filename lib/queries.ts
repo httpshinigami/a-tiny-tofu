@@ -290,3 +290,100 @@ export async function deleteShop(id: string): Promise<{ ok: boolean }> {
   await supabase.from("shops").delete().eq("id", id);
   return { ok: true };
 }
+
+export async function getEventById(id: string): Promise<Event | null> {
+  if (!isSupabaseConfigured()) {
+    return SEED_EVENTS.find((e) => e.id === id) ?? null;
+  }
+  const supabase = createAdminClient();
+  if (!supabase) return null;
+  const { data } = await supabase.from("events").select("*").eq("id", id).single();
+  return data ? mapEventRow(data) : null;
+}
+
+export async function getShopById(id: string): Promise<Shop | null> {
+  if (!isSupabaseConfigured()) {
+    return SEED_SHOPS.find((s) => s.id === id) ?? null;
+  }
+  const supabase = createAdminClient();
+  if (!supabase) return null;
+  const { data: shopData } = await supabase
+    .from("shops")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (!shopData) return null;
+  const { data: tagsData } = await supabase
+    .from("shop_tags")
+    .select("*")
+    .eq("shop_id", id);
+  const tags = (tagsData ?? []).map((t: { tag: ShopTag }) => t.tag);
+  return mapShopRow(shopData, tags);
+}
+
+export async function updateEvent(
+  id: string,
+  payload: Omit<Event, "id" | "created_at" | "slug"> & { slug?: string }
+): Promise<{ ok: boolean; error?: string }> {
+  const slug = payload.slug ?? slugify(payload.title);
+  if (!isSupabaseConfigured()) return { ok: true };
+  const supabase = createAdminClient();
+  if (!supabase) return { ok: false, error: "Database not configured" };
+  const { error } = await supabase
+    .from("events")
+    .update({
+      title: payload.title,
+      slug,
+      description: payload.description,
+      start_at: payload.start_at,
+      end_at: payload.end_at,
+      venue_name: payload.venue_name,
+      address: payload.address,
+      lat: payload.lat,
+      lng: payload.lng,
+      image_url: payload.image_url,
+      external_url: payload.external_url,
+      status: payload.status,
+      admin_note: payload.admin_note,
+    })
+    .eq("id", id);
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+export async function updateShop(
+  id: string,
+  payload: Omit<Shop, "id" | "created_at" | "shop_tags" | "slug"> & {
+    slug?: string;
+    tags: ShopTag[];
+  }
+): Promise<{ ok: boolean; error?: string }> {
+  const slug = payload.slug ?? slugify(payload.name);
+  if (!isSupabaseConfigured()) return { ok: true };
+  const supabase = createAdminClient();
+  if (!supabase) return { ok: false, error: "Database not configured" };
+  const { error } = await supabase
+    .from("shops")
+    .update({
+      name: payload.name,
+      slug,
+      description: payload.description,
+      address: payload.address,
+      lat: payload.lat,
+      lng: payload.lng,
+      website: payload.website,
+      hours: payload.hours,
+      image_url: payload.image_url,
+      status: payload.status,
+      admin_note: payload.admin_note,
+    })
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  await supabase.from("shop_tags").delete().eq("shop_id", id);
+  if (payload.tags.length) {
+    const { error: tagError } = await supabase.from("shop_tags").insert(
+      payload.tags.map((tag) => ({ shop_id: id, tag }))
+    );
+    if (tagError) return { ok: false, error: tagError.message };
+  }
+  return { ok: true };
+}
