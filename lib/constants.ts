@@ -17,6 +17,30 @@ export const SHOP_TAGS = [
 
 export type ShopTag = (typeof SHOP_TAGS)[number];
 
+export const FOOD_DRINK_TAGS = [
+  "desserts",
+  "drinks",
+  "restaurant",
+] as const satisfies readonly ShopTag[];
+
+export type FoodDrinkTag = (typeof FOOD_DRINK_TAGS)[number];
+
+export const RETAIL_SHOP_TAGS = [
+  "photo_booths",
+  "artist_goods",
+  "anime_goods",
+  "blind_boxes",
+  "gachas",
+  "ichiban_kuji",
+  "monchhichi",
+  "sanrio",
+  "smiski",
+  "sonny_angel",
+  "sylvanian_families",
+] as const satisfies readonly ShopTag[];
+
+export type RetailShopTag = (typeof RETAIL_SHOP_TAGS)[number];
+
 export const SHOP_TAG_LABELS: Record<ShopTag, string> = {
   desserts: "Desserts",
   drinks: "Drinks",

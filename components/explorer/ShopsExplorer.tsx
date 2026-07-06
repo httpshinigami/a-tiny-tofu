@@ -4,7 +4,6 @@ import { ExplorerLayout } from "@/components/explorer/ExplorerLayout";
 import { ShopDetailPanel } from "@/components/explorer/ShopDetailPanel";
 import { DynamicShopMap } from "@/components/maps/DynamicShopMap";
 import {
-  SHOP_TAGS,
   SHOP_TAG_LABELS,
   TAG_COLORS,
   type ShopTag,
@@ -13,7 +12,21 @@ import type { Shop } from "@/lib/types";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { useMemo, useState } from "react";
 
-export function ShopsExplorer({ shops }: { shops: Shop[] }) {
+interface Props {
+  shops: Shop[];
+  filterTags: readonly ShopTag[];
+  title: string;
+  subtitle: string;
+  emptyMessage: string;
+}
+
+export function ShopsExplorer({
+  shops,
+  filterTags,
+  title,
+  subtitle,
+  emptyMessage,
+}: Props) {
   const [activeTags, setActiveTags] = useState<ShopTag[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(
     shops[0]?.id ?? null
@@ -42,20 +55,20 @@ export function ShopsExplorer({ shops }: { shops: Shop[] }) {
 
   const sidebar = (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="shrink-0 border-b border-peach-dark/20 p-3">
+      <div className="shrink-0 border-b border-border p-3">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
           Filters
         </p>
         <div className="flex flex-wrap gap-2">
-          {SHOP_TAGS.map((tag) => (
+          {filterTags.map((tag) => (
             <button
               key={tag}
               type="button"
               onClick={() => toggleTag(tag)}
               className={`rounded-full px-3 py-1 text-xs font-semibold ring-2 transition ${
                 activeTags.includes(tag)
-                  ? "ring-coral"
-                  : "ring-transparent hover:ring-peach-dark"
+                  ? "ring-sage"
+                  : "ring-transparent hover:ring-border"
               }`}
               style={{ backgroundColor: TAG_COLORS[tag] }}
             >
@@ -67,7 +80,7 @@ export function ShopsExplorer({ shops }: { shops: Shop[] }) {
           <button
             type="button"
             onClick={() => setActiveTags([])}
-            className="mt-2 text-xs text-coral underline"
+            className="mt-2 text-xs text-sage-dark underline"
           >
             Clear filters
           </button>
@@ -75,7 +88,7 @@ export function ShopsExplorer({ shops }: { shops: Shop[] }) {
       </div>
       <ul className="min-h-0 flex-1 space-y-0.5 overflow-y-auto p-3">
         {filtered.length === 0 ? (
-          <li className="text-sm text-ink-muted">No shops match</li>
+          <li className="text-sm text-ink-muted">{emptyMessage}</li>
         ) : (
           filtered.map((shop) => (
             <li key={shop.id}>
@@ -84,8 +97,8 @@ export function ShopsExplorer({ shops }: { shops: Shop[] }) {
                 onClick={() => setSelectedId(shop.id)}
                 className={`w-full rounded-xl px-3 py-2 text-left transition ${
                   effectiveSelectedId === shop.id
-                    ? "bg-coral/20 font-semibold text-coral"
-                    : "text-ink hover:bg-peach/30"
+                    ? "bg-sage/20 font-semibold text-sage-dark"
+                    : "text-ink hover:bg-cream"
                 }`}
               >
                 <span className="font-display">{shop.name}</span>
@@ -99,11 +112,11 @@ export function ShopsExplorer({ shops }: { shops: Shop[] }) {
 
   return (
     <ExplorerLayout
-      title="Shops"
-      subtitle="Filter by what they offer — select a shop to zoom the map"
+      title={title}
+      subtitle={subtitle}
       headerExtra={
         <KawaiiButton href="/submit/shop" variant="sage">
-          Submit shop
+          Submit a spot
         </KawaiiButton>
       }
       sidebar={sidebar}
