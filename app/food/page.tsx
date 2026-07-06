@@ -18,6 +18,7 @@ export default async function FoodPage() {
       title="Food & Drink"
       subtitle="Desserts, drinks, and restaurants — select a spot to zoom the map"
       emptyMessage="No food & drink spots match"
+      submitHref="/submit/food"
     />
   );
 }

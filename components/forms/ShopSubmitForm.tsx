@@ -4,14 +4,25 @@ import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
-  SHOP_TAGS,
   SHOP_TAG_LABELS,
   TAG_COLORS,
   type ShopTag,
 } from "@/lib/constants";
 import { useState } from "react";
 
-export function ShopSubmitForm() {
+interface Props {
+  tagOptions: readonly ShopTag[];
+  tagPrompt?: string;
+  successHref?: string;
+  successLabel?: string;
+}
+
+export function ShopSubmitForm({
+  tagOptions,
+  tagPrompt = "What do they sell?",
+  successHref = "/shops",
+  successLabel = "Back to shops",
+}: Props) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle"
   );
@@ -65,7 +76,7 @@ export function ShopSubmitForm() {
           We&apos;ll review your shop listing soon.
         </p>
         <div className="mt-6">
-          <KawaiiButton href="/shops">Back to shops</KawaiiButton>
+          <KawaiiButton href={successHref}>{successLabel}</KawaiiButton>
         </div>
       </div>
     );
@@ -101,11 +112,11 @@ export function ShopSubmitForm() {
       </div>
       <div>
         <p className="kawaii-label">
-          What do they sell?
+          {tagPrompt}
           <RequiredMark />
         </p>
         <div className="flex flex-wrap gap-2">
-          {SHOP_TAGS.map((tag) => (
+          {tagOptions.map((tag) => (
             <button
               key={tag}
               type="button"
