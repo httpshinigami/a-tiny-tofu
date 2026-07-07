@@ -8,9 +8,25 @@ export function shopHasAnyTag(
   return shop.shop_tags.some((t) => tags.includes(t));
 }
 
+export function shopHasAllTags(
+  shop: Shop,
+  tags: readonly ShopTag[]
+): boolean {
+  if (!tags.length) return true;
+  return tags.every((t) => shop.shop_tags.includes(t));
+}
+
 export function filterShopsByTags(
   shops: Shop[],
   tags: readonly ShopTag[]
 ): Shop[] {
   return shops.filter((shop) => shopHasAnyTag(shop, tags));
+}
+
+export function filterShopsByAllTags(
+  shops: Shop[],
+  tags: readonly ShopTag[]
+): Shop[] {
+  if (!tags.length) return shops;
+  return shops.filter((shop) => shopHasAllTags(shop, tags));
 }

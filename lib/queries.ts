@@ -1,4 +1,5 @@
 import type { ShopTag, Status } from "./constants";
+import { shopHasAllTags } from "./shop-categories";
 import { SEED_EVENTS, SEED_SHOPS } from "./seed-data";
 import { createAdminClient } from "./supabase/admin";
 import type { Event, Shop } from "./types";
@@ -78,9 +79,7 @@ export async function getApprovedShops(tags?: ShopTag[]): Promise<Shop[]> {
   if (!isSupabaseConfigured()) {
     let shops = [...SEED_SHOPS];
     if (tags?.length) {
-      shops = shops.filter((s) =>
-        tags.every((t) => s.shop_tags.includes(t))
-      );
+      shops = shops.filter((s) => shopHasAllTags(s, tags));
     }
     return shops.sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -110,7 +109,7 @@ export async function getApprovedShops(tags?: ShopTag[]): Promise<Shop[]> {
   );
 
   if (tags?.length) {
-    shops = shops.filter((s) => tags.every((t) => s.shop_tags.includes(t)));
+    shops = shops.filter((s) => shopHasAllTags(s, tags));
   }
 
   return shops;

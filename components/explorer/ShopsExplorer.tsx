@@ -5,6 +5,7 @@ import { ShopDetailPanel } from "@/components/explorer/ShopDetailPanel";
 import { ShopFilterPanel } from "@/components/explorer/ShopFilterPanel";
 import { DynamicShopMap } from "@/components/maps/DynamicShopMap";
 import { SHOP_TAG_LABELS, type ShopTag } from "@/lib/constants";
+import { filterShopsByAllTags } from "@/lib/shop-categories";
 import type { ShopFilterCategory } from "@/lib/shop-filter-categories";
 import type { Shop } from "@/lib/types";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
@@ -44,12 +45,10 @@ export function ShopsExplorer({
     [filterCategories, filterTags]
   );
 
-  const filtered = useMemo(() => {
-    if (!activeTags.length) return shops;
-    return shops.filter((s) =>
-      activeTags.some((t) => s.shop_tags.includes(t))
-    );
-  }, [shops, activeTags]);
+  const filtered = useMemo(
+    () => filterShopsByAllTags(shops, activeTags),
+    [shops, activeTags]
+  );
 
   const effectiveSelectedId =
     selectedId && filtered.some((s) => s.id === selectedId)
