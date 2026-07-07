@@ -20,6 +20,7 @@ export default async function ShopsPage() {
       title="Shops"
       subtitle="Collectibles, character goods, and more — select a spot to zoom the map"
       emptyMessage="No shops match"
+      filterOpenByDefault
     />
   );
 }

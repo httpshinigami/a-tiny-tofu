@@ -35,7 +35,7 @@ export function ExplorerLayout({
 
       <div className="relative w-full">
         {filterPanel && (
-          <div className="mb-4 w-full md:absolute md:top-0 md:right-full md:mb-0 md:mr-4 md:w-56 lg:w-60">
+          <div className="mb-4 w-full md:absolute md:inset-y-0 md:right-full md:mb-0 md:mr-4 md:w-64 lg:w-72">
             {filterPanel}
           </div>
         )}

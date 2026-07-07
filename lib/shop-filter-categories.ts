@@ -14,6 +14,13 @@ export const RETAIL_FILTER_CATEGORIES: ShopFilterCategory[] = [
       "smiski",
       "sonny_angel",
       "sylvanian_families",
+      "mofusand",
+      "miffy",
+      "disney",
+      "chiikawa",
+      "cartoon",
+      "jellycat",
+      "studio_ghibli",
     ],
   },
   {
@@ -26,6 +33,6 @@ export const RETAIL_FILTER_CATEGORIES: ShopFilterCategory[] = [
   },
   {
     label: "Other",
-    tags: ["artist_goods", "photo_booths"],
+    tags: ["artist_goods", "photo_booths", "lifestyle"],
   },
 ];

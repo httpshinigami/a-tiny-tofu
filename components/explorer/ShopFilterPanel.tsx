@@ -2,7 +2,7 @@
 
 import { SHOP_TAG_LABELS, type ShopTag } from "@/lib/constants";
 import type { ShopFilterCategory } from "@/lib/shop-filter-categories";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   categories: readonly ShopFilterCategory[];
@@ -17,6 +17,8 @@ export function ShopFilterPanel({
   onChange,
   onClose,
 }: Props) {
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -33,9 +35,18 @@ export function ShopFilterPanel({
     );
   }
 
+  function toggleCategory(label: string) {
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  }
+
   return (
     <aside
-      className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-border bg-cream shadow-sm md:min-h-[640px]"
+      className="flex h-full max-h-[50vh] flex-col overflow-hidden rounded-xl border border-border bg-cream shadow-sm md:max-h-none"
       aria-label="Filter shops"
     >
       <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border px-4 py-3">
@@ -62,32 +73,79 @@ export function ShopFilterPanel({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        <div className="space-y-5">
-          {categories.map((category) => (
-            <fieldset key={category.label}>
-              <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                {category.label}
-              </legend>
-              <ul className="space-y-2">
-                {category.tags.map((tag) => (
-                  <li key={tag}>
-                    <label className="flex cursor-pointer items-center gap-2.5 rounded-lg px-1 py-0.5 text-sm text-ink transition hover:bg-surface">
-                      <input
-                        type="checkbox"
-                        checked={selected.includes(tag)}
-                        onChange={() => toggleTag(tag)}
-                        className="size-4 rounded border-border text-sage focus:ring-sage"
-                      />
-                      {SHOP_TAG_LABELS[tag]}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            </fieldset>
-          ))}
+        <div className="space-y-3">
+          {categories.map((category) => {
+            const isOpen = !collapsed.has(category.label);
+            const sortedTags = [...category.tags].sort((a, b) =>
+              SHOP_TAG_LABELS[a].localeCompare(SHOP_TAG_LABELS[b])
+            );
+            const selectedCount = sortedTags.filter((t) =>
+              selected.includes(t)
+            ).length;
+
+            return (
+              <div key={category.label} className="rounded-lg border border-border/60 bg-surface">
+                <button
+                  type="button"
+                  onClick={() => toggleCategory(category.label)}
+                  aria-expanded={isOpen}
+                  className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition hover:bg-cream"
+                >
+                  <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                    {category.label}
+                    {selectedCount > 0 && (
+                      <span className="ml-2 normal-case text-sage-dark">
+                        ({selectedCount})
+                      </span>
+                    )}
+                  </span>
+                  <Chevron open={isOpen} />
+                </button>
+
+                {isOpen && (
+                  <ul className="space-y-1 border-t border-border/60 px-3 py-2">
+                    {sortedTags.map((tag) => (
+                      <li key={tag}>
+                        <label className="flex cursor-pointer items-center gap-2.5 rounded-lg px-1 py-0.5 text-sm text-ink transition hover:bg-cream">
+                          <input
+                            type="checkbox"
+                            checked={selected.includes(tag)}
+                            onChange={() => toggleTag(tag)}
+                            className="size-4 rounded border-border text-sage focus:ring-sage"
+                          />
+                          {SHOP_TAG_LABELS[tag]}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </aside>
+  );
+}
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      className={`shrink-0 text-ink-muted transition ${open ? "rotate-180" : ""}`}
+      aria-hidden
+    >
+      <path
+        d="M4 6l4 4 4-4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 

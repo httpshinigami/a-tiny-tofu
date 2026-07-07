@@ -18,6 +18,7 @@ interface Props {
   subtitle: string;
   emptyMessage: string;
   submitHref?: string;
+  filterOpenByDefault?: boolean;
 }
 
 export function ShopsExplorer({
@@ -28,9 +29,10 @@ export function ShopsExplorer({
   subtitle,
   emptyMessage,
   submitHref = "/submit/shop",
+  filterOpenByDefault = false,
 }: Props) {
   const [activeTags, setActiveTags] = useState<ShopTag[]>([]);
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(filterOpenByDefault);
   const [selectedId, setSelectedId] = useState<string | null>(
     shops[0]?.id ?? null
   );

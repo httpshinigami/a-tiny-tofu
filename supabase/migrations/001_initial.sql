@@ -19,7 +19,15 @@ create type public.shop_tag as enum (
   'sanrio',
   'smiski',
   'sonny_angel',
-  'sylvanian_families'
+  'sylvanian_families',
+  'mofusand',
+  'miffy',
+  'disney',
+  'chiikawa',
+  'cartoon',
+  'jellycat',
+  'studio_ghibli',
+  'lifestyle'
 );
 
 create table public.events (
