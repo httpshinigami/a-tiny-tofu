@@ -27,7 +27,8 @@ create type public.shop_tag as enum (
   'cartoon',
   'jellycat',
   'studio_ghibli',
-  'lifestyle'
+  'lifestyle',
+  'manga'
 );
 
 create table public.events (

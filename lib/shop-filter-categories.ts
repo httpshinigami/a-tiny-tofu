@@ -29,7 +29,7 @@ export const RETAIL_FILTER_CATEGORIES: ShopFilterCategory[] = [
   },
   {
     label: "Japanese pop culture",
-    tags: ["anime_goods", "fashion", "gundam"],
+    tags: ["anime_goods", "fashion", "gundam", "manga"],
   },
   {
     label: "Other",
