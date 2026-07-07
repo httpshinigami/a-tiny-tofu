@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { SHOP_TAGS } from "./constants";
 
+const mapLocationField = z.string().max(100).optional().or(z.literal(""));
+
 export const eventSubmitSchema = z.object({
   title: z.string().min(3).max(200),
   description: z.string().min(10).max(5000),
@@ -28,9 +30,11 @@ export const shopSubmitSchema = z.object({
 export const adminEventSchema = eventSubmitSchema.extend({
   status: z.enum(["pending", "approved", "rejected"]),
   admin_note: z.string().max(500).optional().or(z.literal("")),
+  map_location: mapLocationField,
 });
 
 export const adminShopSchema = shopSubmitSchema.extend({
   status: z.enum(["pending", "approved", "rejected"]),
   admin_note: z.string().max(500).optional().or(z.literal("")),
+  map_location: mapLocationField,
 });

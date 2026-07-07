@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import { useRouter } from "next/navigation";
@@ -21,6 +22,7 @@ export function AdminCreateEventForm() {
         : "",
       venue_name: fd.get("venue_name"),
       address: fd.get("address"),
+      map_location: fd.get("map_location") || "",
       external_url: fd.get("external_url") || "",
       image_url: fd.get("image_url") || "",
       status: fd.get("status"),
@@ -86,6 +88,7 @@ export function AdminCreateEventForm() {
         </label>
         <input id="address" name="address" required className="kawaii-input" />
       </div>
+      <AdminMapLocationField />
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="kawaii-label" htmlFor="external_url">

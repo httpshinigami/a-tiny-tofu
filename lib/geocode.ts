@@ -1,4 +1,5 @@
 import { MELBOURNE_CENTER } from "./constants";
+import { parseMapLocation } from "./map-location";
 
 export interface GeocodeResult {
   lat: number;
@@ -27,4 +28,13 @@ export async function geocodeAddress(
 
 export function fallbackCoords(): GeocodeResult {
   return { ...MELBOURNE_CENTER };
+}
+
+export async function resolveCoords(
+  address: string,
+  mapLocation?: string
+): Promise<GeocodeResult> {
+  const parsed = mapLocation ? parseMapLocation(mapLocation) : null;
+  if (parsed) return parsed;
+  return (await geocodeAddress(address)) ?? fallbackCoords();
 }

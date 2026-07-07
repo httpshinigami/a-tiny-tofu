@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
@@ -40,6 +41,7 @@ export function AdminCreateShopForm({
       name: fd.get("name"),
       description: fd.get("description"),
       address: fd.get("address"),
+      map_location: fd.get("map_location") || "",
       website: fd.get("website") || "",
       hours: fd.get("hours") || "",
       image_url: fd.get("image_url") || "",
@@ -84,6 +86,7 @@ export function AdminCreateShopForm({
         </label>
         <input id="address" name="address" required className="kawaii-input" />
       </div>
+      <AdminMapLocationField />
       <div>
         <p className="kawaii-label">
           {tagPrompt}

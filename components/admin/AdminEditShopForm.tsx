@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { patchStatus, SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
@@ -8,6 +9,7 @@ import {
   TAG_COLORS,
   type ShopTag,
 } from "@/lib/constants";
+import { formatMapLocation } from "@/lib/map-location";
 import type { Shop } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -72,6 +74,7 @@ export function AdminEditShopForm({
       name: fd.get("name"),
       description: fd.get("description"),
       address: fd.get("address"),
+      map_location: fd.get("map_location") || "",
       website: fd.get("website") || "",
       hours: fd.get("hours") || "",
       image_url: fd.get("image_url") || "",
@@ -154,6 +157,9 @@ export function AdminEditShopForm({
           className="kawaii-input"
         />
       </div>
+      <AdminMapLocationField
+        defaultValue={formatMapLocation(shop.lat, shop.lng)}
+      />
       <div>
         <p className="kawaii-label">
           {tagPrompt}

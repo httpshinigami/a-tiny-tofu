@@ -1,9 +1,11 @@
 "use client";
 
+import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import { patchStatus } from "@/components/admin/admin-actions";
 import { toDatetimeLocal } from "@/lib/datetime-local";
+import { formatMapLocation } from "@/lib/map-location";
 import type { Event } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -43,6 +45,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
         : "",
       venue_name: fd.get("venue_name"),
       address: fd.get("address"),
+      map_location: fd.get("map_location") || "",
       external_url: fd.get("external_url") || "",
       image_url: fd.get("image_url") || "",
       status: fd.get("status"),
@@ -160,6 +163,9 @@ export function AdminEditEventForm({ event }: { event: Event }) {
           className="kawaii-input"
         />
       </div>
+      <AdminMapLocationField
+        defaultValue={formatMapLocation(event.lat, event.lng)}
+      />
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="kawaii-label" htmlFor="external_url">

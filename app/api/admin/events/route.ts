@@ -1,4 +1,4 @@
-import { fallbackCoords, geocodeAddress } from "@/lib/geocode";
+import { resolveCoords } from "@/lib/geocode";
 import { insertEvent } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/lib/utils";
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   }
 
   const d = parsed.data;
-  const coords = (await geocodeAddress(d.address)) ?? fallbackCoords();
+  const coords = await resolveCoords(d.address, d.map_location);
   const result = await insertEvent({
     title: d.title,
     description: d.description,
