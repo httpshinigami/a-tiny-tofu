@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "leaflet/dist/leaflet.css";
 
 @theme inline {
   --color-cream: #fafafa;
@@ -29,10 +28,13 @@ body {
   min-height: 100vh;
 }
 
-.leaflet-container {
+.mapboxgl-map {
   font-family: var(--font-body), system-ui, sans-serif;
   border-radius: 1rem;
-  z-index: 0;
+}
+
+.mapboxgl-ctrl-attrib a {
+  color: inherit;
 }
 
 .kawaii-input {

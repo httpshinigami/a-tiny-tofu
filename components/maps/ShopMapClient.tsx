@@ -1,28 +1,9 @@
 "use client";
 
-import { Marker } from "react-leaflet";
+import { MapPin } from "@/components/maps/MapPin";
 import { MapShell } from "@/components/maps/MapShell";
-import { SHOP_MARKER, SELECTED_SHOP_MARKER } from "@/components/maps/markers";
-import type { Shop } from "@/lib/types";
 import { MELBOURNE_CENTER } from "@/lib/constants";
-import { useEffect } from "react";
-import { useMap } from "react-leaflet";
-
-function MapFocus({
-  lat,
-  lng,
-  zoom,
-}: {
-  lat: number;
-  lng: number;
-  zoom: number;
-}) {
-  const map = useMap();
-  useEffect(() => {
-    map.flyTo([lat, lng], zoom, { duration: 0.8 });
-  }, [map, lat, lng, zoom]);
-  return null;
-}
+import type { Shop } from "@/lib/types";
 
 export function ShopMapClient({
   shops,
@@ -40,22 +21,22 @@ export function ShopMapClient({
   return (
     <MapShell
       className="h-full min-h-[280px] w-full"
-      center={selected ? { lat: selected.lat, lng: selected.lng } : MELBOURNE_CENTER}
+      center={
+        selected
+          ? { lat: selected.lat, lng: selected.lng }
+          : MELBOURNE_CENTER
+      }
       zoom={selected ? 15 : 12}
+      focusKey={selected?.id ?? null}
     >
-      {selected && (
-        <MapFocus lat={selected.lat} lng={selected.lng} zoom={15} />
-      )}
       {shops.map((shop) => (
-        <Marker
+        <MapPin
           key={shop.id}
-          position={[shop.lat, shop.lng]}
-          icon={
-            selectedId === shop.id ? SELECTED_SHOP_MARKER : SHOP_MARKER
-          }
-          eventHandlers={{
-            click: () => onSelect?.(shop.id),
-          }}
+          longitude={shop.lng}
+          latitude={shop.lat}
+          selected={selectedId === shop.id}
+          tone="shop"
+          onClick={() => onSelect?.(shop.id)}
         />
       ))}
     </MapShell>
