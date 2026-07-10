@@ -4,39 +4,45 @@ import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField"
 import { AddressInput } from "@/components/forms/AddressInput";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
+import type { Status } from "@/lib/constants";
 import { formatMapLocation } from "@/lib/map-location";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export function AdminCreateEventForm() {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
   const [mapLocation, setMapLocation] = useState("");
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const body = {
-      title: fd.get("title"),
-      description: fd.get("description"),
-      start_at: new Date(fd.get("start_at") as string).toISOString(),
-      end_at: fd.get("end_at")
-        ? new Date(fd.get("end_at") as string).toISOString()
-        : "",
-      venue_name: fd.get("venue_name"),
-      address: fd.get("address"),
-      map_location: fd.get("map_location") || "",
-      external_url: fd.get("external_url") || "",
-      image_url: fd.get("image_url") || "",
-      status: fd.get("status"),
-      honeypot: "",
-    };
+  async function saveWithStatus(status: Extract<Status, "approved" | "pending">) {
+    const form = formRef.current;
+    if (!form || !form.reportValidity()) return;
 
+    const fd = new FormData(form);
+    setBusy(true);
+    setError("");
     const res = await fetch("/api/admin/events", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        title: fd.get("title"),
+        description: fd.get("description"),
+        start_at: new Date(fd.get("start_at") as string).toISOString(),
+        end_at: fd.get("end_at")
+          ? new Date(fd.get("end_at") as string).toISOString()
+          : "",
+        venue_name: fd.get("venue_name"),
+        address: fd.get("address"),
+        map_location: fd.get("map_location") || "",
+        external_url: fd.get("external_url") || "",
+        image_url: fd.get("image_url") || "",
+        status,
+        honeypot: "",
+      }),
     });
+    setBusy(false);
     if (!res.ok) {
       const data = await res.json();
       setError(data.error ?? "Failed");
@@ -47,7 +53,11 @@ export function AdminCreateEventForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form
+      ref={formRef}
+      onSubmit={(e) => e.preventDefault()}
+      className="space-y-4"
+    >
       <div>
         <label className="kawaii-label" htmlFor="title">
           Title
@@ -116,16 +126,25 @@ export function AdminCreateEventForm() {
           <input id="image_url" name="image_url" type="url" className="kawaii-input" />
         </div>
       </div>
-      <div>
-        <label className="kawaii-label" htmlFor="status">Status</label>
-        <select id="status" name="status" className="kawaii-input" defaultValue="approved">
-          <option value="approved">Approved</option>
-          <option value="pending">Pending</option>
-          <option value="rejected">Rejected</option>
-        </select>
-      </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <KawaiiButton type="submit">Save event</KawaiiButton>
+      <div className="flex flex-wrap gap-3 border-t border-border pt-4">
+        <KawaiiButton
+          type="button"
+          variant="sage"
+          disabled={busy}
+          onClick={() => saveWithStatus("approved")}
+        >
+          Approved
+        </KawaiiButton>
+        <KawaiiButton
+          type="button"
+          variant="secondary"
+          disabled={busy}
+          onClick={() => saveWithStatus("pending")}
+        >
+          Pending
+        </KawaiiButton>
+      </div>
     </form>
   );
 }

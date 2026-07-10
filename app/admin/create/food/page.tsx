@@ -18,7 +18,6 @@ export default function AdminCreateFoodPage() {
         <AdminCreateShopForm
           tagOptions={FOOD_DRINK_TAGS}
           tagPrompt="What kind of spot is it?"
-          submitLabel="Save food & drink spot"
         />
       </div>
     </PageFrame>

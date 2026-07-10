@@ -38,13 +38,17 @@ export function AddressInput({
   const [value, setValue] = useState(defaultValue);
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [open, setOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
   const blurTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const skipNextFetch = useRef(false);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || !focused) {
+      setOpen(false);
+      return;
+    }
     if (skipNextFetch.current) {
       skipNextFetch.current = false;
       return;
@@ -99,7 +103,7 @@ export function AddressInput({
       clearTimeout(timer);
       controller.abort();
     };
-  }, [token, value]);
+  }, [token, value, focused]);
 
   useEffect(() => {
     return () => {
@@ -153,14 +157,16 @@ export function AddressInput({
         }
         onChange={(e) => setValue(e.target.value)}
         onFocus={() => {
-          if (suggestions.length > 0) setOpen(true);
+          if (blurTimeout.current) clearTimeout(blurTimeout.current);
+          setFocused(true);
         }}
         onBlur={() => {
+          setFocused(false);
           blurTimeout.current = setTimeout(() => setOpen(false), 150);
         }}
         onKeyDown={onKeyDown}
       />
-      {token && open && suggestions.length > 0 && (
+      {token && open && focused && suggestions.length > 0 && (
         <ul
           id={listId}
           role="listbox"
@@ -186,7 +192,7 @@ export function AddressInput({
           ))}
         </ul>
       )}
-      {token && loading && value.trim().length >= 3 && !open && (
+      {token && focused && loading && value.trim().length >= 3 && !open && (
         <p className="mt-1 text-xs text-ink-muted">Searching addresses…</p>
       )}
     </div>

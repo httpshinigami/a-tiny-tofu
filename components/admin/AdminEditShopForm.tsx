@@ -9,11 +9,12 @@ import {
   SHOP_TAG_LABELS,
   TAG_COLORS,
   type ShopTag,
+  type Status,
 } from "@/lib/constants";
 import { formatMapLocation } from "@/lib/map-location";
 import type { Shop } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 interface Props {
   shop: Shop;
@@ -29,6 +30,7 @@ export function AdminEditShopForm({
   deleteConfirmMessage = "Delete this shop permanently?",
 }: Props) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [mapLocation, setMapLocation] = useState(() =>
@@ -49,59 +51,38 @@ export function AdminEditShopForm({
     return [...selected, ...preservedTags];
   }
 
-  async function save(body: object) {
+  async function saveWithStatus(status: Extract<Status, "approved" | "pending">) {
+    if (!selected.length && !preservedTags.length) {
+      setError(SHOP_TAG_REQUIRED_MESSAGE);
+      return;
+    }
+    const form = formRef.current;
+    if (!form || !form.reportValidity()) return;
+
+    const fd = new FormData(form);
     setBusy(true);
     setError("");
     const res = await fetch(`/api/admin/shops/${shop.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        name: fd.get("name"),
+        description: fd.get("description"),
+        address: fd.get("address"),
+        map_location: fd.get("map_location") || "",
+        website: fd.get("website") || "",
+        hours: fd.get("hours") || "",
+        image_url: fd.get("image_url") || "",
+        status,
+        admin_note: fd.get("admin_note") || "",
+        tags: allTags(),
+        honeypot: "",
+      }),
     });
     setBusy(false);
     if (!res.ok) {
       const data = await res.json();
       setError(data.error ?? "Failed to save");
-      return false;
-    }
-    router.refresh();
-    return true;
-  }
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!selected.length && !preservedTags.length) {
-      setError(SHOP_TAG_REQUIRED_MESSAGE);
-      return;
-    }
-    const fd = new FormData(e.currentTarget);
-    const ok = await save({
-      name: fd.get("name"),
-      description: fd.get("description"),
-      address: fd.get("address"),
-      map_location: fd.get("map_location") || "",
-      website: fd.get("website") || "",
-      hours: fd.get("hours") || "",
-      image_url: fd.get("image_url") || "",
-      status: fd.get("status"),
-      admin_note: fd.get("admin_note") || "",
-      tags: allTags(),
-      honeypot: "",
-    });
-    if (ok) router.push("/admin");
-  }
-
-  async function approve() {
-    if (!selected.length && !preservedTags.length) {
-      setError(SHOP_TAG_REQUIRED_MESSAGE);
-      return;
-    }
-    const result = await patchStatus({
-      type: "shop",
-      id: shop.id,
-      action: "approve",
-    });
-    if (!result.ok) {
-      setError(result.error ?? "Failed to approve");
       return;
     }
     router.push("/admin");
@@ -122,7 +103,11 @@ export function AdminEditShopForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form
+      ref={formRef}
+      onSubmit={(e) => e.preventDefault()}
+      className="space-y-4"
+    >
       <div>
         <label className="kawaii-label" htmlFor="name">
           Name
@@ -229,44 +214,35 @@ export function AdminEditShopForm({
           className="kawaii-input"
         />
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label className="kawaii-label" htmlFor="status">
-            Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            className="kawaii-input"
-            defaultValue={shop.status}
-          >
-            <option value="approved">Approved</option>
-            <option value="pending">Pending</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
-        <div>
-          <label className="kawaii-label" htmlFor="admin_note">
-            Admin note
-          </label>
-          <input
-            id="admin_note"
-            name="admin_note"
-            defaultValue={shop.admin_note ?? ""}
-            className="kawaii-input"
-          />
-        </div>
+      <div>
+        <label className="kawaii-label" htmlFor="admin_note">
+          Admin note
+        </label>
+        <input
+          id="admin_note"
+          name="admin_note"
+          defaultValue={shop.admin_note ?? ""}
+          className="kawaii-input"
+        />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex flex-wrap gap-3 border-t border-border pt-4">
-        <KawaiiButton type="submit" variant="sage" disabled={busy}>
-          Save changes
+        <KawaiiButton
+          type="button"
+          variant="sage"
+          disabled={busy}
+          onClick={() => saveWithStatus("approved")}
+        >
+          Approved
         </KawaiiButton>
-        {shop.status !== "approved" && (
-          <KawaiiButton type="button" variant="secondary" onClick={approve} disabled={busy}>
-            Approve
-          </KawaiiButton>
-        )}
+        <KawaiiButton
+          type="button"
+          variant="secondary"
+          disabled={busy}
+          onClick={() => saveWithStatus("pending")}
+        >
+          Pending
+        </KawaiiButton>
         <KawaiiButton type="button" variant="ghost" onClick={remove} disabled={busy}>
           Delete
         </KawaiiButton>

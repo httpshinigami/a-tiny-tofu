@@ -1,32 +1,8 @@
-import Link from "next/link";
+import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { formatDisplayAddress } from "@/lib/format-address";
 import { formatEventDate } from "@/lib/utils";
 import { SHOP_TAG_LABELS } from "@/lib/constants";
 import type { Event, Shop } from "@/lib/types";
-
-const SUBMIT_LINKS = [
-  {
-    href: "/submit/event",
-    label: "Markets & Events",
-    description: "Markets, pop-ups, and meet-ups",
-    className:
-      "border-[#CCD3CA]/60 bg-[#CCD3CA] text-ink hover:brightness-95",
-  },
-  {
-    href: "/submit/shop",
-    label: "Shops",
-    description: "Collectibles, character goods, and more",
-    className:
-      "border-[#EED3D9]/60 bg-[#EED3D9] text-ink hover:brightness-95",
-  },
-  {
-    href: "/submit/food",
-    label: "Food & Drink",
-    description: "Cafés, desserts, restaurants, and marts",
-    className:
-      "border-[#F5E8DD]/80 bg-[#F5E8DD] text-ink hover:brightness-95",
-  },
-] as const;
 
 type PendingTile =
   | { kind: "event"; item: Event }
@@ -63,34 +39,25 @@ export function SubmitLanding({
 
   return (
     <>
-      <h1 className="text-3xl font-bold tracking-tight text-periwinkle md:text-4xl">
-        Submit your hidden gem
-      </h1>
-      <p className="mt-2 max-w-2xl text-ink-muted">
-        Pick what you&apos;d like to share. We review every submission before it
-        goes live — check the pending list below first so we don&apos;t get
-        duplicates.
-      </p>
+      <div className="text-center">
+        <p className="mx-auto max-w-2xl text-ink-muted">
+          We review every submission before it goes live. Check the pending list
+          below first so we don&apos;t get duplicates, then start your
+          submission.
+        </p>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-3">
-        {SUBMIT_LINKS.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`rounded-2xl border px-4 py-5 text-left shadow-sm transition ${link.className}`}
-          >
-            <span className="block font-display text-lg font-semibold">
-              {link.label}
-            </span>
-            <span className="mt-1 block text-sm text-ink-muted">
-              {link.description}
-            </span>
-          </Link>
-        ))}
+        <div className="mt-8 flex justify-center">
+          <KawaiiButton href="/submit/event" variant="sage">
+            Start a submission
+          </KawaiiButton>
+        </div>
       </div>
 
       <section className="mt-12 border-t border-border pt-10">
-        <h2 className="font-display text-xl font-bold text-ink">
+        <h2 className="flex items-center gap-2.5 font-display text-xl font-bold text-ink">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-butter text-ink">
+            <PendingClockIcon className="size-5" />
+          </span>
           Pending submissions
         </h2>
         <p className="mt-1 text-sm text-ink-muted">
@@ -120,8 +87,8 @@ function PendingClockIcon({ className = "" }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
+      width="24"
+      height="24"
       viewBox="0 0 256 256"
       fill="currentColor"
       className={className}
@@ -136,27 +103,22 @@ function PendingCard({ tile }: { tile: PendingTile }) {
   if (tile.kind === "event") {
     const event = tile.item;
     return (
-      <article className="flex h-full gap-3 rounded-2xl border border-butter/80 bg-butter/25 p-4">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-butter text-ink">
-          <PendingClockIcon />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-coral">
-              Market / Event
-            </p>
-            <span className="rounded-full bg-butter px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink">
-              Pending
-            </span>
-          </div>
-          <h3 className="mt-1 font-display text-lg font-semibold text-ink">
-            {event.title}
-          </h3>
-          <p className="mt-1 text-sm text-ink-muted">{event.venue_name}</p>
-          <p className="mt-2 text-xs text-ink-muted">
-            {formatEventDate(event.start_at, event.end_at)}
+      <article className="h-full rounded-2xl border border-butter/80 bg-butter/25 p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-coral">
+            Market / Event
           </p>
+          <span className="rounded-full bg-butter px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink">
+            Pending
+          </span>
         </div>
+        <h3 className="mt-1 font-display text-lg font-semibold text-ink">
+          {event.title}
+        </h3>
+        <p className="mt-1 text-sm text-ink-muted">{event.venue_name}</p>
+        <p className="mt-2 text-xs text-ink-muted">
+          {formatEventDate(event.start_at, event.end_at)}
+        </p>
       </article>
     );
   }
@@ -167,31 +129,26 @@ function PendingCard({ tile }: { tile: PendingTile }) {
     tile.category === "food" ? "text-peach-dark" : "text-sage-dark";
 
   return (
-    <article className="flex h-full gap-3 rounded-2xl border border-butter/80 bg-butter/25 p-4">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-butter text-ink">
-        <PendingClockIcon />
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className={`text-xs font-semibold uppercase tracking-wide ${accent}`}>
-            {label}
-          </p>
-          <span className="rounded-full bg-butter px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink">
-            Pending
-          </span>
-        </div>
-        <h3 className="mt-1 font-display text-lg font-semibold text-ink">
-          {shop.name}
-        </h3>
-        {shop.shop_tags.length > 0 && (
-          <p className="mt-1 text-xs text-ink-muted">
-            {shop.shop_tags.map((t) => SHOP_TAG_LABELS[t]).join(", ")}
-          </p>
-        )}
-        <p className="mt-2 text-xs text-ink-muted">
-          {formatDisplayAddress(shop.address)}
+    <article className="h-full rounded-2xl border border-butter/80 bg-butter/25 p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <p className={`text-xs font-semibold uppercase tracking-wide ${accent}`}>
+          {label}
         </p>
+        <span className="rounded-full bg-butter px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink">
+          Pending
+        </span>
       </div>
+      <h3 className="mt-1 font-display text-lg font-semibold text-ink">
+        {shop.name}
+      </h3>
+      {shop.shop_tags.length > 0 && (
+        <p className="mt-1 text-xs text-ink-muted">
+          {shop.shop_tags.map((t) => SHOP_TAG_LABELS[t]).join(", ")}
+        </p>
+      )}
+      <p className="mt-2 text-xs text-ink-muted">
+        {formatDisplayAddress(shop.address)}
+      </p>
     </article>
   );
 }

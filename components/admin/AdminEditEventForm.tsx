@@ -5,70 +5,57 @@ import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import { patchStatus } from "@/components/admin/admin-actions";
 import { AddressInput } from "@/components/forms/AddressInput";
+import type { Status } from "@/lib/constants";
 import { toDatetimeLocal } from "@/lib/datetime-local";
 import { formatMapLocation } from "@/lib/map-location";
 import type { Event } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export function AdminEditEventForm({ event }: { event: Event }) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [mapLocation, setMapLocation] = useState(() =>
     formatMapLocation(event.lat, event.lng)
   );
 
-  async function save(body: object) {
+  async function saveWithStatus(status: Extract<Status, "approved" | "pending">) {
+    const form = formRef.current;
+    if (!form || !form.reportValidity()) return;
+
+    const fd = new FormData(form);
     setBusy(true);
     setError("");
     const res = await fetch(`/api/admin/events/${event.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        title: fd.get("title"),
+        description: fd.get("description"),
+        start_at: new Date(fd.get("start_at") as string).toISOString(),
+        end_at: fd.get("end_at")
+          ? new Date(fd.get("end_at") as string).toISOString()
+          : "",
+        venue_name: fd.get("venue_name"),
+        address: fd.get("address"),
+        map_location: fd.get("map_location") || "",
+        external_url: fd.get("external_url") || "",
+        image_url: fd.get("image_url") || "",
+        status,
+        admin_note: fd.get("admin_note") || "",
+        honeypot: "",
+      }),
     });
     setBusy(false);
     if (!res.ok) {
       const data = await res.json();
       setError(data.error ?? "Failed to save");
-      return false;
+      return;
     }
+    router.push("/admin");
     router.refresh();
-    return true;
-  }
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const ok = await save({
-      title: fd.get("title"),
-      description: fd.get("description"),
-      start_at: new Date(fd.get("start_at") as string).toISOString(),
-      end_at: fd.get("end_at")
-        ? new Date(fd.get("end_at") as string).toISOString()
-        : "",
-      venue_name: fd.get("venue_name"),
-      address: fd.get("address"),
-      map_location: fd.get("map_location") || "",
-      external_url: fd.get("external_url") || "",
-      image_url: fd.get("image_url") || "",
-      status: fd.get("status"),
-      admin_note: fd.get("admin_note") || "",
-      honeypot: "",
-    });
-    if (ok) router.push("/admin");
-  }
-
-  async function approve() {
-    const result = await patchStatus({
-      type: "event",
-      id: event.id,
-      action: "approve",
-    });
-    if (result.ok) {
-      router.push("/admin");
-      router.refresh();
-    }
   }
 
   async function remove() {
@@ -85,7 +72,11 @@ export function AdminEditEventForm({ event }: { event: Event }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form
+      ref={formRef}
+      onSubmit={(e) => e.preventDefault()}
+      className="space-y-4"
+    >
       <div>
         <label className="kawaii-label" htmlFor="title">
           Title
@@ -199,44 +190,35 @@ export function AdminEditEventForm({ event }: { event: Event }) {
           />
         </div>
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label className="kawaii-label" htmlFor="status">
-            Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            className="kawaii-input"
-            defaultValue={event.status}
-          >
-            <option value="approved">Approved</option>
-            <option value="pending">Pending</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
-        <div>
-          <label className="kawaii-label" htmlFor="admin_note">
-            Admin note <span className="font-normal text-ink-muted">(optional)</span>
-          </label>
-          <input
-            id="admin_note"
-            name="admin_note"
-            defaultValue={event.admin_note ?? ""}
-            className="kawaii-input"
-          />
-        </div>
+      <div>
+        <label className="kawaii-label" htmlFor="admin_note">
+          Admin note <span className="font-normal text-ink-muted">(optional)</span>
+        </label>
+        <input
+          id="admin_note"
+          name="admin_note"
+          defaultValue={event.admin_note ?? ""}
+          className="kawaii-input"
+        />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex flex-wrap gap-3 border-t border-border pt-4">
-        <KawaiiButton type="submit" variant="sage" disabled={busy}>
-          Save changes
+        <KawaiiButton
+          type="button"
+          variant="sage"
+          disabled={busy}
+          onClick={() => saveWithStatus("approved")}
+        >
+          Approved
         </KawaiiButton>
-        {event.status !== "approved" && (
-          <KawaiiButton type="button" variant="secondary" onClick={approve} disabled={busy}>
-            Approve
-          </KawaiiButton>
-        )}
+        <KawaiiButton
+          type="button"
+          variant="secondary"
+          disabled={busy}
+          onClick={() => saveWithStatus("pending")}
+        >
+          Pending
+        </KawaiiButton>
         <KawaiiButton type="button" variant="ghost" onClick={remove} disabled={busy}>
           Delete
         </KawaiiButton>

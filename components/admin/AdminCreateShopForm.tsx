@@ -9,53 +9,56 @@ import {
   SHOP_TAG_LABELS,
   TAG_COLORS,
   type ShopTag,
+  type Status,
 } from "@/lib/constants";
 import { formatMapLocation } from "@/lib/map-location";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface Props {
   tagOptions: readonly ShopTag[];
   tagPrompt?: string;
-  submitLabel?: string;
 }
 
 export function AdminCreateShopForm({
   tagOptions,
   tagPrompt = "Tags",
-  submitLabel = "Save shop",
 }: Props) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState<ShopTag[]>([]);
   const [mapLocation, setMapLocation] = useState("");
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function saveWithStatus(status: Extract<Status, "approved" | "pending">) {
     if (!selected.length) {
       setError(SHOP_TAG_REQUIRED_MESSAGE);
       return;
     }
-    setError("");
-    const fd = new FormData(e.currentTarget);
-    const body = {
-      name: fd.get("name"),
-      description: fd.get("description"),
-      address: fd.get("address"),
-      map_location: fd.get("map_location") || "",
-      website: fd.get("website") || "",
-      hours: fd.get("hours") || "",
-      image_url: fd.get("image_url") || "",
-      status: fd.get("status"),
-      tags: selected,
-      honeypot: "",
-    };
+    const form = formRef.current;
+    if (!form || !form.reportValidity()) return;
 
+    const fd = new FormData(form);
+    setBusy(true);
+    setError("");
     const res = await fetch("/api/admin/shops", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        name: fd.get("name"),
+        description: fd.get("description"),
+        address: fd.get("address"),
+        map_location: fd.get("map_location") || "",
+        website: fd.get("website") || "",
+        hours: fd.get("hours") || "",
+        image_url: fd.get("image_url") || "",
+        status,
+        tags: selected,
+        honeypot: "",
+      }),
     });
+    setBusy(false);
     if (!res.ok) {
       const data = await res.json();
       setError(data.error ?? "Failed");
@@ -66,7 +69,11 @@ export function AdminCreateShopForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form
+      ref={formRef}
+      onSubmit={(e) => e.preventDefault()}
+      className="space-y-4"
+    >
       <div>
         <label className="kawaii-label" htmlFor="name">
           Name
@@ -143,15 +150,25 @@ export function AdminCreateShopForm({
         </label>
         <input id="image_url" name="image_url" type="url" className="kawaii-input" />
       </div>
-      <div>
-        <label className="kawaii-label" htmlFor="status">Status</label>
-        <select id="status" name="status" className="kawaii-input" defaultValue="approved">
-          <option value="approved">Approved</option>
-          <option value="pending">Pending</option>
-        </select>
-      </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <KawaiiButton type="submit">{submitLabel}</KawaiiButton>
+      <div className="flex flex-wrap gap-3 border-t border-border pt-4">
+        <KawaiiButton
+          type="button"
+          variant="sage"
+          disabled={busy}
+          onClick={() => saveWithStatus("approved")}
+        >
+          Approved
+        </KawaiiButton>
+        <KawaiiButton
+          type="button"
+          variant="secondary"
+          disabled={busy}
+          onClick={() => saveWithStatus("pending")}
+        >
+          Pending
+        </KawaiiButton>
+      </div>
     </form>
   );
 }

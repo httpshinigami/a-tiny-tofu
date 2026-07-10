@@ -16,7 +16,6 @@ export default function AdminCreateShopPage() {
         <AdminCreateShopForm
           tagOptions={RETAIL_SHOP_TAGS}
           tagPrompt="Tags"
-          submitLabel="Save shop"
         />
       </div>
     </PageFrame>
