@@ -34,9 +34,7 @@ export function ShopsExplorer({
 }: Props) {
   const [activeTags, setActiveTags] = useState<ShopTag[]>([]);
   const [filterOpen, setFilterOpen] = useState(filterOpenByDefault);
-  const [selectedId, setSelectedId] = useState<string | null>(
-    shops[0]?.id ?? null
-  );
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const categories = useMemo(
     () =>
@@ -53,7 +51,7 @@ export function ShopsExplorer({
   const effectiveSelectedId =
     selectedId && filtered.some((s) => s.id === selectedId)
       ? selectedId
-      : filtered[0]?.id ?? null;
+      : null;
 
   const selected =
     filtered.find((s) => s.id === effectiveSelectedId) ?? null;

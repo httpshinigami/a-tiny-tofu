@@ -2,8 +2,8 @@
 
 import { MapPin } from "@/components/maps/MapPin";
 import { MapShell } from "@/components/maps/MapShell";
-import { MELBOURNE_CENTER } from "@/lib/constants";
 import type { Shop } from "@/lib/types";
+import { useMemo } from "react";
 
 export function ShopMapClient({
   shops,
@@ -18,16 +18,22 @@ export function ShopMapClient({
     ? shops.find((s) => s.id === selectedId)
     : undefined;
 
+  const fitPoints = useMemo(
+    () => shops.map((shop) => ({ lat: shop.lat, lng: shop.lng })),
+    [shops]
+  );
+
   return (
     <MapShell
       className="h-full min-h-[280px] w-full"
       center={
         selected
           ? { lat: selected.lat, lng: selected.lng }
-          : MELBOURNE_CENTER
+          : undefined
       }
       zoom={selected ? 15 : 12}
       focusKey={selected?.id ?? null}
+      fitPoints={selected ? undefined : fitPoints}
     >
       {shops.map((shop) => (
         <MapPin
