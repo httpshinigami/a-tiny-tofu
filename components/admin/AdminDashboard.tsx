@@ -1,11 +1,11 @@
 "use client";
 
 import { AdminEventRow, AdminShopRow } from "@/components/admin/AdminListRows";
-import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { FOOD_DRINK_TAGS, RETAIL_SHOP_TAGS, SHOP_TAG_LABELS } from "@/lib/constants";
 import { filterShopsByTags } from "@/lib/shop-categories";
 import type { Event, Shop } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -17,6 +17,56 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "shops", label: "All shops" },
   { id: "food", label: "All food & drink" },
 ];
+
+const STATUS_RANK = { pending: 0, rejected: 1, approved: 2 } as const;
+
+function sortShopsForAllView(shops: Shop[]): Shop[] {
+  return [...shops].sort((a, b) => {
+    const statusDiff = STATUS_RANK[a.status] - STATUS_RANK[b.status];
+    if (statusDiff !== 0) return statusDiff;
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+  });
+}
+
+function sortEventsForAllView(events: Event[]): Event[] {
+  return [...events].sort((a, b) => {
+    const statusDiff = STATUS_RANK[a.status] - STATUS_RANK[b.status];
+    if (statusDiff !== 0) return statusDiff;
+    return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+  });
+}
+
+function matchesQuery(haystack: string, query: string): boolean {
+  return haystack.toLowerCase().includes(query);
+}
+
+function filterEventsBySearch(events: Event[], query: string): Event[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return events;
+  return events.filter(
+    (event) =>
+      matchesQuery(event.title, q) ||
+      matchesQuery(event.venue_name, q) ||
+      matchesQuery(event.address, q) ||
+      matchesQuery(event.description, q)
+  );
+}
+
+function filterShopsBySearch(shops: Shop[], query: string): Shop[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return shops;
+  return shops.filter((shop) => {
+    const tagLabels = shop.shop_tags
+      .map((t) => SHOP_TAG_LABELS[t])
+      .join(" ");
+    return (
+      matchesQuery(shop.name, q) ||
+      matchesQuery(shop.address, q) ||
+      matchesQuery(shop.description, q) ||
+      matchesQuery(tagLabels, q)
+    );
+  });
+}
 
 export function AdminDashboard({
   pendingEvents,
@@ -33,22 +83,47 @@ export function AdminDashboard({
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("queue");
+  const [search, setSearch] = useState("");
 
   const pendingRetailShops = useMemo(
-    () => filterShopsByTags(pendingShops, RETAIL_SHOP_TAGS),
-    [pendingShops]
+    () =>
+      filterShopsBySearch(
+        filterShopsByTags(pendingShops, RETAIL_SHOP_TAGS),
+        search
+      ),
+    [pendingShops, search]
   );
   const pendingFoodShops = useMemo(
-    () => filterShopsByTags(pendingShops, FOOD_DRINK_TAGS),
-    [pendingShops]
+    () =>
+      filterShopsBySearch(
+        filterShopsByTags(pendingShops, FOOD_DRINK_TAGS),
+        search
+      ),
+    [pendingShops, search]
+  );
+  const filteredPendingEvents = useMemo(
+    () => filterEventsBySearch(pendingEvents, search),
+    [pendingEvents, search]
   );
   const retailShops = useMemo(
-    () => filterShopsByTags(allShops, RETAIL_SHOP_TAGS),
-    [allShops]
+    () =>
+      filterShopsBySearch(
+        sortShopsForAllView(filterShopsByTags(allShops, RETAIL_SHOP_TAGS)),
+        search
+      ),
+    [allShops, search]
   );
   const foodShops = useMemo(
-    () => filterShopsByTags(allShops, FOOD_DRINK_TAGS),
-    [allShops]
+    () =>
+      filterShopsBySearch(
+        sortShopsForAllView(filterShopsByTags(allShops, FOOD_DRINK_TAGS)),
+        search
+      ),
+    [allShops, search]
+  );
+  const sortedEvents = useMemo(
+    () => filterEventsBySearch(sortEventsForAllView(allEvents), search),
+    [allEvents, search]
   );
 
   async function signOut() {
@@ -117,30 +192,59 @@ export function AdminDashboard({
           ))}
         </div>
         <div className="flex flex-wrap gap-2">
-          <KawaiiButton href="/admin/create/event" variant="secondary">
+          <Link
+            href="/admin/create/event"
+            className="rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-ink transition hover:border-sage/50 hover:text-sage-dark"
+          >
             New event
-          </KawaiiButton>
-          <KawaiiButton href="/admin/create/shop" variant="secondary">
+          </Link>
+          <Link
+            href="/admin/create/shop"
+            className="rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-ink transition hover:border-sage/50 hover:text-sage-dark"
+          >
             New shop
-          </KawaiiButton>
-          <KawaiiButton href="/admin/create/food" variant="secondary">
+          </Link>
+          <Link
+            href="/admin/create/food"
+            className="rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-ink transition hover:border-sage/50 hover:text-sage-dark"
+          >
             New food & drink
-          </KawaiiButton>
-          <KawaiiButton onClick={signOut} variant="ghost">
+          </Link>
+          <button
+            type="button"
+            onClick={signOut}
+            className="rounded-xl px-4 py-2 text-sm font-semibold text-ink-muted transition hover:bg-cream hover:text-ink"
+          >
             Sign out
-          </KawaiiButton>
+          </button>
         </div>
+      </div>
+
+      <div>
+        <label htmlFor="admin-search" className="sr-only">
+          Search listings
+        </label>
+        <input
+          id="admin-search"
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by name, address, tags…"
+          className="kawaii-input max-w-xl"
+        />
       </div>
 
       {tab === "queue" && (
         <>
           <section>
             <h2 className="text-xl font-bold text-periwinkle">Pending events</h2>
-            {pendingEvents.length === 0 ? (
-              <p className="mt-2 text-sm text-ink-muted">None waiting</p>
+            {filteredPendingEvents.length === 0 ? (
+              <p className="mt-2 text-sm text-ink-muted">
+                {search.trim() ? "No matching pending events" : "None waiting"}
+              </p>
             ) : (
-              <ul className="mt-3 space-y-2">
-                {pendingEvents.map((e) => (
+              <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filteredPendingEvents.map((e) => (
                   <AdminEventRow key={e.id} event={e} onDone={refresh} />
                 ))}
               </ul>
@@ -149,9 +253,11 @@ export function AdminDashboard({
           <section>
             <h2 className="text-xl font-bold text-periwinkle">Pending shops</h2>
             {pendingRetailShops.length === 0 ? (
-              <p className="mt-2 text-sm text-ink-muted">None waiting</p>
+              <p className="mt-2 text-sm text-ink-muted">
+                {search.trim() ? "No matching pending shops" : "None waiting"}
+              </p>
             ) : (
-              <ul className="mt-3 space-y-2">
+              <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {pendingRetailShops.map(retailShopRow)}
               </ul>
             )}
@@ -161,9 +267,13 @@ export function AdminDashboard({
               Pending food & drink
             </h2>
             {pendingFoodShops.length === 0 ? (
-              <p className="mt-2 text-sm text-ink-muted">None waiting</p>
+              <p className="mt-2 text-sm text-ink-muted">
+                {search.trim()
+                  ? "No matching pending food & drink"
+                  : "None waiting"}
+              </p>
             ) : (
-              <ul className="mt-3 space-y-2">
+              <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {pendingFoodShops.map(foodShopRow)}
               </ul>
             )}
@@ -172,31 +282,49 @@ export function AdminDashboard({
       )}
 
       {tab === "events" && (
-        <ul className="space-y-2">
-          {allEvents.map((e) => (
-            <AdminEventRow key={e.id} event={e} onDone={refresh} />
-          ))}
-        </ul>
+        <>
+          {sortedEvents.length === 0 ? (
+            <p className="text-sm text-ink-muted">
+              {search.trim() ? "No matching events" : "No events yet"}
+            </p>
+          ) : (
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {sortedEvents.map((e) => (
+                <AdminEventRow key={e.id} event={e} onDone={refresh} />
+              ))}
+            </ul>
+          )}
+        </>
       )}
 
       {tab === "shops" && (
-        <ul className="space-y-2">
+        <>
           {retailShops.length === 0 ? (
-            <p className="text-sm text-ink-muted">No shops yet</p>
+            <p className="text-sm text-ink-muted">
+              {search.trim() ? "No matching shops" : "No shops yet"}
+            </p>
           ) : (
-            retailShops.map(retailShopRow)
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {retailShops.map(retailShopRow)}
+            </ul>
           )}
-        </ul>
+        </>
       )}
 
       {tab === "food" && (
-        <ul className="space-y-2">
+        <>
           {foodShops.length === 0 ? (
-            <p className="text-sm text-ink-muted">No food & drink spots yet</p>
+            <p className="text-sm text-ink-muted">
+              {search.trim()
+                ? "No matching food & drink spots"
+                : "No food & drink spots yet"}
+            </p>
           ) : (
-            foodShops.map(foodShopRow)
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {foodShops.map(foodShopRow)}
+            </ul>
           )}
-        </ul>
+        </>
       )}
     </div>
   );
