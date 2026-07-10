@@ -1,5 +1,6 @@
 import { TagChip } from "@/components/shops/TagChip";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
+import { formatDisplayAddress } from "@/lib/format-address";
 import type { Shop } from "@/lib/types";
 
 export function ShopCard({ shop }: { shop: Shop }) {
@@ -14,7 +15,9 @@ export function ShopCard({ shop }: { shop: Shop }) {
         ))}
       </div>
       <p className="mt-2 text-ink-muted">{shop.description}</p>
-      <p className="mt-2 text-xs text-ink-muted">{shop.address}</p>
+      <p className="mt-2 text-xs text-ink-muted">
+        {formatDisplayAddress(shop.address)}
+      </p>
       {shop.hours && (
         <p className="mt-1 text-xs font-semibold text-ink-muted">
           Hours: {shop.hours}

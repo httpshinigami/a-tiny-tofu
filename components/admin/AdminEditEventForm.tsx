@@ -4,6 +4,7 @@ import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField"
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import { patchStatus } from "@/components/admin/admin-actions";
+import { AddressInput } from "@/components/forms/AddressInput";
 import { toDatetimeLocal } from "@/lib/datetime-local";
 import { formatMapLocation } from "@/lib/map-location";
 import type { Event } from "@/lib/types";
@@ -14,6 +15,9 @@ export function AdminEditEventForm({ event }: { event: Event }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mapLocation, setMapLocation] = useState(() =>
+    formatMapLocation(event.lat, event.lng)
+  );
 
   async function save(body: object) {
     setBusy(true);
@@ -155,16 +159,19 @@ export function AdminEditEventForm({ event }: { event: Event }) {
           Address
           <RequiredMark />
         </label>
-        <input
+        <AddressInput
           id="address"
           name="address"
           required
           defaultValue={event.address}
-          className="kawaii-input"
+          onSelect={(suggestion) =>
+            setMapLocation(formatMapLocation(suggestion.lat, suggestion.lng))
+          }
         />
       </div>
       <AdminMapLocationField
-        defaultValue={formatMapLocation(event.lat, event.lng)}
+        value={mapLocation}
+        onChange={setMapLocation}
       />
       <div className="grid gap-4 md:grid-cols-2">
         <div>

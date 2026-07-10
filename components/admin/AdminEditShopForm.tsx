@@ -2,6 +2,7 @@
 
 import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { patchStatus, SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
+import { AddressInput } from "@/components/forms/AddressInput";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
@@ -30,6 +31,9 @@ export function AdminEditShopForm({
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mapLocation, setMapLocation] = useState(() =>
+    formatMapLocation(shop.lat, shop.lng)
+  );
 
   const tagOptionSet = useMemo(() => new Set<string>(tagOptions), [tagOptions]);
 
@@ -149,16 +153,19 @@ export function AdminEditShopForm({
           Address
           <RequiredMark />
         </label>
-        <input
+        <AddressInput
           id="address"
           name="address"
           required
           defaultValue={shop.address}
-          className="kawaii-input"
+          onSelect={(suggestion) =>
+            setMapLocation(formatMapLocation(suggestion.lat, suggestion.lng))
+          }
         />
       </div>
       <AdminMapLocationField
-        defaultValue={formatMapLocation(shop.lat, shop.lng)}
+        value={mapLocation}
+        onChange={setMapLocation}
       />
       <div>
         <p className="kawaii-label">

@@ -1,5 +1,6 @@
 "use client";
 
+import { AddressInput } from "@/components/forms/AddressInput";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { useState } from "react";
 
@@ -110,12 +111,11 @@ export function EventSubmitForm() {
         <label className="kawaii-label" htmlFor="address">
           Address
         </label>
-        <input
+        <AddressInput
           id="address"
           name="address"
           required
           placeholder="Street, suburb, VIC"
-          className="kawaii-input"
         />
       </div>
       <div>

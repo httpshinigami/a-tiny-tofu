@@ -1,6 +1,7 @@
 "use client";
 
 import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
+import { AddressInput } from "@/components/forms/AddressInput";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
@@ -108,7 +109,7 @@ export function ShopSubmitForm({
           Address
           <RequiredMark />
         </label>
-        <input id="address" name="address" required className="kawaii-input" />
+        <AddressInput id="address" name="address" required />
       </div>
       <div>
         <p className="kawaii-label">

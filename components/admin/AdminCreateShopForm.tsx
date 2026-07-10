@@ -1,18 +1,18 @@
 "use client";
 
 import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
+import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
+import { AddressInput } from "@/components/forms/AddressInput";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import {
-  FOOD_DRINK_TAGS,
-  RETAIL_SHOP_TAGS,
   SHOP_TAG_LABELS,
   TAG_COLORS,
   type ShopTag,
 } from "@/lib/constants";
+import { formatMapLocation } from "@/lib/map-location";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 
 interface Props {
   tagOptions: readonly ShopTag[];
@@ -28,6 +28,7 @@ export function AdminCreateShopForm({
   const router = useRouter();
   const [error, setError] = useState("");
   const [selected, setSelected] = useState<ShopTag[]>([]);
+  const [mapLocation, setMapLocation] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -84,9 +85,19 @@ export function AdminCreateShopForm({
           Address
           <RequiredMark />
         </label>
-        <input id="address" name="address" required className="kawaii-input" />
+        <AddressInput
+          id="address"
+          name="address"
+          required
+          onSelect={(suggestion) =>
+            setMapLocation(formatMapLocation(suggestion.lat, suggestion.lng))
+          }
+        />
       </div>
-      <AdminMapLocationField />
+      <AdminMapLocationField
+        value={mapLocation}
+        onChange={setMapLocation}
+      />
       <div>
         <p className="kawaii-label">
           {tagPrompt}

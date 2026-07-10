@@ -1,4 +1,5 @@
 import { TagChip } from "@/components/shops/TagChip";
+import { formatDisplayAddress } from "@/lib/format-address";
 import type { Shop } from "@/lib/types";
 
 export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
@@ -21,7 +22,7 @@ export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
       <p className="mt-3 text-ink-muted">{shop.description}</p>
       <div className="mt-2 text-sm text-ink-muted">
         <span>Address:</span>
-        <p className="mt-0.5">{shop.address}</p>
+        <p className="mt-0.5">{formatDisplayAddress(shop.address)}</p>
       </div>
       {shop.hours && (
         <p className="mt-1 text-sm font-semibold text-ink-muted">

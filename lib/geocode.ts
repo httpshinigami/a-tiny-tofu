@@ -6,7 +6,37 @@ export interface GeocodeResult {
   lng: number;
 }
 
-export async function geocodeAddress(
+async function geocodeWithMapbox(
+  address: string
+): Promise<GeocodeResult | null> {
+  const token =
+    process.env.MAPBOX_ACCESS_TOKEN ??
+    process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+  if (!token) return null;
+
+  const params = new URLSearchParams({
+    access_token: token,
+    country: "au",
+    limit: "1",
+    proximity: `${MELBOURNE_CENTER.lng},${MELBOURNE_CENTER.lat}`,
+  });
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?${params}`;
+
+  try {
+    const res = await fetch(url, { next: { revalidate: 86400 } });
+    if (!res.ok) return null;
+    const data = (await res.json()) as {
+      features?: { center: [number, number] }[];
+    };
+    const feature = data.features?.[0];
+    if (!feature) return null;
+    return { lng: feature.center[0], lat: feature.center[1] };
+  } catch {
+    return null;
+  }
+}
+
+async function geocodeWithNominatim(
   address: string
 ): Promise<GeocodeResult | null> {
   const query = encodeURIComponent(`${address}, Melbourne, Australia`);
@@ -24,6 +54,14 @@ export async function geocodeAddress(
   } catch {
     return null;
   }
+}
+
+export async function geocodeAddress(
+  address: string
+): Promise<GeocodeResult | null> {
+  return (
+    (await geocodeWithMapbox(address)) ?? (await geocodeWithNominatim(address))
+  );
 }
 
 export function fallbackCoords(): GeocodeResult {

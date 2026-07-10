@@ -1,14 +1,17 @@
 "use client";
 
 import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
+import { AddressInput } from "@/components/forms/AddressInput";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
+import { formatMapLocation } from "@/lib/map-location";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function AdminCreateEventForm() {
   const router = useRouter();
   const [error, setError] = useState("");
+  const [mapLocation, setMapLocation] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -86,9 +89,19 @@ export function AdminCreateEventForm() {
           Address
           <RequiredMark />
         </label>
-        <input id="address" name="address" required className="kawaii-input" />
+        <AddressInput
+          id="address"
+          name="address"
+          required
+          onSelect={(suggestion) =>
+            setMapLocation(formatMapLocation(suggestion.lat, suggestion.lng))
+          }
+        />
       </div>
-      <AdminMapLocationField />
+      <AdminMapLocationField
+        value={mapLocation}
+        onChange={setMapLocation}
+      />
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="kawaii-label" htmlFor="external_url">
