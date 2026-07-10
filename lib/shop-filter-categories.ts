@@ -33,6 +33,6 @@ export const RETAIL_FILTER_CATEGORIES: ShopFilterCategory[] = [
   },
   {
     label: "Other",
-    tags: ["artist_goods", "photo_booths", "lifestyle"],
+    tags: ["artist_goods", "photo_booths", "lifestyle", "cosmetics"],
   },
 ];

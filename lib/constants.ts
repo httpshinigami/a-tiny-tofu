@@ -6,6 +6,7 @@ export const SHOP_TAGS = [
   "photo_booths",
   "artist_goods",
   "lifestyle",
+  "cosmetics",
   "anime_goods",
   "manga",
   "gundam",
@@ -41,6 +42,7 @@ export const RETAIL_SHOP_TAGS = [
   "photo_booths",
   "artist_goods",
   "lifestyle",
+  "cosmetics",
   "anime_goods",
   "manga",
   "gundam",
@@ -71,6 +73,7 @@ export const SHOP_TAG_LABELS: Record<ShopTag, string> = {
   photo_booths: "Photo Booths",
   artist_goods: "Artist Goods",
   lifestyle: "Lifestyle",
+  cosmetics: "Cosmetics",
   anime_goods: "Anime Goods",
   manga: "Manga",
   gundam: "Gundam",
@@ -117,6 +120,7 @@ export const TAG_COLORS: Record<ShopTag, string> = {
   jellycat: "#EED3D9",
   studio_ghibli: "#EED3D9",
   lifestyle: "#CCD3CA",
+  cosmetics: "#CCD3CA",
 };
 
 export const MELBOURNE_CENTER = { lat: -37.8136, lng: 144.9631 } as const;

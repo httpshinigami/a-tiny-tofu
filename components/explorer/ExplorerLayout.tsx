@@ -40,16 +40,20 @@ export function ExplorerLayout({
           </div>
         )}
 
-        <div className="grid min-h-[640px] w-full gap-4 rounded-2xl border border-border bg-surface p-4 shadow-sm md:grid-cols-[minmax(220px,280px)_1fr] md:p-5">
-          <aside className="flex max-h-[70vh] flex-col overflow-hidden rounded-xl border border-border bg-cream md:max-h-none md:min-h-[600px]">
+        <div className="grid h-[min(70vh,800px)] min-h-[480px] w-full gap-4 rounded-2xl border border-border bg-surface p-4 shadow-sm md:grid-cols-[minmax(220px,280px)_1fr] md:p-5">
+          <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-cream">
             {sidebar}
           </aside>
-          <div className="flex min-h-0 flex-col gap-4">
-            <div className="min-h-[280px] flex-1 md:min-h-[320px]">{map}</div>
-            <div className="shrink-0 rounded-xl border border-border bg-cream p-4 md:p-5">
-              {detail}
-            </div>
-          </div>
+          <div className="min-h-0 overflow-hidden">{map}</div>
+        </div>
+
+        <div className="mt-4 w-full md:absolute md:top-0 md:left-full md:mt-0 md:ml-4 md:h-[min(70vh,800px)] md:min-h-[480px] md:w-64 lg:w-72">
+          <aside
+            className="h-auto max-h-[50vh] w-full overflow-y-auto rounded-xl border border-border bg-cream shadow-sm md:max-h-full"
+            aria-label="Details"
+          >
+            <div className="p-4 md:p-5">{detail}</div>
+          </aside>
         </div>
       </div>
     </div>

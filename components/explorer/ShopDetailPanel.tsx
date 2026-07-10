@@ -1,5 +1,4 @@
 import { TagChip } from "@/components/shops/TagChip";
-import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import type { Shop } from "@/lib/types";
 
 export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
@@ -20,17 +19,28 @@ export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
         ))}
       </div>
       <p className="mt-3 text-ink-muted">{shop.description}</p>
-      <p className="mt-2 text-sm text-ink-muted">{shop.address}</p>
+      <div className="mt-2 text-sm text-ink-muted">
+        <span>Address:</span>
+        <p className="mt-0.5">{shop.address}</p>
+      </div>
       {shop.hours && (
         <p className="mt-1 text-sm font-semibold text-ink-muted">
           Hours: {shop.hours}
         </p>
       )}
       {shop.website && (
-        <div className="mt-4">
-          <KawaiiButton href={shop.website} variant="secondary">
-            Website
-          </KawaiiButton>
+        <div className="mt-2 text-sm text-ink-muted">
+          <span>Website:</span>
+          <p className="mt-0.5">
+            <a
+              href={shop.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-all text-sage-dark underline hover:text-sage"
+            >
+              {shop.website}
+            </a>
+          </p>
         </div>
       )}
     </div>

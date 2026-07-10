@@ -1,4 +1,3 @@
-import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import type { Event } from "@/lib/types";
 import { formatEventDate } from "@/lib/utils";
 
@@ -24,12 +23,23 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
       </h2>
       <p className="mt-1 font-semibold text-ink-muted">{event.venue_name}</p>
       <p className="mt-3 text-ink-muted">{event.description}</p>
-      <p className="mt-2 text-sm text-ink-muted">{event.address}</p>
+      <div className="mt-2 text-sm text-ink-muted">
+        <span>Address:</span>
+        <p className="mt-0.5">{event.address}</p>
+      </div>
       {event.external_url && (
-        <div className="mt-4">
-          <KawaiiButton href={event.external_url} variant="secondary">
-            More info
-          </KawaiiButton>
+        <div className="mt-2 text-sm text-ink-muted">
+          <span>Website:</span>
+          <p className="mt-0.5">
+            <a
+              href={event.external_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-all text-sage-dark underline hover:text-sage"
+            >
+              {event.external_url}
+            </a>
+          </p>
         </div>
       )}
     </div>
