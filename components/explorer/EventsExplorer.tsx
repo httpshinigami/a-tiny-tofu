@@ -19,6 +19,7 @@ function MonthList({
   selectedId,
   onSelectEvent,
   muted = false,
+  emptyLabel = "No events",
 }: {
   months: MonthGroup[];
   expandedMonths: Set<number>;
@@ -26,6 +27,7 @@ function MonthList({
   selectedId: string | null;
   onSelectEvent: (id: string) => void;
   muted?: boolean;
+  emptyLabel?: string;
 }) {
   const monthText = muted ? "text-ink-muted" : "text-ink";
   const countText = muted ? "text-ink-muted/70" : "text-ink-muted";
@@ -33,6 +35,10 @@ function MonthList({
   const borderAccent = muted
     ? "border-ink-muted/25"
     : "border-peach-dark/30";
+
+  if (months.length === 0) {
+    return <p className="px-1 text-sm text-ink-muted">{emptyLabel}</p>;
+  }
 
   return (
     <ul className="space-y-1">
@@ -87,10 +93,40 @@ function MonthList({
   );
 }
 
+function filterEventsBySearch(events: Event[], query: string): Event[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return events;
+  return events.filter(
+    (event) =>
+      event.title.toLowerCase().includes(q) ||
+      event.venue_name.toLowerCase().includes(q) ||
+      event.address.toLowerCase().includes(q) ||
+      event.description.toLowerCase().includes(q)
+  );
+}
+
 export function EventsExplorer({ events }: { events: Event[] }) {
   const year = getCurrentYear();
   const currentMonth = new Date().getMonth();
-  const months = useMemo(() => groupEventsByMonth(events, year), [events, year]);
+  const [search, setSearch] = useState("");
+  const [expandedMonths, setExpandedMonths] = useState<Set<number>>(
+    () => new Set([currentMonth])
+  );
+  const [showPastEvents, setShowPastEvents] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(
+    events[0]?.id ?? null
+  );
+
+  const filteredEvents = useMemo(
+    () => filterEventsBySearch(events, search),
+    [events, search]
+  );
+
+  const months = useMemo(
+    () => groupEventsByMonth(filteredEvents, year),
+    [filteredEvents, year]
+  );
+
   const { currentMonths, pastMonths } = useMemo(() => {
     const current: MonthGroup[] = [];
     const past: MonthGroup[] = [];
@@ -101,21 +137,18 @@ export function EventsExplorer({ events }: { events: Event[] }) {
     return { currentMonths: current, pastMonths: past };
   }, [months, currentMonth]);
 
-  const [expandedMonths, setExpandedMonths] = useState<Set<number>>(
-    () => new Set([currentMonth])
-  );
-  const [showPastEvents, setShowPastEvents] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(
-    events[0]?.id ?? null
-  );
+  const visibleExpandedMonths = useMemo(() => {
+    if (!search.trim()) return expandedMonths;
+    return new Set(months.filter((m) => m.items.length > 0).map((m) => m.month));
+  }, [search, months, expandedMonths]);
 
   const effectiveSelectedId =
-    selectedId && events.some((e) => e.id === selectedId)
+    selectedId && filteredEvents.some((e) => e.id === selectedId)
       ? selectedId
-      : events[0]?.id ?? null;
+      : filteredEvents[0]?.id ?? null;
 
   const selected =
-    events.find((e) => e.id === effectiveSelectedId) ?? null;
+    filteredEvents.find((e) => e.id === effectiveSelectedId) ?? null;
 
   function toggleMonth(month: number) {
     setExpandedMonths((prev) => {
@@ -127,41 +160,69 @@ export function EventsExplorer({ events }: { events: Event[] }) {
   }
 
   const sidebar = (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
-      <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-        {year}
-      </p>
-      <MonthList
-        months={currentMonths}
-        expandedMonths={expandedMonths}
-        onToggleMonth={toggleMonth}
-        selectedId={effectiveSelectedId}
-        onSelectEvent={setSelectedId}
-      />
-      {pastMonths.length > 0 && (
-        <div className="mt-3 border-t border-ink-muted/30 pt-3">
-          <button
-            type="button"
-            onClick={() => setShowPastEvents((open) => !open)}
-            className="w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-ink-muted transition hover:bg-peach/20"
-            aria-expanded={showPastEvents}
-          >
-            {showPastEvents ? "Hide past events" : "See past events"}
-          </button>
-          {showPastEvents && (
-            <div className="mt-2">
-              <MonthList
-                months={pastMonths}
-                expandedMonths={expandedMonths}
-                onToggleMonth={toggleMonth}
-                selectedId={effectiveSelectedId}
-                onSelectEvent={setSelectedId}
-                muted
-              />
-            </div>
-          )}
-        </div>
-      )}
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="shrink-0 border-b border-border p-3">
+        <label htmlFor="event-search" className="sr-only">
+          Search markets and events
+        </label>
+        <input
+          id="event-search"
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search markets & events…"
+          className="kawaii-input py-2 text-sm"
+        />
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto p-3">
+        <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+          {year}
+        </p>
+        <MonthList
+          months={currentMonths}
+          expandedMonths={visibleExpandedMonths}
+          onToggleMonth={toggleMonth}
+          selectedId={effectiveSelectedId}
+          onSelectEvent={setSelectedId}
+          emptyLabel={
+            search.trim() ? "No matching events" : "No upcoming events"
+          }
+        />
+        {pastMonths.length > 0 && (
+          <div className="mt-3 border-t border-ink-muted/30 pt-3">
+            {!search.trim() && (
+              <button
+                type="button"
+                onClick={() => setShowPastEvents((open) => !open)}
+                className="w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-ink-muted transition hover:bg-peach/20"
+                aria-expanded={showPastEvents}
+              >
+                {showPastEvents ? "Hide past events" : "See past events"}
+              </button>
+            )}
+            {(showPastEvents || search.trim()) && (
+              <div className={search.trim() ? undefined : "mt-2"}>
+                {search.trim() && (
+                  <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                    Past
+                  </p>
+                )}
+                <MonthList
+                  months={pastMonths}
+                  expandedMonths={visibleExpandedMonths}
+                  onToggleMonth={toggleMonth}
+                  selectedId={effectiveSelectedId}
+                  onSelectEvent={setSelectedId}
+                  muted
+                  emptyLabel={
+                    search.trim() ? "No matching past events" : "No past events"
+                  }
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -177,7 +238,7 @@ export function EventsExplorer({ events }: { events: Event[] }) {
       sidebar={sidebar}
       map={
         <DynamicEventMap
-          events={events}
+          events={filteredEvents}
           selectedId={effectiveSelectedId}
           onSelect={setSelectedId}
         />

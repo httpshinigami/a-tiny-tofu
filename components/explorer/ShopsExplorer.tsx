@@ -32,6 +32,7 @@ export function ShopsExplorer({
 }: Props) {
   const [activeTags, setActiveTags] = useState<ShopTag[]>([]);
   const [filterOpen, setFilterOpen] = useState(filterOpenByDefault);
+  const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const categories = useMemo(
@@ -41,10 +42,22 @@ export function ShopsExplorer({
     [filterCategories, filterTags]
   );
 
-  const filtered = useMemo(
-    () => filterShopsByAllTags(shops, activeTags),
-    [shops, activeTags]
-  );
+  const filtered = useMemo(() => {
+    let list = filterShopsByAllTags(shops, activeTags);
+    const q = search.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((shop) => {
+      const tagLabels = shop.shop_tags
+        .map((t) => SHOP_TAG_LABELS[t])
+        .join(" ")
+        .toLowerCase();
+      return (
+        shop.name.toLowerCase().includes(q) ||
+        shop.address.toLowerCase().includes(q) ||
+        tagLabels.includes(q)
+      );
+    });
+  }, [shops, activeTags, search]);
 
   const effectiveSelectedId =
     selectedId && filtered.some((s) => s.id === selectedId)
@@ -57,26 +70,17 @@ export function ShopsExplorer({
   const sidebar = (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="shrink-0 border-b border-border p-3">
-        <button
-          type="button"
-          onClick={() => setFilterOpen((v) => !v)}
-          aria-expanded={filterOpen}
-          className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-sm font-semibold transition ${
-            filterOpen
-              ? "border-sage bg-sage/10 text-sage-dark"
-              : "border-border bg-surface text-ink hover:border-sage/50 hover:text-sage-dark"
-          }`}
-        >
-          <span>Filter</span>
-          <span className="flex items-center gap-2 text-xs font-normal text-ink-muted">
-            {activeTags.length > 0 && (
-              <span className="rounded-full bg-sage/20 px-2 py-0.5 font-semibold text-sage-dark">
-                {activeTags.length}
-              </span>
-            )}
-            <Chevron open={filterOpen} />
-          </span>
-        </button>
+        <label htmlFor="shop-search" className="sr-only">
+          Search shops
+        </label>
+        <input
+          id="shop-search"
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search shops…"
+          className="kawaii-input py-2 text-sm"
+        />
       </div>
       <ul className="min-h-0 flex-1 space-y-0.5 overflow-y-auto p-3">
         {filtered.length === 0 ? (
@@ -110,6 +114,28 @@ export function ShopsExplorer({
     </div>
   );
 
+  const filterToggle = (
+    <button
+      type="button"
+      onClick={() => setFilterOpen((v) => !v)}
+      aria-expanded={filterOpen}
+      aria-label={filterOpen ? "Hide filters" : "Show filters"}
+      className={`inline-flex items-center gap-2 self-start rounded-xl border px-3 py-2 text-sm font-semibold transition ${
+        filterOpen
+          ? "border-sage bg-sage/10 text-sage-dark"
+          : "border-border bg-cream text-ink shadow-sm hover:border-sage/50 hover:text-sage-dark"
+      }`}
+    >
+      <FilterIcon />
+      <span>Filter</span>
+      {activeTags.length > 0 && (
+        <span className="rounded-full bg-sage/20 px-2 py-0.5 text-xs font-semibold text-sage-dark">
+          {activeTags.length}
+        </span>
+      )}
+    </button>
+  );
+
   return (
     <ExplorerLayout
       title={title}
@@ -119,6 +145,7 @@ export function ShopsExplorer({
           Submit a spot
         </KawaiiButton>
       }
+      filterToggle={filterToggle}
       filterPanel={
         filterOpen ? (
           <ShopFilterPanel
@@ -142,22 +169,21 @@ export function ShopsExplorer({
   );
 }
 
-function Chevron({ open }: { open: boolean }) {
+function FilterIcon() {
   return (
     <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
+      xmlns="http://www.w3.org/2000/svg"
       fill="none"
-      className={`transition ${open ? "rotate-180" : ""}`}
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="size-5 shrink-0"
       aria-hidden
     >
       <path
-        d="M4 6l4 4 4-4"
-        stroke="currentColor"
-        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
       />
     </svg>
   );

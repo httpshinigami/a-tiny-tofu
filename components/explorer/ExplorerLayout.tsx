@@ -7,6 +7,7 @@ interface Props {
   map: ReactNode;
   detail: ReactNode;
   headerExtra?: ReactNode;
+  filterToggle?: ReactNode;
   filterPanel?: ReactNode;
 }
 
@@ -17,6 +18,7 @@ export function ExplorerLayout({
   map,
   detail,
   headerExtra,
+  filterToggle,
   filterPanel,
 }: Props) {
   return (
@@ -34,8 +36,9 @@ export function ExplorerLayout({
       </div>
 
       <div className="relative w-full">
-        {filterPanel && (
-          <div className="mb-4 w-full md:absolute md:inset-y-0 md:right-full md:mb-0 md:mr-4 md:w-64 lg:w-72">
+        {(filterToggle || filterPanel) && (
+          <div className="mb-4 flex w-full flex-col gap-3 md:absolute md:inset-y-0 md:right-full md:mb-0 md:mr-4 md:w-64 lg:w-72">
+            {filterToggle}
             {filterPanel}
           </div>
         )}
