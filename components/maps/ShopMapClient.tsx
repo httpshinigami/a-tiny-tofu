@@ -23,6 +23,13 @@ export function ShopMapClient({
     [shops]
   );
 
+  const orderedShops = useMemo(() => {
+    if (!selectedId) return shops;
+    const selectedShop = shops.find((s) => s.id === selectedId);
+    if (!selectedShop) return shops;
+    return [...shops.filter((s) => s.id !== selectedId), selectedShop];
+  }, [shops, selectedId]);
+
   return (
     <MapShell
       className="h-full min-h-[280px] w-full"
@@ -35,7 +42,7 @@ export function ShopMapClient({
       focusKey={selected?.id ?? null}
       fitPoints={selected ? undefined : fitPoints}
     >
-      {shops.map((shop) => (
+      {orderedShops.map((shop) => (
         <MapPin
           key={shop.id}
           longitude={shop.lng}

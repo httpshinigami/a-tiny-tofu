@@ -4,6 +4,7 @@ import { MapPin } from "@/components/maps/MapPin";
 import { MapShell } from "@/components/maps/MapShell";
 import { MELBOURNE_CENTER } from "@/lib/constants";
 import type { Event } from "@/lib/types";
+import { useMemo } from "react";
 
 export function EventMapClient({
   events,
@@ -18,6 +19,13 @@ export function EventMapClient({
     ? events.find((e) => e.id === selectedId)
     : undefined;
 
+  const orderedEvents = useMemo(() => {
+    if (!selectedId) return events;
+    const selectedEvent = events.find((e) => e.id === selectedId);
+    if (!selectedEvent) return events;
+    return [...events.filter((e) => e.id !== selectedId), selectedEvent];
+  }, [events, selectedId]);
+
   return (
     <MapShell
       className="h-full min-h-[280px] w-full"
@@ -29,7 +37,7 @@ export function EventMapClient({
       zoom={selected ? 15 : 12}
       focusKey={selected?.id ?? null}
     >
-      {events.map((event) => (
+      {orderedEvents.map((event) => (
         <MapPin
           key={event.id}
           longitude={event.lng}
