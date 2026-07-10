@@ -32,7 +32,7 @@ export function Header() {
         </ul>
 
         <Link
-          href="/submit/event"
+          href="/submit"
           className="rounded-xl bg-sage px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sage-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
         >
           Submit your hidden gem

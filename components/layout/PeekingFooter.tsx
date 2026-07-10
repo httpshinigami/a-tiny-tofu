@@ -13,7 +13,7 @@ export function PeekingFooter() {
           <a href="/food" className="transition hover:text-sage-dark">
             Food & Drink
           </a>
-          <a href="/submit/event" className="transition hover:text-sage-dark">
+          <a href="/submit" className="transition hover:text-sage-dark">
             Submit
           </a>
           <a href="/about" className="transition hover:text-sage-dark">

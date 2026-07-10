@@ -3,6 +3,7 @@
 import { EventSubmitForm } from "@/components/forms/EventSubmitForm";
 import { ShopSubmitForm } from "@/components/forms/ShopSubmitForm";
 import { FOOD_DRINK_TAGS, RETAIL_SHOP_TAGS } from "@/lib/constants";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export type SubmitType = "event" | "shop" | "food";
@@ -12,15 +13,12 @@ const SUBMIT_TYPES: {
   label: string;
   href: string;
 }[] = [
-  { type: "event", label: "Submit a market/event", href: "/submit/event" },
-  { type: "shop", label: "Submit a shop", href: "/submit/shop" },
-  { type: "food", label: "Submit a food/drink spot", href: "/submit/food" },
+  { type: "event", label: "Markets & Events", href: "/submit/event" },
+  { type: "shop", label: "Shops", href: "/submit/shop" },
+  { type: "food", label: "Food & Drink", href: "/submit/food" },
 ];
 
-const COPY: Record<
-  SubmitType,
-  { title: string; subtitle: string }
-> = {
+const COPY: Record<SubmitType, { title: string; subtitle: string }> = {
   event: {
     title: "Submit a market or event",
     subtitle:
@@ -34,7 +32,7 @@ const COPY: Record<
   food: {
     title: "Submit a food & drink spot",
     subtitle:
-      "Found a great dessert café, drink spot, or restaurant? We'd love to hear about it.",
+      "Found a great dessert café, drink spot, restaurant, or Asian mart? We'd love to hear about it.",
   },
 };
 
@@ -47,7 +45,14 @@ export function SubmitHub({ activeType }: Props) {
 
   return (
     <>
-      <div className="flex flex-wrap gap-2">
+      <Link
+        href="/submit"
+        className="text-sm font-medium text-sage-dark underline hover:text-sage"
+      >
+        ← Back to submit options
+      </Link>
+
+      <div className="mt-4 flex flex-wrap gap-2">
         {SUBMIT_TYPES.map(({ type, label, href }) => (
           <button
             key={type}

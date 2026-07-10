@@ -18,7 +18,6 @@ interface Props {
   title: string;
   subtitle: string;
   emptyMessage: string;
-  submitHref?: string;
   filterOpenByDefault?: boolean;
 }
 
@@ -29,7 +28,6 @@ export function ShopsExplorer({
   title,
   subtitle,
   emptyMessage,
-  submitHref = "/submit/shop",
   filterOpenByDefault = false,
 }: Props) {
   const [activeTags, setActiveTags] = useState<ShopTag[]>([]);
@@ -117,7 +115,7 @@ export function ShopsExplorer({
       title={title}
       subtitle={subtitle}
       headerExtra={
-        <KawaiiButton href={submitHref} variant="sage">
+        <KawaiiButton href="/submit" variant="sage">
           Submit a spot
         </KawaiiButton>
       }

@@ -19,7 +19,7 @@ export default function AboutPage() {
       </p>
       <p className="mt-4 max-w-2xl leading-relaxed text-ink-muted">
         Know a spot we should feature?{" "}
-        <a href="/submit/event" className="font-medium text-sage-dark underline">
+        <a href="/submit" className="font-medium text-sage-dark underline">
           Submit your hidden gem
         </a>{" "}
         and we&apos;ll review it for the site.

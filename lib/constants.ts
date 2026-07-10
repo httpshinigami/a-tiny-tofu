@@ -2,6 +2,7 @@ export const SHOP_TAGS = [
   "desserts",
   "drinks",
   "restaurant",
+  "asian_mart",
   "fashion",
   "photo_booths",
   "artist_goods",
@@ -33,6 +34,7 @@ export const FOOD_DRINK_TAGS = [
   "desserts",
   "drinks",
   "restaurant",
+  "asian_mart",
 ] as const satisfies readonly ShopTag[];
 
 export type FoodDrinkTag = (typeof FOOD_DRINK_TAGS)[number];
@@ -69,6 +71,7 @@ export const SHOP_TAG_LABELS: Record<ShopTag, string> = {
   desserts: "Desserts",
   drinks: "Drinks",
   restaurant: "Restaurant",
+  asian_mart: "Asian Mart",
   fashion: "Fashion",
   photo_booths: "Photo Booths",
   artist_goods: "Artist Goods",
@@ -98,6 +101,7 @@ export const TAG_COLORS: Record<ShopTag, string> = {
   desserts: "#F5E8DD",
   drinks: "#F5E8DD",
   restaurant: "#F5E8DD",
+  asian_mart: "#F5E8DD",
   fashion: "#E8C4D4",
   photo_booths: "#CCD3CA",
   artist_goods: "#D8A8FF",
