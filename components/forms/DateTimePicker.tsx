@@ -188,7 +188,7 @@ export function DateTimePicker({
             <ChevronDown />
           </button>
           {dateOpen && (
-            <div className="absolute z-30 mt-2 rounded-2xl border border-border bg-surface p-3 shadow-lg">
+            <div className="absolute z-30 mt-2 border border-border bg-surface p-3 shadow-lg">
               <DayPicker
                 mode="single"
                 selected={date}
@@ -237,7 +237,7 @@ export function DateTimePicker({
             <ChevronDown />
           </button>
           {timeOpen && (
-            <div className="absolute right-0 z-30 mt-2 flex gap-1 rounded-2xl border border-border bg-surface p-2 shadow-lg">
+            <div className="absolute right-0 z-30 mt-2 flex gap-1 border border-border bg-surface p-2 shadow-lg">
               <TimeColumn
                 label="Hour"
                 options={HOURS_12}
@@ -280,7 +280,7 @@ function TimeColumn({
       <p className="px-2 pb-1 text-center text-[10px] font-semibold uppercase tracking-wide text-ink-muted">
         {label}
       </p>
-      <ul className="max-h-48 w-14 overflow-y-auto rounded-xl bg-cream/60 py-1">
+      <ul className="max-h-48 w-14 overflow-y-auto bg-cream/60 py-1">
         {options.map((option) => (
           <li key={option}>
             <button

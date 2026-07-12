@@ -32,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${dmSans.variable} h-full`}>
-      <body className="flex min-h-full flex-col font-body antialiased">
+      <body className="flex min-h-full flex-col bg-cream font-body antialiased">
         <Header />
         <main className="flex flex-1 flex-col">{children}</main>
         <PeekingFooter />

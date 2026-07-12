@@ -55,7 +55,7 @@ export function SubmitLanding({
 
       <section className="mt-12 border-t border-border pt-10">
         <h2 className="flex items-center gap-2.5 font-display text-xl font-bold text-ink">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-butter text-ink">
+          <span className="flex size-8 shrink-0 items-center justify-center text-ink">
             <PendingClockIcon className="size-5" />
           </span>
           Pending submissions
@@ -66,13 +66,13 @@ export function SubmitLanding({
         </p>
 
         {tiles.length === 0 ? (
-          <p className="mt-6 rounded-xl border border-dashed border-border bg-cream/50 px-4 py-8 text-center text-sm text-ink-muted">
-            Nothing pending right now — feel free to submit something new.
+          <p className="mt-6 border-y border-dashed border-border py-8 text-center text-sm text-ink-muted">
+            Nothing pending right now. Feel free to submit something new.
           </p>
         ) : (
-          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+          <ul className="mt-6 divide-y divide-border border-y border-border">
             {tiles.map((tile) => (
-              <li key={`${tile.kind}-${tile.item.id}`}>
+              <li key={`${tile.kind}-${tile.item.id}`} className="py-4">
                 <PendingCard tile={tile} />
               </li>
             ))}
@@ -103,12 +103,12 @@ function PendingCard({ tile }: { tile: PendingTile }) {
   if (tile.kind === "event") {
     const event = tile.item;
     return (
-      <article className="h-full rounded-2xl border border-butter/80 bg-butter/25 p-4">
+      <article>
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-coral">
             Market / Event
           </p>
-          <span className="rounded-full bg-butter px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink">
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-ink-muted">
             Pending
           </span>
         </div>
@@ -129,12 +129,12 @@ function PendingCard({ tile }: { tile: PendingTile }) {
     tile.category === "food" ? "text-peach-dark" : "text-sage-dark";
 
   return (
-    <article className="h-full rounded-2xl border border-butter/80 bg-butter/25 p-4">
+    <article>
       <div className="flex flex-wrap items-center gap-2">
         <p className={`text-xs font-semibold uppercase tracking-wide ${accent}`}>
           {label}
         </p>
-        <span className="rounded-full bg-butter px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink">
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-ink-muted">
           Pending
         </span>
       </div>

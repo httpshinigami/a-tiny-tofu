@@ -70,10 +70,10 @@ function MonthList({
                       <button
                         type="button"
                         onClick={() => onSelectEvent(event.id)}
-                        className={`w-full rounded-xl px-3 py-2.5 text-left transition ${
+                        className={`w-full px-2 py-2.5 text-left transition ${
                           selected
-                            ? "bg-coral/15 ring-1 ring-coral/30"
-                            : "hover:bg-white/80"
+                            ? "bg-coral/15"
+                            : "hover:bg-surface/80"
                         }`}
                       >
                         <span

@@ -5,7 +5,7 @@ import type { Shop } from "@/lib/types";
 
 export function ShopCard({ shop }: { shop: Shop }) {
   return (
-    <article className="rounded-3xl border-2 border-peach-dark/30 bg-white/70 p-5 shadow-sm transition hover:shadow-md">
+    <article className="border-y border-border py-5">
       <h2 className="font-display text-xl font-bold text-ink md:text-2xl">
         {shop.name}
       </h2>

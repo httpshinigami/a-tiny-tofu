@@ -4,7 +4,7 @@ import { formatEventDate } from "@/lib/utils";
 
 export function EventCard({ event }: { event: Event }) {
   return (
-    <article className="rounded-3xl border-2 border-peach-dark/30 bg-white/70 p-5 shadow-sm transition hover:shadow-md">
+    <article className="border-y border-border py-5">
       <time
         dateTime={event.start_at}
         className="text-sm font-semibold text-coral"

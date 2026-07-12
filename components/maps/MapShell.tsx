@@ -120,7 +120,7 @@ export function MapShell({
   if (!token) {
     return (
       <div
-        className={`flex items-center justify-center rounded-3xl border-2 border-peach-dark/30 bg-peach/30 ${className}`}
+        className={`flex items-center justify-center bg-peach/20 ${className}`}
       >
         <p className="px-4 text-center font-display text-ink-muted">
           Add NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN to enable the map.
@@ -130,9 +130,7 @@ export function MapShell({
   }
 
   return (
-    <div
-      className={`overflow-hidden rounded-3xl border-2 border-peach-dark/30 shadow-inner ${className}`}
-    >
+    <div className={`overflow-hidden ${className}`}>
       <Map
         ref={mapRef}
         mapboxAccessToken={token}

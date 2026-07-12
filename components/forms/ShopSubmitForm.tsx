@@ -69,7 +69,7 @@ export function ShopSubmitForm({
 
   if (status === "success") {
     return (
-      <div className="rounded-3xl bg-sky/30 p-8 text-center">
+      <div className="border-y border-border py-10 text-center">
         <p className="font-display text-2xl font-bold text-ink">
           Thank you!
         </p>

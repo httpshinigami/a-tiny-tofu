@@ -98,10 +98,10 @@ export function ShopsExplorer({
               <button
                 type="button"
                 onClick={() => setSelectedId(shop.id)}
-                className={`w-full rounded-xl px-3 py-2 text-left transition ${
+                className={`w-full px-2 py-2 text-left transition ${
                   effectiveSelectedId === shop.id
                     ? "bg-sage/20 font-semibold text-sage-dark"
-                    : "text-ink hover:bg-cream"
+                    : "text-ink hover:bg-surface/80"
                 }`}
               >
                 <span className="font-display">{shop.name}</span>
@@ -127,16 +127,16 @@ export function ShopsExplorer({
       onClick={() => setFilterOpen((v) => !v)}
       aria-expanded={filterOpen}
       aria-label={filterOpen ? "Hide filters" : "Show filters"}
-      className={`inline-flex items-center gap-2 self-start rounded-xl border px-3 py-2 text-sm font-semibold transition ${
+      className={`inline-flex items-center gap-2 self-start px-1 py-1 text-sm font-semibold transition ${
         filterOpen
-          ? "border-sage bg-sage/10 text-sage-dark"
-          : "border-border bg-cream text-ink shadow-sm hover:border-sage/50 hover:text-sage-dark"
+          ? "text-sage-dark"
+          : "text-ink hover:text-sage-dark"
       }`}
     >
       <FilterIcon />
       <span>Filter</span>
       {activeTags.length > 0 && (
-        <span className="rounded-full bg-sage/20 px-2 py-0.5 text-xs font-semibold text-sage-dark">
+        <span className="bg-sage/20 px-2 py-0.5 text-xs font-semibold text-sage-dark">
           {activeTags.length}
         </span>
       )}

@@ -9,7 +9,7 @@ const navLinks = [
 
 export function Header() {
   return (
-    <header className="border-b border-border/60 bg-surface px-4 py-5 md:px-8">
+    <header className="bg-cream px-4 py-5 md:px-8">
       <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
         <Link
           href="/"
@@ -33,7 +33,7 @@ export function Header() {
 
         <Link
           href="/submit"
-          className="rounded-xl bg-sage px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sage-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
+          className="rounded-md bg-pink px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-pink/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink"
         >
           Submit your hidden gem
         </Link>

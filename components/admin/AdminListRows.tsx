@@ -92,7 +92,7 @@ export function AdminEventRow({
   onDone: () => void;
 }) {
   return (
-    <li className="flex h-full flex-col rounded-2xl border border-border bg-surface p-4 shadow-sm">
+    <li className="flex h-full flex-col border border-border p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <Link
           href={`/admin/events/${event.id}`}
@@ -144,7 +144,7 @@ export function AdminShopRow({
   const href = editHref ?? `/admin/shops/${shop.id}`;
 
   return (
-    <li className="flex h-full flex-col rounded-2xl border border-border bg-surface p-4 shadow-sm">
+    <li className="flex h-full flex-col border border-border p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <Link
           href={href}

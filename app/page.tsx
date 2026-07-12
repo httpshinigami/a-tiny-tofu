@@ -20,7 +20,7 @@ export default function HomePage() {
       </section>
 
       <section className="mt-12 md:mt-16">
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl bg-gradient-to-b from-sky/40 via-periwinkle-light/30 to-butter/50">
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-b from-sky/40 via-periwinkle-light/30 to-butter/50">
           <Image
             src="/hero-illustration.png"
             alt="Tiny characters exploring a beach together"

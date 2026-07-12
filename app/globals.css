@@ -1,36 +1,41 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-cream: #fafafa;
-  --color-peach: #ffd4c4;
-  --color-peach-dark: #ffb8a0;
-  --color-coral: #ff8c5a;
-  --color-coral-dark: #e86f3a;
-  --color-ink: #1a1a1a;
-  --color-ink-muted: #5c5c5c;
-  --color-sky: #a8d8ff;
-  --color-pink: #ffb8d0;
-  --color-butter: #ffe9a8;
-  --color-sage: #9aab9e;
-  --color-sage-dark: #7d8f82;
-  --color-periwinkle: #a8b0c8;
-  --color-periwinkle-light: #c5cad8;
+  /* Clean white page */
+  --color-cream: #ffffff;
   --color-surface: #ffffff;
-  --color-border: #e8e8e8;
+  --color-border: #e8d5db;
+
+  /* Readable ink */
+  --color-ink: #2a2630;
+  --color-ink-muted: #6a6472;
+
+  /* Soft accents */
+  --color-peach: #f3d4c8;
+  --color-peach-dark: #e5b9a8;
+  --color-coral: #e07a5f;
+  --color-coral-dark: #c9654a;
+  --color-sky: #b5d0ea;
+  --color-pink: #efc4d0;
+  --color-butter: #f0e2b0;
+  --color-sage: #7f9b8a;
+  --color-sage-dark: #64806f;
+  --color-periwinkle: #6f7699;
+  --color-periwinkle-light: #c8cbdb;
+
   --font-display: var(--font-dm-sans);
   --font-body: var(--font-dm-sans);
 }
 
 body {
-  background: var(--color-surface);
-  color: var(--color-ink);
+  background-color: #ffffff;
+  color: var(--color-ink, #2a2630);
   font-family: var(--font-body), system-ui, sans-serif;
   min-height: 100vh;
 }
 
 .mapboxgl-map {
   font-family: var(--font-body), system-ui, sans-serif;
-  border-radius: 1rem;
 }
 
 .mapboxgl-ctrl-attrib a {
@@ -38,7 +43,7 @@ body {
 }
 
 .kawaii-input {
-  @apply w-full rounded-xl border border-border bg-surface px-4 py-3 text-ink outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/20;
+  @apply w-full rounded-md border border-border bg-surface px-4 py-3 text-ink outline-none transition focus:border-sage focus:ring-2 focus:ring-sage/20;
 }
 
 .kawaii-label {
@@ -47,7 +52,11 @@ body {
 
 .rdp-tofu {
   --rdp-accent-color: var(--color-sage);
-  --rdp-accent-background-color: color-mix(in srgb, var(--color-sage) 18%, white);
+  --rdp-accent-background-color: color-mix(
+    in srgb,
+    var(--color-sage) 18%,
+    var(--color-surface)
+  );
   --rdp-day-height: 2.25rem;
   --rdp-day-width: 2.25rem;
   font-family: var(--font-body), system-ui, sans-serif;

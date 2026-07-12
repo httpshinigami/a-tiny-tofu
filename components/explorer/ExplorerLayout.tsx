@@ -28,9 +28,7 @@ export function ExplorerLayout({
           <h1 className="text-3xl font-bold tracking-tight text-periwinkle md:text-4xl">
             {title}
           </h1>
-          {subtitle && (
-            <p className="mt-2 text-ink-muted">{subtitle}</p>
-          )}
+          {subtitle && <p className="mt-2 text-ink-muted">{subtitle}</p>}
         </div>
         {headerExtra}
       </div>
@@ -43,19 +41,19 @@ export function ExplorerLayout({
           </div>
         )}
 
-        <div className="grid h-[min(70vh,800px)] min-h-[480px] w-full gap-4 rounded-2xl border border-border bg-surface p-4 shadow-sm md:grid-cols-[minmax(220px,280px)_1fr] md:p-5">
-          <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-cream">
+        <div className="grid h-[min(70vh,800px)] min-h-[480px] w-full gap-0 border-y border-border md:grid-cols-[minmax(220px,280px)_1fr] md:border md:border-border">
+          <aside className="flex min-h-0 flex-col overflow-hidden border-b border-border md:border-b-0 md:border-r md:border-border">
             {sidebar}
           </aside>
           <div className="min-h-0 overflow-hidden">{map}</div>
         </div>
 
-        <div className="mt-4 w-full md:absolute md:top-0 md:left-full md:mt-0 md:ml-4 md:h-[min(70vh,800px)] md:min-h-[480px] md:w-64 lg:w-72">
+        <div className="mt-6 w-full border-t border-border pt-5 md:absolute md:top-0 md:left-full md:mt-0 md:ml-5 md:h-[min(70vh,800px)] md:min-h-[480px] md:w-64 md:border-t-0 md:border-l md:border-border md:pt-0 md:pl-5 lg:w-72">
           <aside
-            className="h-auto max-h-[50vh] w-full overflow-y-auto rounded-xl border border-border bg-cream shadow-sm md:max-h-full"
+            className="h-auto max-h-[50vh] w-full overflow-y-auto md:max-h-full"
             aria-label="Details"
           >
-            <div className="p-4 md:p-5">{detail}</div>
+            {detail}
           </aside>
         </div>
       </div>

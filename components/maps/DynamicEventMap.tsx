@@ -9,7 +9,7 @@ const EventMapClient = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full min-h-[280px] items-center justify-center rounded-3xl bg-peach/30">
+      <div className="flex h-full min-h-[280px] items-center justify-center bg-peach/20">
         <p className="font-display text-ink-muted">Loading map…</p>
       </div>
     ),

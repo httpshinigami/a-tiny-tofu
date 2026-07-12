@@ -9,7 +9,7 @@ export function TagChip({ tag }: { tag: ShopTag }) {
 
   return (
     <span
-      className="rounded-full px-3 py-1 text-xs font-semibold text-ink"
+      className="rounded-sm px-2.5 py-1 text-xs font-semibold text-ink"
       style={{ backgroundColor: color }}
     >
       {SHOP_TAG_LABELS[tag]}
