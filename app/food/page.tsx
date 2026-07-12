@@ -18,6 +18,7 @@ export default async function FoodPage() {
       title="Food & Drink"
       subtitle="Desserts, drinks, restaurants, and Asian marts — select a spot to zoom the map"
       emptyMessage="No food & drink spots match"
+      filterOpenByDefault
     />
   );
 }

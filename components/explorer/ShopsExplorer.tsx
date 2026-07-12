@@ -9,7 +9,7 @@ import { filterShopsByAllTags } from "@/lib/shop-categories";
 import type { ShopFilterCategory } from "@/lib/shop-filter-categories";
 import type { Shop } from "@/lib/types";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface Props {
   shops: Shop[];
@@ -18,6 +18,7 @@ interface Props {
   title: string;
   subtitle: string;
   emptyMessage: string;
+  /** Open filters by default on desktop only; mobile always starts closed. */
   filterOpenByDefault?: boolean;
 }
 
@@ -31,9 +32,15 @@ export function ShopsExplorer({
   filterOpenByDefault = false,
 }: Props) {
   const [activeTags, setActiveTags] = useState<ShopTag[]>([]);
-  const [filterOpen, setFilterOpen] = useState(filterOpenByDefault);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!filterOpenByDefault) return;
+    const mq = window.matchMedia("(min-width: 768px)");
+    setFilterOpen(mq.matches);
+  }, [filterOpenByDefault]);
 
   const categories = useMemo(
     () =>
