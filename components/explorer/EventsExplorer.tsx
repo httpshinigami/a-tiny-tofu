@@ -12,13 +12,21 @@ import {
 import type { Event } from "@/lib/types";
 import { useMemo, useState } from "react";
 
+function formatListDate(start: string): string {
+  return new Date(start).toLocaleString("en-AU", {
+    weekday: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 function MonthList({
   months,
   expandedMonths,
   onToggleMonth,
   selectedId,
   onSelectEvent,
-  muted = false,
   emptyLabel = "No events",
 }: {
   months: MonthGroup[];
@@ -26,22 +34,14 @@ function MonthList({
   onToggleMonth: (month: number) => void;
   selectedId: string | null;
   onSelectEvent: (id: string) => void;
-  muted?: boolean;
   emptyLabel?: string;
 }) {
-  const monthText = muted ? "text-ink-muted" : "text-ink";
-  const countText = muted ? "text-ink-muted/70" : "text-ink-muted";
-  const hoverBg = muted ? "hover:bg-peach/20" : "hover:bg-peach/40";
-  const borderAccent = muted
-    ? "border-ink-muted/25"
-    : "border-peach-dark/30";
-
   if (months.length === 0) {
-    return <p className="px-1 text-sm text-ink-muted">{emptyLabel}</p>;
+    return <p className="px-1 py-2 text-sm text-ink-muted">{emptyLabel}</p>;
   }
 
   return (
-    <ul className="space-y-1">
+    <ul className="space-y-4">
       {months.map(({ month, label, items }) => {
         const open = expandedMonths.has(month);
         return (
@@ -49,47 +49,77 @@ function MonthList({
             <button
               type="button"
               onClick={() => onToggleMonth(month)}
-              className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left font-display font-semibold transition ${monthText} ${hoverBg}`}
+              className="flex w-full items-center gap-2 rounded-md py-1 text-left transition hover:opacity-80"
               aria-expanded={open}
             >
-              <span>{label.split(" ")[0]}</span>
-              <span className={`text-sm ${countText}`}>{items.length}</span>
+              <Chevron open={open} />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted">
+                {label.split(" ")[0]}
+              </span>
+              <span className="h-px flex-1 bg-border" aria-hidden />
+              <span className="text-[11px] tabular-nums text-ink-muted/70">
+                {items.length}
+              </span>
             </button>
             {open && (
-              <ul
-                className={`mb-2 ml-1 space-y-0.5 border-l-2 pl-2 ${borderAccent}`}
-              >
-                {items.length === 0 ? (
-                  <li className="px-2 py-1 text-xs text-ink-muted">
-                    No events
-                  </li>
-                ) : (
-                  items.map((event) => (
+              <ul className="mt-1.5 space-y-0.5">
+                {items.map((event) => {
+                  const selected = selectedId === event.id;
+                  return (
                     <li key={event.id}>
                       <button
                         type="button"
                         onClick={() => onSelectEvent(event.id)}
-                        className={`w-full rounded-lg px-2 py-2 text-left text-sm transition ${
-                          selectedId === event.id
-                            ? muted
-                              ? "bg-ink-muted/15 font-semibold text-ink-muted"
-                              : "bg-coral/20 font-semibold text-coral"
-                            : muted
-                              ? "text-ink-muted/80 hover:bg-white/50"
-                              : "text-ink hover:bg-white/80"
+                        className={`w-full rounded-xl px-3 py-2.5 text-left transition ${
+                          selected
+                            ? "bg-coral/15 ring-1 ring-coral/30"
+                            : "hover:bg-white/80"
                         }`}
                       >
-                        {event.title}
+                        <span
+                          className={`block text-sm leading-snug ${
+                            selected
+                              ? "font-semibold text-coral"
+                              : "font-medium text-ink"
+                          }`}
+                        >
+                          {event.title}
+                        </span>
+                        <span className="mt-0.5 block truncate text-xs text-ink-muted">
+                          {formatListDate(event.start_at)}
+                          {event.venue_name ? ` · ${event.venue_name}` : ""}
+                        </span>
                       </button>
                     </li>
-                  ))
-                )}
+                  );
+                })}
               </ul>
             )}
           </li>
         );
       })}
     </ul>
+  );
+}
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      className={`shrink-0 text-ink-muted/60 transition ${open ? "rotate-180" : ""}`}
+      aria-hidden
+    >
+      <path
+        d="M4 6l4 4 4-4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
@@ -109,50 +139,48 @@ export function EventsExplorer({ events }: { events: Event[] }) {
   const year = getCurrentYear();
   const currentMonth = new Date().getMonth();
   const [search, setSearch] = useState("");
-  const [expandedMonths, setExpandedMonths] = useState<Set<number>>(
-    () => new Set([currentMonth])
+  const [yearOpen, setYearOpen] = useState(true);
+  const [expandedMonths, setExpandedMonths] = useState<Set<number> | null>(
+    null
   );
-  const [showPastEvents, setShowPastEvents] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(
-    events[0]?.id ?? null
-  );
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const filteredEvents = useMemo(
     () => filterEventsBySearch(events, search),
     [events, search]
   );
 
-  const months = useMemo(
-    () => groupEventsByMonth(filteredEvents, year),
-    [filteredEvents, year]
+  const months = useMemo(() => {
+    const grouped = groupEventsByMonth(filteredEvents, year);
+    return grouped.filter(
+      (group) => group.month >= currentMonth && group.items.length > 0
+    );
+  }, [filteredEvents, year, currentMonth]);
+
+  const defaultOpen = useMemo(
+    () => new Set(months.map((m) => m.month)),
+    [months]
   );
 
-  const { currentMonths, pastMonths } = useMemo(() => {
-    const current: MonthGroup[] = [];
-    const past: MonthGroup[] = [];
-    for (const group of months) {
-      if (group.month < currentMonth) past.push(group);
-      else current.push(group);
-    }
-    return { currentMonths: current, pastMonths: past };
-  }, [months, currentMonth]);
-
   const visibleExpandedMonths = useMemo(() => {
-    if (!search.trim()) return expandedMonths;
-    return new Set(months.filter((m) => m.items.length > 0).map((m) => m.month));
-  }, [search, months, expandedMonths]);
+    if (search.trim()) {
+      return new Set(months.map((m) => m.month));
+    }
+    return expandedMonths ?? defaultOpen;
+  }, [search, months, expandedMonths, defaultOpen]);
 
   const effectiveSelectedId =
     selectedId && filteredEvents.some((e) => e.id === selectedId)
       ? selectedId
-      : filteredEvents[0]?.id ?? null;
+      : null;
 
   const selected =
     filteredEvents.find((e) => e.id === effectiveSelectedId) ?? null;
 
   function toggleMonth(month: number) {
     setExpandedMonths((prev) => {
-      const next = new Set(prev);
+      const base = prev ?? defaultOpen;
+      const next = new Set(base);
       if (next.has(month)) next.delete(month);
       else next.add(month);
       return next;
@@ -174,53 +202,27 @@ export function EventsExplorer({ events }: { events: Event[] }) {
           className="kawaii-input py-2 text-sm"
         />
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto p-3">
-        <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-          {year}
-        </p>
-        <MonthList
-          months={currentMonths}
-          expandedMonths={visibleExpandedMonths}
-          onToggleMonth={toggleMonth}
-          selectedId={effectiveSelectedId}
-          onSelectEvent={setSelectedId}
-          emptyLabel={
-            search.trim() ? "No matching events" : "No upcoming events"
-          }
-        />
-        {pastMonths.length > 0 && (
-          <div className="mt-3 border-t border-ink-muted/30 pt-3">
-            {!search.trim() && (
-              <button
-                type="button"
-                onClick={() => setShowPastEvents((open) => !open)}
-                className="w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-ink-muted transition hover:bg-peach/20"
-                aria-expanded={showPastEvents}
-              >
-                {showPastEvents ? "Hide past events" : "See past events"}
-              </button>
-            )}
-            {(showPastEvents || search.trim()) && (
-              <div className={search.trim() ? undefined : "mt-2"}>
-                {search.trim() && (
-                  <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-ink-muted">
-                    Past
-                  </p>
-                )}
-                <MonthList
-                  months={pastMonths}
-                  expandedMonths={visibleExpandedMonths}
-                  onToggleMonth={toggleMonth}
-                  selectedId={effectiveSelectedId}
-                  onSelectEvent={setSelectedId}
-                  muted
-                  emptyLabel={
-                    search.trim() ? "No matching past events" : "No past events"
-                  }
-                />
-              </div>
-            )}
-          </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
+        <button
+          type="button"
+          onClick={() => setYearOpen((open) => !open)}
+          className="mb-3 flex w-full items-center gap-2 rounded-md py-0.5 text-left transition hover:opacity-80"
+          aria-expanded={yearOpen}
+        >
+          <Chevron open={yearOpen} />
+          <span className="text-sm font-semibold text-ink">{year}</span>
+        </button>
+        {yearOpen && (
+          <MonthList
+            months={months}
+            expandedMonths={visibleExpandedMonths}
+            onToggleMonth={toggleMonth}
+            selectedId={effectiveSelectedId}
+            onSelectEvent={setSelectedId}
+            emptyLabel={
+              search.trim() ? "No matching events" : "No upcoming events"
+            }
+          />
         )}
       </div>
     </div>

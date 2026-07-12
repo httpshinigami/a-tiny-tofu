@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function EventsPage() {
   const year = getCurrentYear();
-  const allEvents = await getApprovedEvents(true);
+  const allEvents = await getApprovedEvents();
   const events = allEvents.filter(
     (e) => new Date(e.start_at).getFullYear() === year
   );
