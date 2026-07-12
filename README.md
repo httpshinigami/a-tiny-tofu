@@ -1,14 +1,23 @@
 # World of Tiny Tofu
 
-Explore local artist markets, collectible shops, themed events, and whimsical experiences across Melbourne.
+A cosy guide to Melbourne’s cutest hidden gems: artist markets, collectible shops, themed events, and whimsical food & drink spots.
+
+Built to make discovering cute finds feel easier. Browse by category or month, explore on a map, and submit new gems for review.
 
 ## Features
 
-- **Markets & Events**  — left sidebar with expandable months; map zooms when you select an event; details below the map
-- **Shops** — same layout with category filters and shop list
-- **Food & Drink** — same layout with category filters and food and beverages list
-- **User Submissions** — public forms; content hidden until approved
-- **Admin** — review submission queue (CRUD)
+- **Markets & Events**: upcoming events grouped by month, with map and detail views
+- **Shops**: filterable directory of collectible and character-goods shops
+- **Food & Drink**: desserts, drinks, restaurants, Asian marts, and more
+- **Public submissions**: anyone can suggest a listing; content stays pending until approved
+- **Admin dashboard**: create, edit, approve, reject, and delete events and shops
+
+## Tech stack
+
+- Next.js (App Router), React, TypeScript
+- Tailwind CSS
+- Supabase (auth, Postgres, moderation workflow)
+- Mapbox (interactive maps, geocoding, address suggestions)
 
 ## License
 
