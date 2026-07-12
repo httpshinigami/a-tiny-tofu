@@ -5,8 +5,8 @@ import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import { patchStatus } from "@/components/admin/admin-actions";
 import { AddressInput } from "@/components/forms/AddressInput";
+import { DateTimePicker } from "@/components/forms/DateTimePicker";
 import type { Status } from "@/lib/constants";
-import { toDatetimeLocal } from "@/lib/datetime-local";
 import { formatMapLocation } from "@/lib/map-location";
 import type { Event } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -105,32 +105,20 @@ export function AdminEditEventForm({ event }: { event: Event }) {
         />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label className="kawaii-label" htmlFor="start_at">
-            Start
-            <RequiredMark />
-          </label>
-          <input
-            id="start_at"
-            name="start_at"
-            type="datetime-local"
-            required
-            defaultValue={toDatetimeLocal(event.start_at)}
-            className="kawaii-input"
-          />
-        </div>
-        <div>
-          <label className="kawaii-label" htmlFor="end_at">
-            End <span className="font-normal text-ink-muted">(optional)</span>
-          </label>
-          <input
-            id="end_at"
-            name="end_at"
-            type="datetime-local"
-            defaultValue={event.end_at ? toDatetimeLocal(event.end_at) : ""}
-            className="kawaii-input"
-          />
-        </div>
+        <DateTimePicker
+          id="start_at"
+          name="start_at"
+          label="Start"
+          required
+          defaultValue={event.start_at}
+        />
+        <DateTimePicker
+          id="end_at"
+          name="end_at"
+          label="End"
+          optional
+          defaultValue={event.end_at ?? undefined}
+        />
       </div>
       <div>
         <label className="kawaii-label" htmlFor="venue_name">

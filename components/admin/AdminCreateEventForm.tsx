@@ -2,6 +2,7 @@
 
 import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { AddressInput } from "@/components/forms/AddressInput";
+import { DateTimePicker } from "@/components/forms/DateTimePicker";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import type { Status } from "@/lib/constants";
@@ -73,19 +74,18 @@ export function AdminCreateEventForm() {
         <textarea id="description" name="description" required rows={3} className="kawaii-input" />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label className="kawaii-label" htmlFor="start_at">
-            Start
-            <RequiredMark />
-          </label>
-          <input id="start_at" name="start_at" type="datetime-local" required className="kawaii-input" />
-        </div>
-        <div>
-          <label className="kawaii-label" htmlFor="end_at">
-            End <span className="font-normal text-ink-muted">(optional)</span>
-          </label>
-          <input id="end_at" name="end_at" type="datetime-local" className="kawaii-input" />
-        </div>
+        <DateTimePicker
+          id="start_at"
+          name="start_at"
+          label="Start"
+          required
+        />
+        <DateTimePicker
+          id="end_at"
+          name="end_at"
+          label="End"
+          optional
+        />
       </div>
       <div>
         <label className="kawaii-label" htmlFor="venue_name">

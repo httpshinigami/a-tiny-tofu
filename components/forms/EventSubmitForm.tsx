@@ -1,6 +1,7 @@
 "use client";
 
 import { AddressInput } from "@/components/forms/AddressInput";
+import { DateTimePicker } from "@/components/forms/DateTimePicker";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { useState } from "react";
 
@@ -77,29 +78,18 @@ export function EventSubmitForm() {
         />
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label className="kawaii-label" htmlFor="start_at">
-            Start date & time
-          </label>
-          <input
-            id="start_at"
-            name="start_at"
-            type="datetime-local"
-            required
-            className="kawaii-input"
-          />
-        </div>
-        <div>
-          <label className="kawaii-label" htmlFor="end_at">
-            End (optional)
-          </label>
-          <input
-            id="end_at"
-            name="end_at"
-            type="datetime-local"
-            className="kawaii-input"
-          />
-        </div>
+        <DateTimePicker
+          id="start_at"
+          name="start_at"
+          label="Start date & time"
+          required
+        />
+        <DateTimePicker
+          id="end_at"
+          name="end_at"
+          label="End"
+          optional
+        />
       </div>
       <div>
         <label className="kawaii-label" htmlFor="venue_name">
