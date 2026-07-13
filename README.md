@@ -8,9 +8,9 @@ Built to make discovering cute finds feel easier. Browse by category or month, e
 
 - **Markets & Events**: upcoming events grouped by month, with map and detail views
 - **Shops**: filterable directory of collectible and character-goods shops
-- **Food & Drink**: desserts, drinks, restaurants, Asian marts, and more
+- **Food & Drink**: bubble tea, matcha, bakery treats, meals, Asian groceries, and more
 - **Public submissions**: anyone can suggest a listing; content stays pending until approved
-- **Admin dashboard**: create, edit, approve, reject, and delete events and shops
+- **Admin dashboard**: create, edit, approve, and delete events and shops
 
 ## Tech stack
 

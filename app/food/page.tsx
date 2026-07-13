@@ -16,7 +16,7 @@ export default async function FoodPage() {
       shops={shops}
       filterTags={FOOD_DRINK_TAGS}
       title="Food & Drink"
-      subtitle="Desserts, drinks, restaurants, and Asian marts — select a spot to zoom the map"
+      subtitle="Bubble tea, matcha, bakery treats, bingsu, meals, and Asian groceries — select a spot to zoom the map"
       emptyMessage="No food & drink spots match"
       filterOpenByDefault
     />

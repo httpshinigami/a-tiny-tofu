@@ -9,7 +9,7 @@ const navLinks = [
 
 export function Header() {
   return (
-    <header className="bg-cream px-4 py-5 md:px-8">
+    <header className="bg-white px-4 py-5 md:px-8">
       <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
         <Link
           href="/"

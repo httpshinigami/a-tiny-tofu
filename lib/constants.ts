@@ -1,8 +1,10 @@
 export const SHOP_TAGS = [
-  "desserts",
-  "drinks",
-  "restaurant",
-  "asian_mart",
+  "bubble_tea",
+  "matcha",
+  "bakery",
+  "bingsu",
+  "meals",
+  "asian_grocery",
   "fashion",
   "photo_booths",
   "artist_goods",
@@ -31,10 +33,12 @@ export const SHOP_TAGS = [
 export type ShopTag = (typeof SHOP_TAGS)[number];
 
 export const FOOD_DRINK_TAGS = [
-  "desserts",
-  "drinks",
-  "restaurant",
-  "asian_mart",
+  "bubble_tea",
+  "matcha",
+  "bakery",
+  "bingsu",
+  "meals",
+  "asian_grocery",
 ] as const satisfies readonly ShopTag[];
 
 export type FoodDrinkTag = (typeof FOOD_DRINK_TAGS)[number];
@@ -68,10 +72,12 @@ export const RETAIL_SHOP_TAGS = [
 export type RetailShopTag = (typeof RETAIL_SHOP_TAGS)[number];
 
 export const SHOP_TAG_LABELS: Record<ShopTag, string> = {
-  desserts: "Desserts",
-  drinks: "Drinks",
-  restaurant: "Restaurant",
-  asian_mart: "Asian Mart",
+  bubble_tea: "Bubble & fruit tea",
+  matcha: "Matcha",
+  bakery: "Cakes & pastries",
+  bingsu: "Bingsu",
+  meals: "Meals",
+  asian_grocery: "Asian grocery",
   fashion: "Fashion",
   photo_booths: "Photo Booths",
   artist_goods: "Artist Goods",
@@ -98,10 +104,12 @@ export const SHOP_TAG_LABELS: Record<ShopTag, string> = {
 };
 
 export const TAG_COLORS: Record<ShopTag, string> = {
-  desserts: "#F3E6DC",
-  drinks: "#F3E6DC",
-  restaurant: "#F3E6DC",
-  asian_mart: "#F3E6DC",
+  bubble_tea: "#F3E6DC",
+  matcha: "#F3E6DC",
+  bakery: "#F3E6DC",
+  bingsu: "#F3E6DC",
+  meals: "#F3E6DC",
+  asian_grocery: "#F3E6DC",
   fashion: "#E8D0DC",
   photo_booths: "#D5DDD4",
   artist_goods: "#E2D4F0",

@@ -32,7 +32,7 @@ const COPY: Record<SubmitType, { title: string; subtitle: string }> = {
   food: {
     title: "Submit a food & drink spot",
     subtitle:
-      "Found a great dessert café, drink spot, restaurant, or Asian mart? We'd love to hear about it.",
+      "Found a great bubble tea spot, matcha cafe, bakery, bingsu spot, meal spot, or Asian grocery? We'd love to hear about it.",
   },
 };
 

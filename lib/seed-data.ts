@@ -88,7 +88,7 @@ export const SEED_SHOPS: Shop[] = [
     status: "approved",
     admin_note: null,
     created_at: new Date().toISOString(),
-    shop_tags: ["desserts", "restaurant"],
+    shop_tags: ["bakery", "meals"],
   },
   {
     id: "s3",
@@ -104,6 +104,6 @@ export const SEED_SHOPS: Shop[] = [
     status: "approved",
     admin_note: null,
     created_at: new Date().toISOString(),
-    shop_tags: ["smiski", "restaurant", "desserts"],
+    shop_tags: ["smiski", "meals", "bakery"],
   },
 ];
