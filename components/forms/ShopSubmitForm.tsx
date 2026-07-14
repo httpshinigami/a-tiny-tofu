@@ -2,13 +2,10 @@
 
 import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 import { AddressInput } from "@/components/forms/AddressInput";
+import { ShopTagPicker } from "@/components/forms/ShopTagPicker";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
-import {
-  SHOP_TAG_LABELS,
-  TAG_COLORS,
-  type ShopTag,
-} from "@/lib/constants";
+import { type ShopTag } from "@/lib/constants";
 import { useState } from "react";
 
 interface Props {
@@ -29,12 +26,6 @@ export function ShopSubmitForm({
   );
   const [error, setError] = useState("");
   const [selected, setSelected] = useState<ShopTag[]>([]);
-
-  function toggleTag(tag: ShopTag) {
-    setSelected((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -111,27 +102,13 @@ export function ShopSubmitForm({
         </label>
         <AddressInput id="address" name="address" required />
       </div>
-      <div>
-        <p className="kawaii-label">
-          {tagPrompt}
-          <RequiredMark />
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {tagOptions.map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              onClick={() => toggleTag(tag)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold ring-2 transition ${
-                selected.includes(tag) ? "ring-coral" : "ring-transparent"
-              }`}
-              style={{ backgroundColor: TAG_COLORS[tag] }}
-            >
-              {SHOP_TAG_LABELS[tag]}
-            </button>
-          ))}
-        </div>
-      </div>
+      <ShopTagPicker
+        options={tagOptions}
+        selected={selected}
+        onChange={setSelected}
+        label={tagPrompt}
+        required
+      />
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="kawaii-label" htmlFor="hours">

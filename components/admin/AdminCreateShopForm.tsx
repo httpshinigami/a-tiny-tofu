@@ -3,14 +3,10 @@
 import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 import { AddressInput } from "@/components/forms/AddressInput";
+import { ShopTagPicker } from "@/components/forms/ShopTagPicker";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
-import {
-  SHOP_TAG_LABELS,
-  TAG_COLORS,
-  type ShopTag,
-  type Status,
-} from "@/lib/constants";
+import { type ShopTag, type Status } from "@/lib/constants";
 import { formatMapLocation } from "@/lib/map-location";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -105,31 +101,13 @@ export function AdminCreateShopForm({
         value={mapLocation}
         onChange={setMapLocation}
       />
-      <div>
-        <p className="kawaii-label">
-          {tagPrompt}
-          <RequiredMark />
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {tagOptions.map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              onClick={() =>
-                setSelected((p) =>
-                  p.includes(tag) ? p.filter((t) => t !== tag) : [...p, tag]
-                )
-              }
-              className={`rounded-full px-3 py-1 text-xs font-semibold ring-2 ${
-                selected.includes(tag) ? "ring-coral" : "ring-transparent"
-              }`}
-              style={{ backgroundColor: TAG_COLORS[tag] }}
-            >
-              {SHOP_TAG_LABELS[tag]}
-            </button>
-          ))}
-        </div>
-      </div>
+      <ShopTagPicker
+        options={tagOptions}
+        selected={selected}
+        onChange={setSelected}
+        label={tagPrompt}
+        required
+      />
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="kawaii-label" htmlFor="hours">
