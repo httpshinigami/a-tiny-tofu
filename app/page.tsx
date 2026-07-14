@@ -58,7 +58,7 @@ export default async function HomePage() {
         </section>
       </div>
 
-      <section className="bg-white px-4 py-14 md:px-8 md:py-20">
+      <section className="hidden bg-white px-4 py-14 md:px-8 md:py-20">
         <div className="ml-8 max-w-3xl md:ml-16 lg:ml-24 lg:max-w-5xl">
           <p className="text-base leading-relaxed text-ink md:text-lg">
             hello everynyan,

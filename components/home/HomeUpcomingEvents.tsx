@@ -72,7 +72,7 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
 
   return (
     <section
-      className="bg-white pb-16 md:pb-24"
+      className="bg-white pb-16 pt-14 md:pb-24 md:pt-15"
       aria-label="Upcoming markets and events"
     >
       <div className="ml-8 md:ml-16 lg:ml-24">
@@ -101,7 +101,7 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
                 <Link
                   href="/events"
                   draggable={false}
-                  className={`biscuit-tile flex h-full min-h-[14rem] select-none flex-col px-8 py-6 transition hover:opacity-90 md:min-h-[16rem] md:px-9 md:py-7 ${
+                  className={`biscuit-tile flex h-full min-h-[14rem] select-none flex-col px-8 py-6 md:min-h-[16rem] md:px-9 md:py-7 ${
                     isChoc ? "biscuit-tile--choc" : "biscuit-tile--dough"
                   }`}
                 >
