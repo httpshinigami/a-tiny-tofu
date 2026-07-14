@@ -21,7 +21,7 @@ export default async function AdminEditFoodPage({
       <KawaiiButton href="/admin" variant="ghost">
         ← Back to dashboard
       </KawaiiButton>
-      <h1 className="mt-4 font-display text-3xl font-bold text-ink">
+      <h1 className="mt-4 font-display text-3xl font-bold text-periwinkle">
         Edit food & drink spot
       </h1>
       <p className="mt-1 text-sm text-ink-muted">{shop.name}</p>

@@ -11,7 +11,7 @@ export default function AdminCreateShopPage() {
       <KawaiiButton href="/admin" variant="ghost">
         ← Back
       </KawaiiButton>
-      <h1 className="mt-4 font-display text-3xl font-bold text-ink">Create shop</h1>
+      <h1 className="mt-4 font-display text-3xl font-bold text-periwinkle">Create shop</h1>
       <div className="mt-8">
         <AdminCreateShopForm
           tagOptions={RETAIL_SHOP_TAGS}

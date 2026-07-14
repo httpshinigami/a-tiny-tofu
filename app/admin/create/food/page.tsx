@@ -11,7 +11,7 @@ export default function AdminCreateFoodPage() {
       <KawaiiButton href="/admin" variant="ghost">
         ← Back
       </KawaiiButton>
-      <h1 className="mt-4 font-display text-3xl font-bold text-ink">
+      <h1 className="mt-4 font-display text-3xl font-bold text-periwinkle">
         Create food & drink spot
       </h1>
       <div className="mt-8">
