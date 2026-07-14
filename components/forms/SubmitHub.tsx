@@ -69,7 +69,7 @@ export function SubmitHub({ activeType }: Props) {
         ))}
       </div>
 
-      <h1 className="mt-8 font-display text-3xl font-bold text-ink">
+      <h1 className="mt-8 font-display text-3xl font-bold text-periwinkle">
         {COPY[activeType].title}
       </h1>
       <p className="mt-2 text-ink-muted">{COPY[activeType].subtitle}</p>
