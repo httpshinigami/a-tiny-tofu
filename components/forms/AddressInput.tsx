@@ -181,7 +181,7 @@ export function AddressInput({
                 className={`block w-full px-4 py-2.5 text-left text-sm transition ${
                   index === activeIndex
                     ? "bg-sage/15 text-sage-dark"
-                    : "text-ink hover:bg-cream"
+                    : "text-ink hover:bg-surface"
                 }`}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => choose(suggestion)}

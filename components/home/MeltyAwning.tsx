@@ -22,11 +22,11 @@ export function MeltyAwning({ className = "" }: { className?: string }) {
             patternUnits="userSpaceOnUse"
           >
             <path
-              fill="#4a3f38"
+              fill="var(--color-cocoa)"
               d={`M0,0 H${unit} V${stem} A${radius},${radius} 0 0 1 0,${stem} Z`}
             />
             <path
-              fill="#3d342e"
+              fill="var(--color-cocoa-dark)"
               d={`M${unit},0 H${patternWidth} V${stem} A${radius},${radius} 0 0 1 ${unit},${stem} Z`}
             />
           </pattern>

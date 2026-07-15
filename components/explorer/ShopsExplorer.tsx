@@ -148,7 +148,7 @@ export function ShopsExplorer({
       title={title}
       subtitle={subtitle}
       headerExtra={
-        <KawaiiButton href="/submit" variant="sage">
+        <KawaiiButton href="/submit" variant="primary">
           Submit a spot
         </KawaiiButton>
       }

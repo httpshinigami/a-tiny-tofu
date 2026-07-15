@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Clean white page */
-  --color-cream: #ffffff;
+  /* Page */
   --color-surface: #ffffff;
   --color-border: #e8d5db;
 
@@ -15,28 +14,28 @@
   --color-peach-dark: #e5b9a8;
   --color-coral: #e07a5f;
   --color-coral-dark: #c9654a;
-  --color-sky: #b5d0ea;
   --color-pink: #efc4d0;
   --color-butter: #f0e2b0;
   --color-mint: #d8f0e4;
   --color-sage: #7f9b8a;
   --color-sage-dark: #64806f;
-  --color-periwinkle: #4a3f38;
-  --color-periwinkle-light: #c8cbdb;
+  /* Door / title brown */
+  --color-cocoa: #4a3f38;
+  --color-cocoa-dark: #3d342e;
 
   --font-display: var(--font-dm-sans);
   --font-body: var(--font-dm-sans);
 }
 
 body {
-  background-color: #ffffff;
-  color: var(--color-ink, #2a2630);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
   font-family: var(--font-body), system-ui, sans-serif;
   min-height: 100vh;
 }
 
 .home-mint {
-  background-color: #d8f0e4;
+  background-color: var(--color-mint);
 }
 
 /* Biscuit tiles — straight body + overlapping side scallops */

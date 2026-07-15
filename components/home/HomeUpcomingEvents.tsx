@@ -93,7 +93,7 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
       aria-label="Upcoming markets and events"
     >
       <div className="ml-8 md:ml-16 lg:ml-24">
-        <h2 className="font-display text-2xl font-bold text-periwinkle md:text-3xl">
+        <h2 className="font-display text-2xl font-bold text-cocoa md:text-3xl">
           Upcoming markets &amp; events
         </h2>
       </div>

@@ -213,7 +213,7 @@ export function AdminDashboard({
           <button
             type="button"
             onClick={signOut}
-            className="rounded-xl px-4 py-2 text-sm font-semibold text-ink-muted transition hover:bg-cream hover:text-ink"
+            className="rounded-xl px-4 py-2 text-sm font-semibold text-ink-muted transition hover:bg-surface hover:text-ink"
           >
             Sign out
           </button>
@@ -237,7 +237,7 @@ export function AdminDashboard({
       {tab === "queue" && (
         <>
           <section>
-            <h2 className="text-xl font-bold text-periwinkle">Pending events</h2>
+            <h2 className="text-xl font-bold text-cocoa">Pending events</h2>
             {filteredPendingEvents.length === 0 ? (
               <p className="mt-2 text-sm text-ink-muted">
                 {search.trim() ? "No matching pending events" : "None waiting"}
@@ -251,7 +251,7 @@ export function AdminDashboard({
             )}
           </section>
           <section>
-            <h2 className="text-xl font-bold text-periwinkle">Pending shops</h2>
+            <h2 className="text-xl font-bold text-cocoa">Pending shops</h2>
             {pendingRetailShops.length === 0 ? (
               <p className="mt-2 text-sm text-ink-muted">
                 {search.trim() ? "No matching pending shops" : "None waiting"}
@@ -263,7 +263,7 @@ export function AdminDashboard({
             )}
           </section>
           <section>
-            <h2 className="text-xl font-bold text-periwinkle">
+            <h2 className="text-xl font-bold text-cocoa">
               Pending food & drink
             </h2>
             {pendingFoodShops.length === 0 ? (

@@ -11,13 +11,18 @@ import { isAdminEmail, isSupabaseConfigured } from "@/lib/utils";
 
 export const metadata = { title: "Admin" };
 
+// check who’s signed in and grab their email — used later to decide if they can use admin stuff
 export default async function AdminPage() {
   let userEmail: string | undefined;
+  // only try login lookup if Supabase is set up
   if (isSupabaseConfigured()) {
+    // connects to Supabase
     const supabase = await createClient();
     const {
       data: { user },
+    // asks Supabase “is someone logged in?”
     } = await supabase.auth.getUser();
+    // if yes, save their email; if not, leave it empty
     userEmail = user?.email;
   }
 
@@ -30,7 +35,7 @@ export default async function AdminPage() {
 
   return (
     <PageFrame className="max-w-7xl">
-      <h1 className="font-display text-3xl font-bold text-periwinkle">Dashboard</h1>
+      <h1 className="font-display text-3xl font-bold text-cocoa">Dashboard</h1>
       <p className="mt-1 text-sm text-ink-muted">
         {isSupabaseConfigured()
           ? `Signed in as ${userEmail ?? "unknown"}`

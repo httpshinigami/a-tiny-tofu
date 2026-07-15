@@ -5,9 +5,9 @@ type Variant = "primary" | "secondary" | "ghost" | "sage";
 
 const styles: Record<Variant, string> = {
   primary: "bg-pink text-ink hover:bg-pink/80",
-  sage: "bg-pink text-ink hover:bg-pink/80",
-  secondary: "bg-pink text-ink hover:bg-pink/80",
+  secondary: "bg-peach text-ink hover:bg-peach-dark",
   ghost: "bg-transparent text-ink hover:bg-pink/40",
+  sage: "bg-sage text-white hover:bg-sage-dark",
 };
 
 interface Props {

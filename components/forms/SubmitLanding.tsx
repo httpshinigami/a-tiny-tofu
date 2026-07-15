@@ -47,7 +47,7 @@ export function SubmitLanding({
         </p>
 
         <div className="mt-8 flex justify-center">
-          <KawaiiButton href="/submit/event" variant="sage">
+          <KawaiiButton href="/submit/event" variant="primary">
             Start a submission
           </KawaiiButton>
         </div>

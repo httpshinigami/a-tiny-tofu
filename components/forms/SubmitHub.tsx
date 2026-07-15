@@ -61,7 +61,7 @@ export function SubmitHub({ activeType }: Props) {
             className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
               activeType === type
                 ? "bg-sage text-white"
-                : "border border-border bg-cream text-ink hover:border-sage/50 hover:text-sage-dark"
+                : "border border-border bg-surface text-ink hover:border-sage/50 hover:text-sage-dark"
             }`}
           >
             {label}
@@ -69,7 +69,7 @@ export function SubmitHub({ activeType }: Props) {
         ))}
       </div>
 
-      <h1 className="mt-8 font-display text-3xl font-bold text-periwinkle">
+      <h1 className="mt-8 font-display text-3xl font-bold text-cocoa">
         {COPY[activeType].title}
       </h1>
       <p className="mt-2 text-ink-muted">{COPY[activeType].subtitle}</p>

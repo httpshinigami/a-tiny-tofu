@@ -33,8 +33,7 @@ export function Header() {
 
         <Link
           href="/submit"
-          className="rounded-md px-4 py-2.5 text-sm font-semibold text-ink transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
-          style={{ backgroundColor: "#d8f0e4" }}
+          className="rounded-md bg-mint px-4 py-2.5 text-sm font-semibold text-ink transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
         >
           Submit a spot
         </Link>

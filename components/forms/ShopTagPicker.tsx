@@ -88,15 +88,15 @@ export function ShopTagPicker({
                       <label
                         className={`flex cursor-pointer items-center gap-1.5 rounded border px-2 py-1.5 text-sm transition ${
                           isOn
-                            ? "border-periwinkle/40 bg-mint/50 text-ink"
-                            : "border-border bg-white text-ink hover:border-periwinkle/25"
+                            ? "border-cocoa/40 bg-mint/50 text-ink"
+                            : "border-border bg-white text-ink hover:border-cocoa/25"
                         }`}
                       >
                         <input
                           type="checkbox"
                           checked={isOn}
                           onChange={() => toggle(tag)}
-                          className="size-3.5 shrink-0 rounded border-border text-periwinkle focus:ring-periwinkle/30"
+                          className="size-3.5 shrink-0 rounded border-border text-cocoa focus:ring-cocoa/30"
                         />
                         <span className="leading-tight font-medium">
                           {SHOP_TAG_LABELS[tag]}

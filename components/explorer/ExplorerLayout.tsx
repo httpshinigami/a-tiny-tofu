@@ -25,7 +25,7 @@ export function ExplorerLayout({
     <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-8">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-periwinkle md:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-cocoa md:text-4xl">
             {title}
           </h1>
           {subtitle && <p className="mt-2 text-ink-muted">{subtitle}</p>}

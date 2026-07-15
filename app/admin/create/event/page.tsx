@@ -10,7 +10,7 @@ export default function AdminCreateEventPage() {
       <KawaiiButton href="/admin" variant="ghost">
         ← Back
       </KawaiiButton>
-      <h1 className="mt-4 font-display text-3xl font-bold text-periwinkle">Create event</h1>
+      <h1 className="mt-4 font-display text-3xl font-bold text-cocoa">Create event</h1>
       <div className="mt-8">
         <AdminCreateEventForm />
       </div>

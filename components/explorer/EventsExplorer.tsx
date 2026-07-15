@@ -257,7 +257,7 @@ export function EventsExplorer({
       title="Markets & Events"
       subtitle="Browse by month — select an event to zoom the map"
       headerExtra={
-        <KawaiiButton href="/submit" variant="sage">
+        <KawaiiButton href="/submit" variant="primary">
           Submit event
         </KawaiiButton>
       }

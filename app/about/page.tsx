@@ -8,7 +8,7 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <PageFrame>
-      <h1 className="text-3xl font-bold tracking-tight text-periwinkle md:text-4xl">
+      <h1 className="text-3xl font-bold tracking-tight text-cocoa md:text-4xl">
         About World of Tiny Tofu
       </h1>
       <p className="mt-4 max-w-2xl leading-relaxed text-ink-muted">
@@ -31,7 +31,7 @@ export default function AboutPage() {
         and we&apos;ll take a look.
       </p>
       <div className="mt-8">
-        <KawaiiButton href="/events" variant="sage">
+        <KawaiiButton href="/events" variant="primary">
           Start exploring
         </KawaiiButton>
       </div>

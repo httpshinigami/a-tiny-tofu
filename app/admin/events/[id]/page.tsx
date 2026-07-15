@@ -26,7 +26,7 @@ export default async function AdminEditEventPage({
       <KawaiiButton href="/admin" variant="ghost">
         ← Back to dashboard
       </KawaiiButton>
-      <h1 className="mt-4 text-3xl font-bold text-periwinkle">Edit event</h1>
+      <h1 className="mt-4 text-3xl font-bold text-cocoa">Edit event</h1>
       <p className="mt-1 text-sm text-ink-muted">{event.title}</p>
       <div className="mt-8">
         <AdminEditEventForm event={event} />

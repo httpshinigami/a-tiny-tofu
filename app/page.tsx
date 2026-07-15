@@ -34,13 +34,13 @@ export default async function HomePage() {
 
           {/* Door — sits on the floor, left of the divider */}
           <div
-            className="pointer-events-none absolute bottom-0 right-[42%] z-[5] hidden h-56 w-42 rounded-t-full bg-[#4a3f38] sm:h-72 sm:w-48 md:block md:h-[20.5rem] md:w-62"
+            className="pointer-events-none absolute bottom-0 right-[42%] z-[5] hidden h-56 w-42 rounded-t-full bg-cocoa sm:h-72 sm:w-48 md:block md:h-[20.5rem] md:w-62"
             aria-hidden
           />
 
           <div className="relative z-10 ml-8 mr-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 py-10 md:ml-16 md:px-8 md:py-12 lg:ml-24">
             <div className="max-w-xl md:w-[55%] lg:max-w-2xl">
-              <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-periwinkle md:text-5xl lg:text-[3.25rem]">
+              <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-cocoa md:text-5xl lg:text-[3.25rem]">
                 Discover everything cute in Melbourne
               </h1>
               <p className="mt-5 text-base leading-relaxed text-ink-muted md:text-lg">
@@ -84,14 +84,13 @@ export default async function HomePage() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               href="/submit"
-              className="inline-flex items-center justify-center rounded-md px-6 py-3 text-base font-semibold text-periwinkle transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-periwinkle"
-              style={{ backgroundColor: "#d8f0e4" }}
+              className="inline-flex items-center justify-center rounded-md bg-mint px-6 py-3 text-base font-semibold text-cocoa transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cocoa"
             >
               Submit a spot
             </Link>
             <Link
               href="/about"
-              className="inline-flex items-center justify-center rounded-md bg-butter px-6 py-3 text-base font-semibold text-periwinkle transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-periwinkle"
+              className="inline-flex items-center justify-center rounded-md bg-butter px-6 py-3 text-base font-semibold text-cocoa transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cocoa"
             >
               Learn more
             </Link>

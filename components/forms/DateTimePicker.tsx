@@ -203,7 +203,7 @@ export function DateTimePicker({
               {!required && date && (
                 <button
                   type="button"
-                  className="mt-2 w-full rounded-lg px-2 py-1.5 text-xs font-semibold text-ink-muted transition hover:bg-cream hover:text-ink"
+                  className="mt-2 w-full rounded-lg px-2 py-1.5 text-xs font-semibold text-ink-muted transition hover:bg-surface hover:text-ink"
                   onClick={() => {
                     setDate(undefined);
                     setTime("");
@@ -280,7 +280,7 @@ function TimeColumn({
       <p className="px-2 pb-1 text-center text-[10px] font-semibold uppercase tracking-wide text-ink-muted">
         {label}
       </p>
-      <ul className="max-h-48 w-14 overflow-y-auto bg-cream/60 py-1">
+      <ul className="max-h-48 w-14 overflow-y-auto bg-surface/60 py-1">
         {options.map((option) => (
           <li key={option}>
             <button
