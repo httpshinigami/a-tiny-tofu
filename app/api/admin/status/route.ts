@@ -29,6 +29,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // check if valid approve/delete request - type, id, action (not “is the whole event form filled out correctly?”)
   const parsed = schema.safeParse(await request.json());
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
@@ -37,11 +38,13 @@ export async function PATCH(request: Request) {
   const { type, id, action, admin_note } = parsed.data;
 
   if (action === "delete") {
+    // result = did the DB delete succeed? ({ ok: true/false })
     const result =
       type === "event" ? await deleteEvent(id) : await deleteShop(id);
     return NextResponse.json({ ok: result.ok });
   }
 
+  // if type is shop, check if it has at least one tag before approving
   if (type === "shop") {
     const shop = await getShopById(id);
     if (!shop) {

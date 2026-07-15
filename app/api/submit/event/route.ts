@@ -2,7 +2,9 @@ import { fallbackCoords, geocodeAddress } from "@/lib/geocode";
 import { insertEvent } from "@/lib/queries";
 import { eventSubmitSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
+// convert datetime-local string to ISO string
 function toIso(datetimeLocal: string): string {
   if (!datetimeLocal) return "";
   const d = new Date(datetimeLocal);
@@ -10,16 +12,18 @@ function toIso(datetimeLocal: string): string {
 }
 
 export async function POST(request: Request) {
+  // validate the request body against the eventSubmitSchema
   const json = await request.json();
   const parsed = eventSubmitSchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: parsed.error.flatten().fieldErrors },
+      { error: z.flattenError(parsed.error).fieldErrors },
       { status: 400 }
     );
   }
 
   const data = parsed.data;
+  // check if the honeypot field is filled out - if so, return ok so the bot thinks it succeeded but no events are submitted
   if (data.honeypot) {
     return NextResponse.json({ ok: true });
   }
