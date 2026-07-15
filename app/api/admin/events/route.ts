@@ -5,6 +5,7 @@ import { isAdminEmail } from "@/lib/utils";
 import { adminEventSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
 
+// create a new event
 export async function POST(request: Request) {
   const supabase = await createClient();
   const {

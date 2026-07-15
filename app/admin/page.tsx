@@ -38,7 +38,9 @@ export default async function AdminPage() {
       <h1 className="font-display text-3xl font-bold text-cocoa">Dashboard</h1>
       <p className="mt-1 text-sm text-ink-muted">
         {isSupabaseConfigured()
+        // show "unknown" only if user.email is missing — successful login should always show the real email
           ? `Signed in as ${userEmail ?? "unknown"}`
+          // If Supabase isn’t set up → show the demo-mode message
           : "Demo mode — configure Supabase for auth and submissions"}
       </p>
       <div className="mt-8">
@@ -47,6 +49,7 @@ export default async function AdminPage() {
           pendingShops={pendingShops}
           allEvents={allEvents}
           allShops={allShops}
+          // in demo mode → everyone is admin; otherwise only allowlisted emails in Supabase
           isAdmin={!isSupabaseConfigured() || isAdminEmail(userEmail)}
         />
       </div>

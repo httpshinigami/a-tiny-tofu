@@ -7,12 +7,15 @@ import {
 } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/lib/utils";
+// the page asks the server to do something - NextResponse is what the server uses to reply, “Yep, that worked”, “Nope, you’re not allowed”, “Nope, the data was wrong”
 import { NextResponse } from "next/server";
+// Zod checks incoming JSON so bad form/API input doesn’t get saved to the database
 import { z } from "zod";
 
 const schema = z.object({
   type: z.enum(["event", "shop"]),
-  id: z.string().uuid().or(z.string().min(1)),
+  // id must be a UUID, or a non-empty string
+  id: z.uuid().or(z.string().min(1)),
   action: z.enum(["approve", "reject", "delete"]),
   admin_note: z.string().optional(),
 });
