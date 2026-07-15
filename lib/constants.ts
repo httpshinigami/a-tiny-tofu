@@ -137,7 +137,7 @@ export const TAG_COLORS: Record<ShopTag, string> = {
 
 export const MELBOURNE_CENTER = { lat: -37.8136, lng: 144.9631 } as const;
 
-export const STATUS = ["pending", "approved", "rejected"] as const;
+export const STATUS = ["pending", "approved"] as const;
 export type Status = (typeof STATUS)[number];
 
 export const MONTH_NAMES = [

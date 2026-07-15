@@ -16,7 +16,7 @@ const schema = z.object({
   type: z.enum(["event", "shop"]),
   // id must be a UUID, or a non-empty string
   id: z.uuid().or(z.string().min(1)),
-  action: z.enum(["approve", "reject", "delete"]),
+  action: z.enum(["approve", "delete"]),
   admin_note: z.string().optional(),
 });
 
@@ -42,7 +42,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ ok: result.ok });
   }
 
-  if (type === "shop" && action === "approve") {
+  if (type === "shop") {
     const shop = await getShopById(id);
     if (!shop) {
       return NextResponse.json({ error: "Shop not found" }, { status: 404 });
@@ -55,11 +55,10 @@ export async function PATCH(request: Request) {
     }
   }
 
-  const status = action === "approve" ? "approved" : "rejected";
   const result =
     type === "event"
-      ? await updateEventStatus(id, status, admin_note)
-      : await updateShopStatus(id, status, admin_note);
+      ? await updateEventStatus(id, "approved", admin_note)
+      : await updateShopStatus(id, "approved", admin_note);
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });

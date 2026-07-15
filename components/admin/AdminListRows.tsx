@@ -11,7 +11,6 @@ function StatusBadge({ status }: { status: Status }) {
   const styles: Record<Status, string> = {
     pending: "bg-butter/60 text-ink",
     approved: "bg-sage/20 text-sage-dark",
-    rejected: "bg-red-100 text-red-700",
   };
   return (
     <span

@@ -1,6 +1,6 @@
 -- a tiny tofu schema
 
-create type public.content_status as enum ('pending', 'approved', 'rejected');
+create type public.content_status as enum ('pending', 'approved');
 
 create type public.shop_tag as enum (
   'brunch',

@@ -29,13 +29,13 @@ export const shopSubmitSchema = z.object({
 });
 
 export const adminEventSchema = eventSubmitSchema.extend({
-  status: z.enum(["pending", "approved", "rejected"]),
+  status: z.enum(["pending", "approved"]),
   admin_note: z.string().max(500).optional().or(z.literal("")),
   map_location: mapLocationField,
 });
 
 export const adminShopSchema = shopSubmitSchema.extend({
-  status: z.enum(["pending", "approved", "rejected"]),
+  status: z.enum(["pending", "approved"]),
   admin_note: z.string().max(500).optional().or(z.literal("")),
   map_location: mapLocationField,
 });

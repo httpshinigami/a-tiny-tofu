@@ -18,7 +18,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "food", label: "All food & drink" },
 ];
 
-const STATUS_RANK = { pending: 0, rejected: 1, approved: 2 } as const;
+const STATUS_RANK = { pending: 0, approved: 1 } as const;
 
 function sortShopsForAllView(shops: Shop[]): Shop[] {
   return [...shops].sort((a, b) => {
