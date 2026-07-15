@@ -10,7 +10,7 @@ import {
   type MonthGroup,
 } from "@/lib/group-by-month";
 import type { Event } from "@/lib/types";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 function formatListDate(start: string): string {
   return new Date(start).toLocaleString("en-AU", {
@@ -135,7 +135,13 @@ function filterEventsBySearch(events: Event[], query: string): Event[] {
   );
 }
 
-export function EventsExplorer({ events }: { events: Event[] }) {
+export function EventsExplorer({
+  events,
+  initialFocusId = null,
+}: {
+  events: Event[];
+  initialFocusId?: string | null;
+}) {
   const year = getCurrentYear();
   const currentMonth = new Date().getMonth();
   const [search, setSearch] = useState("");
@@ -143,7 +149,10 @@ export function EventsExplorer({ events }: { events: Event[] }) {
   const [expandedMonths, setExpandedMonths] = useState<Set<number> | null>(
     null
   );
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(() => {
+    if (!initialFocusId) return null;
+    return events.some((e) => e.id === initialFocusId) ? initialFocusId : null;
+  });
 
   const filteredEvents = useMemo(
     () => filterEventsBySearch(events, search),
@@ -161,6 +170,21 @@ export function EventsExplorer({ events }: { events: Event[] }) {
     () => new Set(months.map((m) => m.month)),
     [months]
   );
+
+  useEffect(() => {
+    if (!initialFocusId) return;
+    if (!events.some((e) => e.id === initialFocusId)) return;
+    setSelectedId(initialFocusId);
+    setYearOpen(true);
+    const focused = events.find((e) => e.id === initialFocusId);
+    if (!focused) return;
+    const month = new Date(focused.start_at).getMonth();
+    setExpandedMonths((prev) => {
+      const next = new Set(prev ?? defaultOpen);
+      next.add(month);
+      return next;
+    });
+  }, [initialFocusId, events, defaultOpen]);
 
   const visibleExpandedMonths = useMemo(() => {
     if (search.trim()) {

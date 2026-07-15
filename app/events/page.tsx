@@ -6,12 +6,17 @@ export const metadata = {
   title: "Events",
 };
 
-export default async function EventsPage() {
+export default async function EventsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ focus?: string }>;
+}) {
+  const { focus } = await searchParams;
   const year = getCurrentYear();
   const allEvents = await getApprovedEvents();
   const events = allEvents.filter(
     (e) => new Date(e.start_at).getFullYear() === year
   );
 
-  return <EventsExplorer events={events} />;
+  return <EventsExplorer events={events} initialFocusId={focus ?? null} />;
 }

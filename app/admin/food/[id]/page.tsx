@@ -14,6 +14,7 @@ export default async function AdminEditFoodPage({
 }) {
   const { id } = await params;
   const shop = await getShopById(id);
+  // If shop not found, show 404 page
   if (!shop) notFound();
 
   return (

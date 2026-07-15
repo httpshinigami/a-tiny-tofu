@@ -18,53 +18,70 @@ function formatCardDate(start: string, end: string | null): string {
   return `${startStr} – ${endDate.toLocaleDateString("en-AU", opts)}`;
 }
 
+const DRAG_THRESHOLD = 8;
+
 export function HomeUpcomingEvents({ events }: { events: Event[] }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const drag = useRef({
     active: false,
+    dragging: false,
+    pointerId: -1,
     startX: 0,
     scrollLeft: 0,
-    moved: false,
   });
 
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
-    if (!el) return;
+    if (!el || e.button !== 0) return;
     drag.current = {
       active: true,
+      dragging: false,
+      pointerId: e.pointerId,
       startX: e.clientX,
       scrollLeft: el.scrollLeft,
-      moved: false,
     };
-    el.setPointerCapture(e.pointerId);
-    el.style.cursor = "grabbing";
   }, []);
 
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
-    if (!el || !drag.current.active) return;
-    const dx = e.clientX - drag.current.startX;
-    if (Math.abs(dx) > 4) drag.current.moved = true;
-    el.scrollLeft = drag.current.scrollLeft - dx;
+    const state = drag.current;
+    if (!el || !state.active || e.pointerId !== state.pointerId) return;
+
+    const dx = e.clientX - state.startX;
+    if (!state.dragging) {
+      if (Math.abs(dx) < DRAG_THRESHOLD) return;
+      state.dragging = true;
+      el.setPointerCapture(e.pointerId);
+      el.style.cursor = "grabbing";
+    }
+
+    el.scrollLeft = state.scrollLeft - dx;
   }, []);
 
   const endDrag = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
-    if (!el) return;
-    drag.current.active = false;
-    el.style.cursor = "grab";
-    try {
-      el.releasePointerCapture(e.pointerId);
-    } catch {
-      /* already released */
+    const state = drag.current;
+    if (!el || e.pointerId !== state.pointerId) return;
+
+    if (state.dragging) {
+      try {
+        el.releasePointerCapture(e.pointerId);
+      } catch {
+        /* already released */
+      }
     }
+
+    state.active = false;
+    state.pointerId = -1;
+    el.style.cursor = "grab";
+    // Keep dragging=true until clickCapture can suppress the post-drag click
   }, []);
 
   const onClickCapture = useCallback((e: React.MouseEvent) => {
-    if (drag.current.moved) {
+    if (drag.current.dragging) {
       e.preventDefault();
       e.stopPropagation();
-      drag.current.moved = false;
+      drag.current.dragging = false;
     }
   }, []);
 
@@ -99,7 +116,7 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
                 className="w-[min(78vw,22rem)] shrink-0 snap-start md:w-[min(42vw,24rem)]"
               >
                 <Link
-                  href="/events"
+                  href={`/events?focus=${encodeURIComponent(event.id)}`}
                   draggable={false}
                   className={`biscuit-tile flex h-full min-h-[14rem] select-none flex-col px-8 py-6 md:min-h-[16rem] md:px-9 md:py-7 ${
                     isChoc ? "biscuit-tile--choc" : "biscuit-tile--dough"
