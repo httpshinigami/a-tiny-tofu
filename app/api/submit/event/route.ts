@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
   const result = await insertEvent({
     title: data.title,
-    description: data.description,
+    description: data.description ?? "",
     start_at: toIso(data.start_at),
     end_at: data.end_at ? toIso(data.end_at) : null,
     venue_name: data.venue_name,

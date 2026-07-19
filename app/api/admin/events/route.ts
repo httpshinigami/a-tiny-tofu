@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   const coords = await resolveCoords(d.address, d.map_location);
   const result = await insertEvent({
     title: d.title,
-    description: d.description,
+    description: d.description ?? "",
     start_at: d.start_at,
     end_at: d.end_at || null,
     venue_name: d.venue_name,

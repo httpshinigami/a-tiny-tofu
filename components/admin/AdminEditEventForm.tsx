@@ -92,13 +92,12 @@ export function AdminEditEventForm({ event }: { event: Event }) {
       </div>
       <div>
         <label className="kawaii-label" htmlFor="description">
-          Description
-          <RequiredMark />
+          Description{" "}
+          <span className="font-normal text-ink-muted">(optional)</span>
         </label>
         <textarea
           id="description"
           name="description"
-          required
           rows={4}
           defaultValue={event.description}
           className="kawaii-input"

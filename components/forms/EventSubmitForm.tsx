@@ -3,6 +3,7 @@
 import { AddressInput } from "@/components/forms/AddressInput";
 import { DateTimePicker } from "@/components/forms/DateTimePicker";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
+import { RequiredMark } from "@/components/ui/RequiredMark";
 import { useState } from "react";
 
 export function EventSubmitForm() {
@@ -27,7 +28,11 @@ export function EventSubmitForm() {
     const data = await res.json();
     if (!res.ok) {
       setStatus("error");
-      setError(data.error ?? "Something went wrong");
+      setError(
+        typeof data.error === "string"
+          ? data.error
+          : "Something went wrong"
+      );
       return;
     }
     setStatus("success");
@@ -62,17 +67,18 @@ export function EventSubmitForm() {
       <div>
         <label className="kawaii-label" htmlFor="title">
           Event title
+          <RequiredMark />
         </label>
         <input id="title" name="title" required className="kawaii-input" />
       </div>
       <div>
         <label className="kawaii-label" htmlFor="description">
-          Description
+          Description{" "}
+          <span className="font-normal text-ink-muted">(optional)</span>
         </label>
         <textarea
           id="description"
           name="description"
-          required
           rows={4}
           className="kawaii-input"
         />
@@ -94,12 +100,19 @@ export function EventSubmitForm() {
       <div>
         <label className="kawaii-label" htmlFor="venue_name">
           Venue name
+          <RequiredMark />
         </label>
-        <input id="venue_name" name="venue_name" required className="kawaii-input" />
+        <input
+          id="venue_name"
+          name="venue_name"
+          required
+          className="kawaii-input"
+        />
       </div>
       <div>
         <label className="kawaii-label" htmlFor="address">
           Address
+          <RequiredMark />
         </label>
         <AddressInput
           id="address"
@@ -112,13 +125,23 @@ export function EventSubmitForm() {
         <label className="kawaii-label" htmlFor="external_url">
           Ticket / info URL (optional)
         </label>
-        <input id="external_url" name="external_url" type="url" className="kawaii-input" />
+        <input
+          id="external_url"
+          name="external_url"
+          type="url"
+          className="kawaii-input"
+        />
       </div>
       <div>
         <label className="kawaii-label" htmlFor="image_url">
           Image URL (optional)
         </label>
-        <input id="image_url" name="image_url" type="url" className="kawaii-input" />
+        <input
+          id="image_url"
+          name="image_url"
+          type="url"
+          className="kawaii-input"
+        />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <KawaiiButton type="submit" disabled={status === "loading"}>

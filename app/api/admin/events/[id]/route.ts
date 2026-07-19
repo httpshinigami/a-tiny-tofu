@@ -33,7 +33,7 @@ export async function PATCH(request: Request, { params }: Params) {
   // || null fields become null in the DB
   const result = await updateEvent(id, {
     title: d.title,
-    description: d.description,
+    description: d.description ?? "",
     start_at: d.start_at,
     end_at: d.end_at || null,
     venue_name: d.venue_name,

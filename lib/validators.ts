@@ -5,12 +5,12 @@ const mapLocationField = z.string().max(100).optional().or(z.literal(""));
 const optionalUrl = z.url().or(z.literal("")).optional();
 
 export const eventSubmitSchema = z.object({
-  title: z.string().min(3).max(200),
-  description: z.string().min(10).max(5000),
+  title: z.string().min(1).max(200),
+  description: z.string().max(5000).optional().or(z.literal("")),
   start_at: z.string().min(1),
   end_at: z.string().optional().or(z.literal("")),
-  venue_name: z.string().min(2).max(200),
-  address: z.string().min(5).max(500),
+  venue_name: z.string().min(1).max(200),
+  address: z.string().min(1).max(500),
   image_url: optionalUrl,
   external_url: optionalUrl,
   website: z.string().optional(),
