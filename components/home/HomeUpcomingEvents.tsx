@@ -118,7 +118,7 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
                 <Link
                   href={`/events?focus=${encodeURIComponent(event.id)}`}
                   draggable={false}
-                  className={`biscuit-tile flex h-full min-h-[14rem] select-none flex-col px-8 py-6 md:min-h-[16rem] md:px-9 md:py-7 ${
+                  className={`biscuit-tile flex h-[14rem] select-none flex-col px-8 py-6 md:h-[16rem] md:px-9 md:py-7 ${
                     isChoc ? "biscuit-tile--choc" : "biscuit-tile--dough"
                   }`}
                 >
@@ -140,13 +140,23 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
                   >
                     {event.venue_name}
                   </p>
-                  <p
-                    className={`mt-auto line-clamp-2 pt-4 text-sm ${
-                      isChoc ? "text-[#f4d2a9]/70" : "text-[#54413e]/65"
-                    }`}
-                  >
-                    {event.description}
-                  </p>
+                  <div className="relative mt-3 flex-1 overflow-hidden">
+                    <p
+                      className={`text-sm ${
+                        isChoc ? "text-[#f4d2a9]/70" : "text-[#54413e]/65"
+                      }`}
+                    >
+                      {event.description}
+                    </p>
+                    <span
+                      aria-hidden
+                      className={`pointer-events-none absolute inset-x-0 bottom-0 h-12 ${
+                        isChoc
+                          ? "bg-gradient-to-b from-transparent to-[#54413e]"
+                          : "bg-gradient-to-b from-transparent to-[#f4d2a9]"
+                      }`}
+                    />
+                  </div>
                 </Link>
               </li>
             );
