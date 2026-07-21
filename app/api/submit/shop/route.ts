@@ -1,7 +1,12 @@
+import {
+  CONTENT_REJECT_MESSAGE,
+  rejectShopSubmissionContent,
+} from "@/lib/content-moderation";
 import { fallbackCoords, geocodeAddress } from "@/lib/geocode";
 import { insertShop } from "@/lib/queries";
 import {
   consumeSubmissionRateLimit,
+  isSubmissionBypassed,
   submissionRateLimitResponse,
 } from "@/lib/submit-rate-limit";
 import { shopSubmitSchema } from "@/lib/validators";
@@ -20,6 +25,18 @@ export async function POST(request: Request) {
   const data = parsed.data;
   if (data.honeypot) {
     return NextResponse.json({ ok: true });
+  }
+
+  if (
+    !isSubmissionBypassed(request) &&
+    rejectShopSubmissionContent({
+      name: data.name,
+      description: data.description,
+      address: data.address,
+      hours: data.hours,
+    })
+  ) {
+    return NextResponse.json({ error: CONTENT_REJECT_MESSAGE }, { status: 400 });
   }
 
   const rateLimit = await consumeSubmissionRateLimit(request);

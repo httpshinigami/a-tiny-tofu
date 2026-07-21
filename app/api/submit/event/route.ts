@@ -1,7 +1,12 @@
+import {
+  CONTENT_REJECT_MESSAGE,
+  rejectEventSubmissionContent,
+} from "@/lib/content-moderation";
 import { resolveEventSchedule } from "@/lib/event-datetime";
 import { insertEvent } from "@/lib/queries";
 import {
   consumeSubmissionRateLimit,
+  isSubmissionBypassed,
   submissionRateLimitResponse,
 } from "@/lib/submit-rate-limit";
 import { eventSubmitSchema } from "@/lib/validators";
@@ -21,6 +26,18 @@ export async function POST(request: Request) {
   const data = parsed.data;
   if (data.honeypot) {
     return NextResponse.json({ ok: true });
+  }
+
+  if (
+    !isSubmissionBypassed(request) &&
+    rejectEventSubmissionContent({
+      title: data.title,
+      venue_name: data.venue_name,
+      description: data.description,
+      address: data.address,
+    })
+  ) {
+    return NextResponse.json({ error: CONTENT_REJECT_MESSAGE }, { status: 400 });
   }
 
   const rateLimit = await consumeSubmissionRateLimit(request);

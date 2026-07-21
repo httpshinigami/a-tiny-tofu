@@ -11,7 +11,8 @@ export function getClientIp(request: Request): string {
   return request.headers.get("x-real-ip") ?? "unknown";
 }
 
-export function isSubmissionRateLimitBypassed(request: Request): boolean {
+/** Dev mode and RATE_LIMIT_BYPASS_IPS skip rate limits and content moderation. */
+export function isSubmissionBypassed(request: Request): boolean {
   if (process.env.NODE_ENV === "development") {
     return true;
   }
@@ -23,6 +24,10 @@ export function isSubmissionRateLimitBypassed(request: Request): boolean {
     .filter(Boolean);
 
   return allowlist.includes(ip);
+}
+
+export function isSubmissionRateLimitBypassed(request: Request): boolean {
+  return isSubmissionBypassed(request);
 }
 
 function utcDay(): string {
