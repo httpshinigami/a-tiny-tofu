@@ -103,7 +103,7 @@ export function AdminEventRow({
       </div>
       <p className="mt-2 text-sm font-medium text-ink-muted">{event.venue_name}</p>
       <p className="mt-1 text-xs text-ink-muted">
-        {formatEventDate(event.start_at, event.end_at)}
+        {formatEventDate(event.start_at, event.end_at, event.timezone)}
       </p>
       <p className="mt-2 line-clamp-2 text-xs text-ink-muted">{event.address}</p>
       {event.description && (

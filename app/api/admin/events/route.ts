@@ -1,11 +1,10 @@
-import { resolveCoords } from "@/lib/geocode";
+import { resolveEventSchedule } from "@/lib/event-datetime";
 import { insertEvent } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/lib/utils";
 import { adminEventSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
 
-// create a new event
 export async function POST(request: Request) {
   const supabase = await createClient();
   const {
@@ -22,16 +21,28 @@ export async function POST(request: Request) {
   }
 
   const d = parsed.data;
-  const coords = await resolveCoords(d.address, d.map_location);
+  let schedule;
+  try {
+    schedule = await resolveEventSchedule({
+      address: d.address,
+      mapLocation: d.map_location,
+      startAt: d.start_at,
+      endAt: d.end_at || null,
+    });
+  } catch {
+    return NextResponse.json({ error: "Invalid date or time" }, { status: 400 });
+  }
+
   const result = await insertEvent({
     title: d.title,
     description: d.description ?? "",
-    start_at: d.start_at,
-    end_at: d.end_at || null,
+    start_at: schedule.start_at,
+    end_at: schedule.end_at,
     venue_name: d.venue_name,
     address: d.address,
-    lat: coords.lat,
-    lng: coords.lng,
+    lat: schedule.lat,
+    lng: schedule.lng,
+    timezone: schedule.timezone,
     image_url: d.image_url || null,
     external_url: d.external_url || null,
     status: d.status,

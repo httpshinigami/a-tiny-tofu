@@ -9,7 +9,7 @@ export function EventCard({ event }: { event: Event }) {
         dateTime={event.start_at}
         className="text-sm font-semibold text-coral"
       >
-        {formatEventDate(event.start_at, event.end_at)}
+        {formatEventDate(event.start_at, event.end_at, event.timezone)}
       </time>
       <h2 className="mt-1 font-display text-xl font-bold text-ink md:text-2xl">
         {event.title}

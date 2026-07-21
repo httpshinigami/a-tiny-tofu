@@ -2,80 +2,116 @@ import { formatDisplayAddress } from "@/lib/format-address";
 import type { Event } from "@/lib/types";
 import type { ReactNode } from "react";
 
-const TIME_OPTS: Intl.DateTimeFormatOptions = {
-  hour: "numeric",
-  minute: "2-digit",
-};
-
-function formatTime(d: Date): string {
-  return d.toLocaleTimeString("en-AU", TIME_OPTS);
+function tzOpts(timeZone?: string | null): Intl.DateTimeFormatOptions {
+  return timeZone ? { timeZone } : {};
 }
 
-function formatSingleDate(d: Date): string {
-  return d.toLocaleDateString("en-AU", {
+function formatTime(iso: string, timeZone?: string | null): string {
+  return new Date(iso).toLocaleTimeString("en-AU", {
+    hour: "numeric",
+    minute: "2-digit",
+    ...tzOpts(timeZone),
+  });
+}
+
+function formatSingleDate(iso: string, timeZone?: string | null): string {
+  return new Date(iso).toLocaleDateString("en-AU", {
     weekday: "short",
     day: "numeric",
     month: "short",
     year: "numeric",
+    ...tzOpts(timeZone),
   });
 }
 
-/** Compact range for multi-day events, e.g. "14–15 Jun 2026" or "28 Jun – 2 Jul 2026". */
-function formatDateRange(start: Date, end: Date): string {
-  const sameYear = start.getFullYear() === end.getFullYear();
-  const sameMonth = sameYear && start.getMonth() === end.getMonth();
+function sameCalendarDay(
+  a: string,
+  b: string,
+  timeZone?: string | null
+): boolean {
+  const opts: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    ...tzOpts(timeZone),
+  };
+  const start = new Date(a).toLocaleDateString("en-AU", opts);
+  const end = new Date(b).toLocaleDateString("en-AU", opts);
+  return start === end;
+}
 
-  if (sameMonth) {
-    return `${start.getDate()}–${end.getDate()} ${start.toLocaleDateString("en-AU", {
+/** Compact range for multi-day events, e.g. "14–15 Jun 2026" or "28 Jun – 2 Jul 2026". */
+function formatDateRange(
+  startIso: string,
+  endIso: string,
+  timeZone?: string | null
+): string {
+  const start = new Date(startIso);
+  const end = new Date(endIso);
+  const opts = tzOpts(timeZone);
+
+  const startYear = start.toLocaleDateString("en-AU", { year: "numeric", ...opts });
+  const endYear = end.toLocaleDateString("en-AU", { year: "numeric", ...opts });
+  const startMonth = start.toLocaleDateString("en-AU", { month: "numeric", ...opts });
+  const endMonth = end.toLocaleDateString("en-AU", { month: "numeric", ...opts });
+
+  if (startYear === endYear && startMonth === endMonth) {
+    const startDay = start.toLocaleDateString("en-AU", { day: "numeric", ...opts });
+    const endDay = end.toLocaleDateString("en-AU", { day: "numeric", ...opts });
+    const monthYear = start.toLocaleDateString("en-AU", {
       month: "short",
       year: "numeric",
-    })}`;
+      ...opts,
+    });
+    return `${startDay}–${endDay} ${monthYear}`;
   }
 
-  if (sameYear) {
+  if (startYear === endYear) {
     const startPart = start.toLocaleDateString("en-AU", {
       day: "numeric",
       month: "short",
+      ...opts,
     });
     const endPart = end.toLocaleDateString("en-AU", {
       day: "numeric",
       month: "short",
       year: "numeric",
+      ...opts,
     });
     return `${startPart} – ${endPart}`;
   }
 
-  const opts: Intl.DateTimeFormatOptions = {
+  const fullOpts: Intl.DateTimeFormatOptions = {
     day: "numeric",
     month: "short",
     year: "numeric",
+    ...opts,
   };
-  return `${start.toLocaleDateString("en-AU", opts)} – ${end.toLocaleDateString("en-AU", opts)}`;
+  return `${start.toLocaleDateString("en-AU", fullOpts)} – ${end.toLocaleDateString("en-AU", fullOpts)}`;
 }
 
 function getScheduleLines(
   start: string,
-  end: string | null
+  end: string | null,
+  timeZone?: string | null
 ): { date: string; time: string | null } {
-  const startDate = new Date(start);
-
   if (!end) {
-    return { date: formatSingleDate(startDate), time: formatTime(startDate) };
+    return {
+      date: formatSingleDate(start, timeZone),
+      time: formatTime(start, timeZone),
+    };
   }
 
-  const endDate = new Date(end);
-  const sameDay = startDate.toDateString() === endDate.toDateString();
-
-  if (sameDay) {
+  if (sameCalendarDay(start, end, timeZone)) {
     return {
-      date: formatSingleDate(startDate),
-      time: `${formatTime(startDate)} – ${formatTime(endDate)}`,
+      date: formatSingleDate(start, timeZone),
+      time: `${formatTime(start, timeZone)} – ${formatTime(end, timeZone)}`,
     };
   }
 
   return {
-    date: formatDateRange(startDate, endDate),
-    time: `${formatTime(startDate)} – ${formatTime(endDate)}`,
+    date: formatDateRange(start, end, timeZone),
+    time: `${formatTime(start, timeZone)} – ${formatTime(end, timeZone)}`,
   };
 }
 
@@ -105,7 +141,11 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
     );
   }
 
-  const { date, time } = getScheduleLines(event.start_at, event.end_at);
+  const { date, time } = getScheduleLines(
+    event.start_at,
+    event.end_at,
+    event.timezone
+  );
 
   return (
     <div className="space-y-5">

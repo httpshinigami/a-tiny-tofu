@@ -117,7 +117,7 @@ function PendingCard({ tile }: { tile: PendingTile }) {
         </h3>
         <p className="mt-1 text-sm text-ink-muted">{event.venue_name}</p>
         <p className="mt-2 text-xs text-ink-muted">
-          {formatEventDate(event.start_at, event.end_at)}
+          {formatEventDate(event.start_at, event.end_at, event.timezone)}
         </p>
       </article>
     );

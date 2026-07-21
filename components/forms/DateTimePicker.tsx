@@ -2,6 +2,7 @@
 
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import { format, isValid } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { useEffect, useId, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
@@ -14,6 +15,8 @@ interface Props {
   optional?: boolean;
   /** ISO string or datetime-local value */
   defaultValue?: string;
+  /** IANA timezone for interpreting stored UTC values (e.g. Australia/Melbourne) */
+  timeZone?: string;
 }
 
 const HOURS_12 = Array.from({ length: 12 }, (_, i) => String(i + 1));
@@ -43,10 +46,14 @@ function buildTime(hour12: number, minute: number, period: Period): string {
   return `${pad(to24Hour(hour12, period))}:${pad(minute)}`;
 }
 
-function splitValue(value?: string): { date?: Date; time: string } {
+function splitValue(
+  value?: string,
+  timeZone?: string
+): { date?: Date; time: string } {
   if (!value) return { time: "" };
-  const d = new Date(value);
-  if (!isValid(d)) return { time: "" };
+  const instant = new Date(value);
+  if (!isValid(instant)) return { time: "" };
+  const d = timeZone ? toZonedTime(instant, timeZone) : instant;
   const snapped = Math.round(d.getMinutes() / 5) * 5;
   const minutes = snapped === 60 ? 0 : snapped;
   const hours = snapped === 60 ? (d.getHours() + 1) % 24 : d.getHours();
@@ -80,11 +87,12 @@ export function DateTimePicker({
   required = false,
   optional = false,
   defaultValue,
+  timeZone,
 }: Props) {
   const reactId = useId();
   const dateId = id ? `${id}-date` : `${reactId}-date`;
   const timeId = id ? `${id}-time` : `${reactId}-time`;
-  const initial = splitValue(defaultValue);
+  const initial = splitValue(defaultValue, timeZone);
   const [dateOpen, setDateOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(initial.date);

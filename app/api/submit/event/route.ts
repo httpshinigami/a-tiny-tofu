@@ -1,18 +1,10 @@
-import { fallbackCoords, geocodeAddress } from "@/lib/geocode";
+import { resolveEventSchedule } from "@/lib/event-datetime";
 import { insertEvent } from "@/lib/queries";
 import { eventSubmitSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-// convert datetime-local string to ISO string
-function toIso(datetimeLocal: string): string {
-  if (!datetimeLocal) return "";
-  const d = new Date(datetimeLocal);
-  return d.toISOString();
-}
-
 export async function POST(request: Request) {
-  // validate the request body against the eventSubmitSchema
   const json = await request.json();
   const parsed = eventSubmitSchema.safeParse(json);
   if (!parsed.success) {
@@ -23,23 +15,31 @@ export async function POST(request: Request) {
   }
 
   const data = parsed.data;
-  // check if the honeypot field is filled out - if so, return ok so the bot thinks it succeeded but no events are submitted
   if (data.honeypot) {
     return NextResponse.json({ ok: true });
   }
 
-  const coords =
-    (await geocodeAddress(data.address)) ?? fallbackCoords();
+  let schedule;
+  try {
+    schedule = await resolveEventSchedule({
+      address: data.address,
+      startAt: data.start_at,
+      endAt: data.end_at || null,
+    });
+  } catch {
+    return NextResponse.json({ error: "Invalid date or time" }, { status: 400 });
+  }
 
   const result = await insertEvent({
     title: data.title,
     description: data.description ?? "",
-    start_at: toIso(data.start_at),
-    end_at: data.end_at ? toIso(data.end_at) : null,
+    start_at: schedule.start_at,
+    end_at: schedule.end_at,
     venue_name: data.venue_name,
     address: data.address,
-    lat: coords.lat,
-    lng: coords.lng,
+    lat: schedule.lat,
+    lng: schedule.lng,
+    timezone: schedule.timezone,
     image_url: data.image_url || null,
     external_url: data.external_url || null,
     status: "pending",

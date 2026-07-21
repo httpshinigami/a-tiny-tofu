@@ -1,5 +1,6 @@
 import { MONTH_NAMES } from "./constants";
 import type { Event } from "./types";
+import { toZonedTime } from "date-fns-tz";
 
 export interface MonthGroup {
   month: number;
@@ -20,7 +21,9 @@ export function groupEventsByMonth(
   for (let m = 0; m < 12; m++) buckets.set(m, []);
 
   for (const event of events) {
-    const d = new Date(event.start_at);
+    const d = event.timezone
+      ? toZonedTime(new Date(event.start_at), event.timezone)
+      : new Date(event.start_at);
     if (d.getFullYear() !== year) continue;
     const list = buckets.get(d.getMonth()) ?? [];
     list.push(event);

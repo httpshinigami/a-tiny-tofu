@@ -12,12 +12,13 @@ import {
 import type { Event } from "@/lib/types";
 import { useEffect, useMemo, useState } from "react";
 
-function formatListDate(start: string): string {
+function formatListDate(start: string, timeZone?: string | null): string {
   return new Date(start).toLocaleString("en-AU", {
     weekday: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    ...(timeZone ? { timeZone } : {}),
   });
 }
 
@@ -86,7 +87,7 @@ function MonthList({
                           {event.title}
                         </span>
                         <span className="mt-0.5 block truncate text-xs text-ink-muted">
-                          {formatListDate(event.start_at)}
+                          {formatListDate(event.start_at, event.timezone)}
                           {event.venue_name ? ` · ${event.venue_name}` : ""}
                         </span>
                       </button>

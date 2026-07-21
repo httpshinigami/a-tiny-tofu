@@ -4,17 +4,30 @@ import type { Event } from "@/lib/types";
 import Link from "next/link";
 import { useCallback, useRef } from "react";
 
-function formatCardDate(start: string, end: string | null): string {
-  const startDate = new Date(start);
+function formatCardDate(
+  start: string,
+  end: string | null,
+  timeZone?: string | null
+): string {
   const opts: Intl.DateTimeFormatOptions = {
     weekday: "short",
     day: "numeric",
     month: "short",
+    ...(timeZone ? { timeZone } : {}),
   };
+  const startDate = new Date(start);
   const startStr = startDate.toLocaleDateString("en-AU", opts);
   if (!end) return startStr;
   const endDate = new Date(end);
-  if (startDate.toDateString() === endDate.toDateString()) return startStr;
+  const sameDayOpts: Intl.DateTimeFormatOptions = {
+    ...(timeZone ? { timeZone } : {}),
+  };
+  if (
+    startDate.toLocaleDateString("en-AU", sameDayOpts) ===
+    endDate.toLocaleDateString("en-AU", sameDayOpts)
+  ) {
+    return startStr;
+  }
   return `${startStr} – ${endDate.toLocaleDateString("en-AU", opts)}`;
 }
 
@@ -128,7 +141,7 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
                       isChoc ? "text-[#f4d2a9]/80" : "text-[#54413e]/75"
                     }`}
                   >
-                    {formatCardDate(event.start_at, event.end_at)}
+                    {formatCardDate(event.start_at, event.end_at, event.timezone)}
                   </time>
                   <h3 className="mt-3 font-display text-xl font-bold leading-snug md:text-2xl">
                     {event.title}

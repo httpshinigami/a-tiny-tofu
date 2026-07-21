@@ -7,7 +7,11 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-export function formatEventDate(start: string, end: string | null): string {
+export function formatEventDate(
+  start: string,
+  end: string | null,
+  timeZone?: string | null
+): string {
   const opts: Intl.DateTimeFormatOptions = {
     weekday: "short",
     day: "numeric",
@@ -15,16 +19,22 @@ export function formatEventDate(start: string, end: string | null): string {
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    ...(timeZone ? { timeZone } : {}),
   };
   const startDate = new Date(start);
   const startStr = startDate.toLocaleString("en-AU", opts);
   if (!end) return startStr;
   const endDate = new Date(end);
-  if (startDate.toDateString() === endDate.toDateString()) {
-    const endTime = endDate.toLocaleString("en-AU", {
-      hour: "numeric",
-      minute: "2-digit",
-    });
+  const endOpts: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "2-digit",
+    ...(timeZone ? { timeZone } : {}),
+  };
+  const sameDayOpts: Intl.DateTimeFormatOptions = {
+    ...(timeZone ? { timeZone } : {}),
+  };
+  if (startDate.toLocaleDateString("en-AU", sameDayOpts) === endDate.toLocaleDateString("en-AU", sameDayOpts)) {
+    const endTime = endDate.toLocaleString("en-AU", endOpts);
     return `${startStr} – ${endTime}`;
   }
   return `${startStr} – ${endDate.toLocaleString("en-AU", opts)}`;

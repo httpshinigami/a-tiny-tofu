@@ -30,10 +30,8 @@ export function AdminCreateEventForm() {
       body: JSON.stringify({
         title: fd.get("title"),
         description: fd.get("description"),
-        start_at: new Date(fd.get("start_at") as string).toISOString(),
-        end_at: fd.get("end_at")
-          ? new Date(fd.get("end_at") as string).toISOString()
-          : "",
+        start_at: fd.get("start_at"),
+        end_at: fd.get("end_at") || "",
         venue_name: fd.get("venue_name"),
         address: fd.get("address"),
         map_location: fd.get("map_location") || "",
