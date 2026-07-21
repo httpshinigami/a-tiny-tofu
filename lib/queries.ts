@@ -2,6 +2,7 @@ import type { ShopTag, Status } from "./constants";
 import { shopHasAllTags } from "./shop-categories";
 import { SEED_EVENTS, SEED_SHOPS } from "./seed-data";
 import { createAdminClient } from "./supabase/admin";
+import { toSafeHttpHref } from "./safe-url";
 import type { Event, Shop } from "./types";
 import { isSupabaseConfigured, slugify } from "./utils";
 
@@ -17,9 +18,9 @@ function mapShopRow(
     address: row.address as string,
     lat: row.lat as number,
     lng: row.lng as number,
-    website: (row.website as string) ?? null,
+    website: toSafeHttpHref(row.website as string | null | undefined),
     hours: (row.hours as string) ?? null,
-    image_url: (row.image_url as string) ?? null,
+    image_url: toSafeHttpHref(row.image_url as string | null | undefined),
     status: row.status as Status,
     admin_note: (row.admin_note as string) ?? null,
     created_at: row.created_at as string,
@@ -40,8 +41,8 @@ function mapEventRow(row: Record<string, unknown>): Event {
     lat: row.lat as number,
     lng: row.lng as number,
     timezone: (row.timezone as string) ?? null,
-    image_url: (row.image_url as string) ?? null,
-    external_url: (row.external_url as string) ?? null,
+    image_url: toSafeHttpHref(row.image_url as string | null | undefined),
+    external_url: toSafeHttpHref(row.external_url as string | null | undefined),
     status: row.status as Status,
     admin_note: (row.admin_note as string) ?? null,
     created_at: row.created_at as string,

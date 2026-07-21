@@ -1,5 +1,7 @@
 import { TagChip } from "@/components/shops/TagChip";
+import { SafeExternalLink } from "@/components/ui/SafeExternalLink";
 import { formatDisplayAddress } from "@/lib/format-address";
+import { toSafeHttpHref } from "@/lib/safe-url";
 import type { Shop } from "@/lib/types";
 
 export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
@@ -10,6 +12,8 @@ export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
       </p>
     );
   }
+
+  const website = toSafeHttpHref(shop.website);
 
   return (
     <div>
@@ -29,18 +33,16 @@ export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
           Hours: {shop.hours}
         </p>
       )}
-      {shop.website && (
+      {website && (
         <div className="mt-2 text-sm text-ink-muted">
           <span>Website:</span>
           <p className="mt-0.5">
-            <a
-              href={shop.website}
-              target="_blank"
-              rel="noopener noreferrer"
+            <SafeExternalLink
+              href={website}
               className="break-all text-sage-dark underline hover:text-sage"
             >
-              {shop.website}
-            </a>
+              {website}
+            </SafeExternalLink>
           </p>
         </div>
       )}

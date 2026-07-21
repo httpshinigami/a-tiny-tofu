@@ -1,4 +1,5 @@
 import { formatDisplayAddress } from "@/lib/format-address";
+import { SafeExternalLink } from "@/components/ui/SafeExternalLink";
 import type { Event } from "@/lib/types";
 import type { ReactNode } from "react";
 
@@ -172,14 +173,12 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
         </MetaBlock>
         {event.external_url && (
           <MetaBlock label="Website">
-            <a
+            <SafeExternalLink
               href={event.external_url}
-              target="_blank"
-              rel="noopener noreferrer"
               className="font-medium text-sage-dark underline decoration-sage/40 underline-offset-2 hover:text-sage"
             >
               Visit website
-            </a>
+            </SafeExternalLink>
           </MetaBlock>
         )}
       </div>
