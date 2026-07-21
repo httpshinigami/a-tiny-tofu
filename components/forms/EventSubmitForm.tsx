@@ -123,15 +123,19 @@ export function EventSubmitForm() {
       </div>
       <div>
         <label className="kawaii-label" htmlFor="external_url">
-          Ticket / info URL (optional)
+          Ticket / info URL
+          <RequiredMark />
         </label>
         <input
           id="external_url"
           name="external_url"
           type="url"
+          required
           className="kawaii-input"
         />
       </div>
+      {/* Image URL hidden for now — re-enable when image uploads/URLs are supported */}
+      {/*
       <div>
         <label className="kawaii-label" htmlFor="image_url">
           Image URL (optional)
@@ -143,6 +147,7 @@ export function EventSubmitForm() {
           className="kawaii-input"
         />
       </div>
+      */}
       {error && <p className="text-sm text-red-600">{error}</p>}
       <KawaiiButton type="submit" disabled={status === "loading"}>
         {status === "loading" ? "Sending…" : "Submit for review"}

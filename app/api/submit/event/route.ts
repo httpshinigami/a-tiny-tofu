@@ -49,8 +49,8 @@ export async function POST(request: Request) {
     lat: schedule.lat,
     lng: schedule.lng,
     timezone: schedule.timezone,
-    image_url: data.image_url || null,
-    external_url: data.external_url || null,
+    image_url: null,
+    external_url: data.external_url,
     status: "pending",
   });
 

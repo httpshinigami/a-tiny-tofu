@@ -11,8 +11,7 @@ export const eventSubmitSchema = z.object({
   end_at: z.string().optional().or(z.literal("")),
   venue_name: z.string().min(1).max(200),
   address: z.string().min(1).max(500),
-  image_url: optionalUrl,
-  external_url: optionalUrl,
+  external_url: z.url(),
   website: z.string().optional(),
   honeypot: z.string().max(0).optional(),
 });
@@ -32,6 +31,8 @@ export const adminEventSchema = eventSubmitSchema.extend({
   status: z.enum(["pending", "approved"]),
   admin_note: z.string().max(500).optional().or(z.literal("")),
   map_location: mapLocationField,
+  external_url: optionalUrl,
+  image_url: optionalUrl,
 });
 
 export const adminShopSchema = shopSubmitSchema.extend({
