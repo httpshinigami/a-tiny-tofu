@@ -1,5 +1,9 @@
 import { fallbackCoords, geocodeAddress } from "@/lib/geocode";
 import { insertShop } from "@/lib/queries";
+import {
+  consumeSubmissionRateLimit,
+  submissionRateLimitResponse,
+} from "@/lib/submit-rate-limit";
 import { shopSubmitSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
 
@@ -16,6 +20,11 @@ export async function POST(request: Request) {
   const data = parsed.data;
   if (data.honeypot) {
     return NextResponse.json({ ok: true });
+  }
+
+  const rateLimit = await consumeSubmissionRateLimit(request);
+  if (!rateLimit.allowed) {
+    return submissionRateLimitResponse(rateLimit.limit);
   }
 
   const coords =

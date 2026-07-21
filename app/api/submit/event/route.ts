@@ -1,5 +1,9 @@
 import { resolveEventSchedule } from "@/lib/event-datetime";
 import { insertEvent } from "@/lib/queries";
+import {
+  consumeSubmissionRateLimit,
+  submissionRateLimitResponse,
+} from "@/lib/submit-rate-limit";
 import { eventSubmitSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -17,6 +21,11 @@ export async function POST(request: Request) {
   const data = parsed.data;
   if (data.honeypot) {
     return NextResponse.json({ ok: true });
+  }
+
+  const rateLimit = await consumeSubmissionRateLimit(request);
+  if (!rateLimit.allowed) {
+    return submissionRateLimitResponse(rateLimit.limit);
   }
 
   let schedule;
