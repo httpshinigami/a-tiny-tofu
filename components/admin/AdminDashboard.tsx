@@ -2,6 +2,7 @@
 
 import { AdminEventRow, AdminShopRow } from "@/components/admin/AdminListRows";
 import { FOOD_DRINK_TAGS, RETAIL_SHOP_TAGS, SHOP_TAG_LABELS } from "@/lib/constants";
+import { getCurrentYear, groupEventsByYear } from "@/lib/group-by-month";
 import { filterShopsByTags } from "@/lib/shop-categories";
 import type { Event, Shop } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
@@ -28,16 +29,29 @@ function sortShopsForAllView(shops: Shop[]): Shop[] {
   });
 }
 
-function sortEventsForAllView(events: Event[]): Event[] {
-  return [...events].sort((a, b) => {
-    const statusDiff = STATUS_RANK[a.status] - STATUS_RANK[b.status];
-    if (statusDiff !== 0) return statusDiff;
-    return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
-  });
-}
-
 function matchesQuery(haystack: string, query: string): boolean {
   return haystack.toLowerCase().includes(query);
+}
+
+function YearChevron() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      className="shrink-0 text-ink-muted/60 transition group-open:rotate-180"
+      aria-hidden
+    >
+      <path
+        d="M4 6l4 4 4-4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }
 
 function filterEventsBySearch(events: Event[], query: string): Event[] {
@@ -121,9 +135,18 @@ export function AdminDashboard({
       ),
     [allShops, search]
   );
-  const sortedEvents = useMemo(
-    () => filterEventsBySearch(sortEventsForAllView(allEvents), search),
-    [allEvents, search]
+  const eventsByYear = useMemo(() => {
+    const filtered = filterEventsBySearch(allEvents, search);
+    return groupEventsByYear(filtered, (a, b) => {
+      const statusDiff = STATUS_RANK[a.status] - STATUS_RANK[b.status];
+      if (statusDiff !== 0) return statusDiff;
+      return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+    });
+  }, [allEvents, search]);
+
+  const eventCount = useMemo(
+    () => eventsByYear.reduce((sum, group) => sum + group.items.length, 0),
+    [eventsByYear]
   );
 
   async function signOut() {
@@ -174,7 +197,7 @@ export function AdminDashboard({
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="flex flex-wrap gap-2">
           {TABS.map(({ id, label }) => (
             <button
@@ -190,6 +213,19 @@ export function AdminDashboard({
               {id === "queue" ? `${label} (${queueCount})` : label}
             </button>
           ))}
+        </div>
+        <div className="flex min-w-[10rem] flex-1 basis-full justify-center px-2 sm:basis-auto sm:px-4">
+          <label htmlFor="admin-search" className="sr-only">
+            Search listings
+          </label>
+          <input
+            id="admin-search"
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search…"
+            className="kawaii-input w-full max-w-[17rem] py-2 text-sm"
+          />
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
@@ -218,20 +254,6 @@ export function AdminDashboard({
             Sign out
           </button>
         </div>
-      </div>
-
-      <div>
-        <label htmlFor="admin-search" className="sr-only">
-          Search listings
-        </label>
-        <input
-          id="admin-search"
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name, address, tags…"
-          className="kawaii-input max-w-xl"
-        />
       </div>
 
       {tab === "queue" && (
@@ -283,16 +305,35 @@ export function AdminDashboard({
 
       {tab === "events" && (
         <>
-          {sortedEvents.length === 0 ? (
+          {eventCount === 0 ? (
             <p className="text-sm text-ink-muted">
               {search.trim() ? "No matching events" : "No events yet"}
             </p>
           ) : (
-            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {sortedEvents.map((e) => (
-                <AdminEventRow key={e.id} event={e} onDone={refresh} />
+            <div>
+              {eventsByYear.map(({ year, items }) => (
+                <details
+                  key={year}
+                  open={year === getCurrentYear()}
+                  className="group"
+                >
+                  <summary className="cursor-pointer list-none py-2 text-sm font-semibold text-cocoa select-none [&::-webkit-details-marker]:hidden">
+                    <span className="inline-flex items-center gap-2">
+                      <YearChevron />
+                      {year}
+                      <span className="font-normal text-ink-muted">
+                        ({items.length})
+                      </span>
+                    </span>
+                  </summary>
+                  <ul className="mb-6 grid gap-3 pt-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {items.map((e) => (
+                      <AdminEventRow key={e.id} event={e} onDone={refresh} />
+                    ))}
+                  </ul>
+                </details>
               ))}
-            </ul>
+            </div>
           )}
         </>
       )}

@@ -34,7 +34,7 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <PageFrame className="max-w-7xl">
+    <PageFrame className="max-w-[90rem]">
       <h1 className="font-display text-3xl font-bold text-cocoa">Dashboard</h1>
       <p className="mt-1 text-sm text-ink-muted">
         {isSupabaseConfigured()

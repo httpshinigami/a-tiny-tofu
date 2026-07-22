@@ -13,6 +13,39 @@ export function getCurrentYear(): number {
   return new Date().getFullYear();
 }
 
+function getEventYear(event: Event): number {
+  const d = event.timezone
+    ? toZonedTime(new Date(event.start_at), event.timezone)
+    : new Date(event.start_at);
+  return d.getFullYear();
+}
+
+export interface YearGroup {
+  year: number;
+  items: Event[];
+}
+
+export function groupEventsByYear(
+  events: Event[],
+  compare: (a: Event, b: Event) => number
+): YearGroup[] {
+  const buckets = new Map<number, Event[]>();
+
+  for (const event of events) {
+    const year = getEventYear(event);
+    const list = buckets.get(year) ?? [];
+    list.push(event);
+    buckets.set(year, list);
+  }
+
+  return [...buckets.entries()]
+    .sort(([yearA], [yearB]) => yearB - yearA)
+    .map(([year, items]) => ({
+      year,
+      items: [...items].sort(compare),
+    }));
+}
+
 export function groupEventsByMonth(
   events: Event[],
   year: number
