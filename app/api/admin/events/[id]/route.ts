@@ -43,6 +43,8 @@ export async function PATCH(request: Request, { params }: Params) {
     timezone: schedule.timezone,
     image_url: d.image_url || null,
     external_url: d.external_url || null,
+    tickets_url: d.tickets_url || null,
+    instagram_url: d.instagram_url || null,
     status: d.status,
     admin_note: d.admin_note || null,
   });

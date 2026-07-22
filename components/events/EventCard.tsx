@@ -23,6 +23,11 @@ export function EventCard({ event }: { event: Event }) {
         <KawaiiButton href={`/events/map?focus=${event.id}`} variant="secondary">
           View on map
         </KawaiiButton>
+        {event.tickets_url && (
+          <KawaiiButton href={event.tickets_url} variant="primary">
+            Get tickets
+          </KawaiiButton>
+        )}
         {event.external_url && (
           <KawaiiButton href={event.external_url} variant="ghost">
             More info

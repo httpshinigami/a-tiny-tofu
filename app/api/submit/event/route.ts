@@ -67,7 +67,9 @@ export async function POST(request: Request) {
     lng: schedule.lng,
     timezone: schedule.timezone,
     image_url: null,
-    external_url: data.external_url,
+    external_url: data.external_url || null,
+    tickets_url: data.tickets_url || null,
+    instagram_url: null,
     status: "pending",
   });
 

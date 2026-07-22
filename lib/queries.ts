@@ -3,6 +3,7 @@ import { shopHasAllTags } from "./shop-categories";
 import { SEED_EVENTS, SEED_SHOPS } from "./seed-data";
 import { createAdminClient } from "./supabase/admin";
 import { toSafeHttpHref } from "./safe-url";
+import { toSafeInstagramEmbedUrl } from "./instagram-url";
 import type { Event, Shop } from "./types";
 import { isSupabaseConfigured, slugify } from "./utils";
 
@@ -43,6 +44,10 @@ function mapEventRow(row: Record<string, unknown>): Event {
     timezone: (row.timezone as string) ?? null,
     image_url: toSafeHttpHref(row.image_url as string | null | undefined),
     external_url: toSafeHttpHref(row.external_url as string | null | undefined),
+    tickets_url: toSafeHttpHref(row.tickets_url as string | null | undefined),
+    instagram_url: toSafeInstagramEmbedUrl(
+      row.instagram_url as string | null | undefined
+    ),
     status: row.status as Status,
     admin_note: (row.admin_note as string) ?? null,
     created_at: row.created_at as string,
@@ -204,6 +209,8 @@ export async function insertEvent(
     timezone: payload.timezone,
     image_url: payload.image_url,
     external_url: payload.external_url,
+    tickets_url: payload.tickets_url,
+    instagram_url: payload.instagram_url,
     status: payload.status,
   });
   return error ? { ok: false, error: error.message } : { ok: true };
@@ -346,6 +353,8 @@ export async function updateEvent(
       timezone: payload.timezone,
       image_url: payload.image_url,
       external_url: payload.external_url,
+      tickets_url: payload.tickets_url,
+      instagram_url: payload.instagram_url,
       status: payload.status,
       admin_note: payload.admin_note,
     })

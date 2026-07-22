@@ -36,7 +36,9 @@ export function AdminCreateEventForm() {
         address: fd.get("address"),
         map_location: fd.get("map_location") || "",
         external_url: fd.get("external_url") || "",
+        tickets_url: fd.get("tickets_url") || "",
         image_url: fd.get("image_url") || "",
+        instagram_url: fd.get("instagram_url") || "",
         status,
         honeypot: "",
       }),
@@ -113,16 +115,46 @@ export function AdminCreateEventForm() {
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <label className="kawaii-label" htmlFor="external_url">
-            External URL <span className="font-normal text-ink-muted">(optional)</span>
+            Organiser link{" "}
+            <span className="font-normal text-ink-muted">(optional)</span>
           </label>
           <input id="external_url" name="external_url" type="url" className="kawaii-input" />
+          <p className="mt-1 text-xs text-ink-muted">
+            Website, Instagram, or the best link to reach the organiser.
+          </p>
         </div>
         <div>
-          <label className="kawaii-label" htmlFor="image_url">
-            Image URL <span className="font-normal text-ink-muted">(optional)</span>
+          <label className="kawaii-label" htmlFor="tickets_url">
+            Tickets URL{" "}
+            <span className="font-normal text-ink-muted">(optional)</span>
           </label>
-          <input id="image_url" name="image_url" type="url" className="kawaii-input" />
+          <input id="tickets_url" name="tickets_url" type="url" className="kawaii-input" />
+          <p className="mt-1 text-xs text-ink-muted">
+            Link to buy tickets or RSVP, if separate from the organiser link.
+          </p>
         </div>
+      </div>
+      <div>
+        <label className="kawaii-label" htmlFor="instagram_url">
+          Instagram post URL{" "}
+          <span className="font-normal text-ink-muted">(optional)</span>
+        </label>
+        <input
+          id="instagram_url"
+          name="instagram_url"
+          type="url"
+          placeholder="https://www.instagram.com/p/…"
+          className="kawaii-input"
+        />
+        <p className="mt-1 text-xs text-ink-muted">
+          Public post or reel — embeds when the event is selected on Markets &amp; Events.
+        </p>
+      </div>
+      <div>
+        <label className="kawaii-label" htmlFor="image_url">
+          Image URL <span className="font-normal text-ink-muted">(optional)</span>
+        </label>
+        <input id="image_url" name="image_url" type="url" className="kawaii-input" />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex flex-wrap gap-3 border-t border-border pt-4">

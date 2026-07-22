@@ -121,18 +121,31 @@ export function EventSubmitForm() {
           placeholder="Street, suburb, VIC"
         />
       </div>
-      <div>
-        <label className="kawaii-label" htmlFor="external_url">
-          Ticket / info URL
-          <RequiredMark />
-        </label>
-        <input
-          id="external_url"
-          name="external_url"
-          type="url"
-          required
-          className="kawaii-input"
-        />
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <label className="kawaii-label" htmlFor="external_url">
+            Organiser link{" "}
+            <span className="font-normal text-ink-muted">(optional)</span>
+          </label>
+          <input
+            id="external_url"
+            name="external_url"
+            type="url"
+            className="kawaii-input"
+          />
+        </div>
+        <div>
+          <label className="kawaii-label" htmlFor="tickets_url">
+            Tickets URL{" "}
+            <span className="font-normal text-ink-muted">(optional)</span>
+          </label>
+          <input
+            id="tickets_url"
+            name="tickets_url"
+            type="url"
+            className="kawaii-input"
+          />
+        </div>
       </div>
       {/* Image URL hidden for now — re-enable when image uploads/URLs are supported */}
       {/*

@@ -172,12 +172,22 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
           {formatDisplayAddress(event.address)}
         </MetaBlock>
         {event.external_url && (
-          <MetaBlock label="Website">
+          <MetaBlock label="Organiser link">
             <SafeExternalLink
               href={event.external_url}
               className="font-medium text-sage-dark underline decoration-sage/40 underline-offset-2 hover:text-sage"
             >
-              Visit website
+              Open link
+            </SafeExternalLink>
+          </MetaBlock>
+        )}
+        {event.tickets_url && (
+          <MetaBlock label="Tickets">
+            <SafeExternalLink
+              href={event.tickets_url}
+              className="font-medium text-sage-dark underline decoration-sage/40 underline-offset-2 hover:text-sage"
+            >
+              Get tickets
             </SafeExternalLink>
           </MetaBlock>
         )}
