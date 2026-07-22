@@ -136,7 +136,7 @@ export function EventSubmitForm() {
         </div>
         <div>
           <label className="kawaii-label" htmlFor="tickets_url">
-            Tickets URL{" "}
+            Tickets link{" "}
             <span className="font-normal text-ink-muted">(optional)</span>
           </label>
           <input
@@ -147,11 +147,11 @@ export function EventSubmitForm() {
           />
         </div>
       </div>
-      {/* Image URL hidden for now — re-enable when image uploads/URLs are supported */}
+      {/* Image link hidden for now — re-enable when image uploads/links are supported */}
       {/*
       <div>
         <label className="kawaii-label" htmlFor="image_url">
-          Image URL (optional)
+          Image link (optional)
         </label>
         <input
           id="image_url"

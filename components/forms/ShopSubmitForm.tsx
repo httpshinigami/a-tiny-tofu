@@ -125,7 +125,7 @@ export function ShopSubmitForm({
       </div>
       <div>
         <label className="kawaii-label" htmlFor="image_url">
-          Image URL (optional)
+          Image link (optional)
         </label>
         <input id="image_url" name="image_url" type="url" className="kawaii-input" />
       </div>

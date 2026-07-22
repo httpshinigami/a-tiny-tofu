@@ -37,7 +37,7 @@ export function ExplorerLayout({
 
       <div className="relative w-full">
         {(filterToggle || filterPanel || leftPanel) && (
-          <div className="mb-4 flex w-full flex-col gap-3 md:absolute md:inset-y-0 md:right-full md:mb-0 md:mr-4 md:w-80 md:min-w-[320px] lg:w-80">
+          <div className="mb-4 flex w-full flex-col gap-3 md:absolute md:inset-y-0 md:right-full md:mb-0 md:mr-6 md:w-[340px] md:min-w-[340px]">
             {leftPanel}
             {filterToggle}
             {filterPanel}

@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminExtrasSection } from "@/components/admin/AdminExtrasSection";
 import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { patchStatus, SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 import { AddressInput } from "@/components/forms/AddressInput";
@@ -180,29 +181,31 @@ export function AdminEditShopForm({
           />
         </div>
       </div>
-      <div>
-        <label className="kawaii-label" htmlFor="image_url">
-          Image URL
-        </label>
-        <input
-          id="image_url"
-          name="image_url"
-          type="url"
-          defaultValue={shop.image_url ?? ""}
-          className="kawaii-input"
-        />
-      </div>
-      <div>
-        <label className="kawaii-label" htmlFor="admin_note">
-          Admin note
-        </label>
-        <input
-          id="admin_note"
-          name="admin_note"
-          defaultValue={shop.admin_note ?? ""}
-          className="kawaii-input"
-        />
-      </div>
+      <AdminExtrasSection>
+        <div>
+          <label className="kawaii-label" htmlFor="image_url">
+            Image link
+          </label>
+          <input
+            id="image_url"
+            name="image_url"
+            type="url"
+            defaultValue={shop.image_url ?? ""}
+            className="kawaii-input"
+          />
+        </div>
+        <div>
+          <label className="kawaii-label" htmlFor="admin_note">
+            Admin note
+          </label>
+          <input
+            id="admin_note"
+            name="admin_note"
+            defaultValue={shop.admin_note ?? ""}
+            className="kawaii-input"
+          />
+        </div>
+      </AdminExtrasSection>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex flex-wrap gap-3 border-t border-border pt-4">
         <KawaiiButton

@@ -5,7 +5,7 @@ import { isSafeHttpUrl, MAX_URL_LENGTH } from "./safe-url";
 
 const mapLocationField = z.string().max(100).optional().or(z.literal(""));
 
-const safeUrlMessage = "Only http and https URLs are allowed";
+const safeUrlMessage = "Only http and https links are allowed";
 
 const safeHttpUrl = z
   .url()
@@ -14,7 +14,7 @@ const safeHttpUrl = z
 
 const optionalSafeHttpUrl = z.union([z.literal(""), safeHttpUrl]).optional();
 
-const instagramUrlMessage = "Must be an Instagram post or reel URL";
+const instagramUrlMessage = "Must be an Instagram post or reel link";
 
 const optionalInstagramUrl = z
   .union([

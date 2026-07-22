@@ -274,10 +274,7 @@ export function EventsExplorer({
       detail={<EventDetailPanel event={selected} />}
       leftPanel={
         selected?.instagram_url ? (
-          <div className="flex h-full min-h-0 flex-col">
-            <p className="mb-2 shrink-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted/70">
-              Instagram
-            </p>
+          <div className="flex h-full min-h-0 flex-col md:-translate-x-0.2">
             <div className="min-h-[560px] flex-1 overflow-y-auto overscroll-contain">
               <InstagramEmbed url={selected.instagram_url} />
             </div>

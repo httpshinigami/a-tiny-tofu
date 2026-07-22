@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminExtrasSection } from "@/components/admin/AdminExtrasSection";
 import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
@@ -172,7 +173,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
         </div>
         <div>
           <label className="kawaii-label" htmlFor="tickets_url">
-            Tickets URL{" "}
+            Tickets link{" "}
             <span className="font-normal text-ink-muted">(optional)</span>
           </label>
           <input
@@ -189,7 +190,7 @@ export function AdminEditEventForm({ event }: { event: Event }) {
       </div>
       <div>
         <label className="kawaii-label" htmlFor="instagram_url">
-          Instagram post URL{" "}
+          Instagram post link{" "}
           <span className="font-normal text-ink-muted">(optional)</span>
         </label>
         <input
@@ -204,29 +205,31 @@ export function AdminEditEventForm({ event }: { event: Event }) {
           Public post or reel — embeds when the event is selected on Markets &amp; Events.
         </p>
       </div>
-      <div>
-        <label className="kawaii-label" htmlFor="image_url">
-          Image URL <span className="font-normal text-ink-muted">(optional)</span>
-        </label>
-        <input
-          id="image_url"
-          name="image_url"
-          type="url"
-          defaultValue={event.image_url ?? ""}
-          className="kawaii-input"
-        />
-      </div>
-      <div>
-        <label className="kawaii-label" htmlFor="admin_note">
-          Admin note <span className="font-normal text-ink-muted">(optional)</span>
-        </label>
-        <input
-          id="admin_note"
-          name="admin_note"
-          defaultValue={event.admin_note ?? ""}
-          className="kawaii-input"
-        />
-      </div>
+      <AdminExtrasSection>
+        <div>
+          <label className="kawaii-label" htmlFor="image_url">
+            Image link <span className="font-normal text-ink-muted">(optional)</span>
+          </label>
+          <input
+            id="image_url"
+            name="image_url"
+            type="url"
+            defaultValue={event.image_url ?? ""}
+            className="kawaii-input"
+          />
+        </div>
+        <div>
+          <label className="kawaii-label" htmlFor="admin_note">
+            Admin note <span className="font-normal text-ink-muted">(optional)</span>
+          </label>
+          <input
+            id="admin_note"
+            name="admin_note"
+            defaultValue={event.admin_note ?? ""}
+            className="kawaii-input"
+          />
+        </div>
+      </AdminExtrasSection>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex flex-wrap gap-3 border-t border-border pt-4">
         <KawaiiButton

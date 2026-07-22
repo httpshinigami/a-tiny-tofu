@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminExtrasSection } from "@/components/admin/AdminExtrasSection";
 import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { SHOP_TAG_REQUIRED_MESSAGE } from "@/components/admin/admin-actions";
 import { AddressInput } from "@/components/forms/AddressInput";
@@ -122,12 +123,14 @@ export function AdminCreateShopForm({
           <input id="website" name="website" type="url" className="kawaii-input" />
         </div>
       </div>
-      <div>
-        <label className="kawaii-label" htmlFor="image_url">
-          Image URL <span className="font-normal text-ink-muted">(optional)</span>
-        </label>
-        <input id="image_url" name="image_url" type="url" className="kawaii-input" />
-      </div>
+      <AdminExtrasSection>
+        <div>
+          <label className="kawaii-label" htmlFor="image_url">
+            Image link <span className="font-normal text-ink-muted">(optional)</span>
+          </label>
+          <input id="image_url" name="image_url" type="url" className="kawaii-input" />
+        </div>
+      </AdminExtrasSection>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex flex-wrap gap-3 border-t border-border pt-4">
         <KawaiiButton
