@@ -7,6 +7,8 @@ import { DynamicEventMap } from "@/components/maps/DynamicEventMap";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import {
   getCurrentYear,
+  getEventMonth,
+  getEventYear,
   groupEventsByMonth,
   type MonthGroup,
 } from "@/lib/group-by-month";
@@ -24,6 +26,7 @@ function formatListDate(start: string, timeZone?: string | null): string {
 }
 
 function MonthList({
+  year,
   months,
   expandedMonths,
   onToggleMonth,
@@ -31,9 +34,10 @@ function MonthList({
   onSelectEvent,
   emptyLabel = "No events",
 }: {
+  year: number;
   months: MonthGroup[];
-  expandedMonths: Set<number>;
-  onToggleMonth: (month: number) => void;
+  expandedMonths: Set<string>;
+  onToggleMonth: (year: number, month: number) => void;
   selectedId: string | null;
   onSelectEvent: (id: string) => void;
   emptyLabel?: string;
@@ -45,12 +49,12 @@ function MonthList({
   return (
     <ul className="space-y-4">
       {months.map(({ month, label, items }) => {
-        const open = expandedMonths.has(month);
+        const open = expandedMonths.has(monthKey(year, month));
         return (
           <li key={month}>
             <button
               type="button"
-              onClick={() => onToggleMonth(month)}
+              onClick={() => onToggleMonth(year, month)}
               className="flex w-full items-center gap-2 rounded-md py-1 text-left transition hover:opacity-80"
               aria-expanded={open}
             >
@@ -125,6 +129,24 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
+function monthKey(year: number, month: number): string {
+  return `${year}-${month}`;
+}
+
+function visibleMonthGroups(
+  events: Event[],
+  year: number,
+  currentYear: number,
+  currentMonth: number
+): MonthGroup[] {
+  return groupEventsByMonth(events, year).filter((group) => {
+    if (group.items.length === 0) return false;
+    if (year > currentYear) return true;
+    if (year === currentYear) return group.month >= currentMonth;
+    return false;
+  });
+}
+
 function filterEventsBySearch(events: Event[], query: string): Event[] {
   const q = query.trim().toLowerCase();
   if (!q) return events;
@@ -144,11 +166,11 @@ export function EventsExplorer({
   events: Event[];
   initialFocusId?: string | null;
 }) {
-  const year = getCurrentYear();
+  const currentYear = getCurrentYear();
   const currentMonth = new Date().getMonth();
   const [search, setSearch] = useState("");
-  const [yearOpen, setYearOpen] = useState(true);
-  const [expandedMonths, setExpandedMonths] = useState<Set<number> | null>(
+  const [expandedYears, setExpandedYears] = useState<Set<number> | null>(null);
+  const [expandedMonths, setExpandedMonths] = useState<Set<string> | null>(
     null
   );
   const [selectedId, setSelectedId] = useState<string | null>(() => {
@@ -161,39 +183,73 @@ export function EventsExplorer({
     [events, search]
   );
 
-  const months = useMemo(() => {
-    const grouped = groupEventsByMonth(filteredEvents, year);
-    return grouped.filter(
-      (group) => group.month >= currentMonth && group.items.length > 0
+  const yearSections = useMemo(() => {
+    const years = [...new Set(filteredEvents.map(getEventYear))].sort(
+      (a, b) => a - b
     );
-  }, [filteredEvents, year, currentMonth]);
+    return years
+      .map((year) => ({
+        year,
+        months: visibleMonthGroups(
+          filteredEvents,
+          year,
+          currentYear,
+          currentMonth
+        ),
+      }))
+      .filter((section) => section.months.length > 0);
+  }, [filteredEvents, currentYear, currentMonth]);
 
-  const defaultOpen = useMemo(
-    () => new Set(months.map((m) => m.month)),
-    [months]
+  const defaultExpandedYears = useMemo(
+    () => new Set([currentYear]),
+    [currentYear]
+  );
+
+  const defaultExpandedMonths = useMemo(
+    () =>
+      new Set(
+        yearSections.flatMap(({ year, months }) =>
+          months.map((m) => monthKey(year, m.month))
+        )
+      ),
+    [yearSections]
   );
 
   useEffect(() => {
     if (!initialFocusId) return;
     if (!events.some((e) => e.id === initialFocusId)) return;
     setSelectedId(initialFocusId);
-    setYearOpen(true);
     const focused = events.find((e) => e.id === initialFocusId);
     if (!focused) return;
-    const month = new Date(focused.start_at).getMonth();
-    setExpandedMonths((prev) => {
-      const next = new Set(prev ?? defaultOpen);
-      next.add(month);
+    const year = getEventYear(focused);
+    const month = getEventMonth(focused);
+    setExpandedYears((prev) => {
+      const next = new Set(prev ?? defaultExpandedYears);
+      next.add(year);
       return next;
     });
-  }, [initialFocusId, events, defaultOpen]);
+    setExpandedMonths((prev) => {
+      const next = new Set(prev ?? defaultExpandedMonths);
+      next.add(monthKey(year, month));
+      return next;
+    });
+  }, [initialFocusId, events, defaultExpandedYears, defaultExpandedMonths]);
+
+  const visibleExpandedYears = useMemo(() => {
+    if (search.trim()) return new Set(yearSections.map((section) => section.year));
+    return expandedYears ?? defaultExpandedYears;
+  }, [search, yearSections, expandedYears, defaultExpandedYears]);
 
   const visibleExpandedMonths = useMemo(() => {
     if (search.trim()) {
-      return new Set(months.map((m) => m.month));
+      return new Set(
+        yearSections.flatMap(({ year, months }) =>
+          months.map((m) => monthKey(year, m.month))
+        )
+      );
     }
-    return expandedMonths ?? defaultOpen;
-  }, [search, months, expandedMonths, defaultOpen]);
+    return expandedMonths ?? defaultExpandedMonths;
+  }, [search, yearSections, expandedMonths, defaultExpandedMonths]);
 
   const effectiveSelectedId =
     selectedId && filteredEvents.some((e) => e.id === selectedId)
@@ -203,12 +259,23 @@ export function EventsExplorer({
   const selected =
     filteredEvents.find((e) => e.id === effectiveSelectedId) ?? null;
 
-  function toggleMonth(month: number) {
-    setExpandedMonths((prev) => {
-      const base = prev ?? defaultOpen;
+  function toggleYear(year: number) {
+    setExpandedYears((prev) => {
+      const base = prev ?? defaultExpandedYears;
       const next = new Set(base);
-      if (next.has(month)) next.delete(month);
-      else next.add(month);
+      if (next.has(year)) next.delete(year);
+      else next.add(year);
+      return next;
+    });
+  }
+
+  function toggleMonth(year: number, month: number) {
+    setExpandedMonths((prev) => {
+      const base = prev ?? defaultExpandedMonths;
+      const key = monthKey(year, month);
+      const next = new Set(base);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   }
@@ -229,26 +296,37 @@ export function EventsExplorer({
         />
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
-        <button
-          type="button"
-          onClick={() => setYearOpen((open) => !open)}
-          className="mb-3 flex w-full items-center gap-2 rounded-md py-0.5 text-left transition hover:opacity-80"
-          aria-expanded={yearOpen}
-        >
-          <Chevron open={yearOpen} />
-          <span className="text-sm font-semibold text-ink">{year}</span>
-        </button>
-        {yearOpen && (
-          <MonthList
-            months={months}
-            expandedMonths={visibleExpandedMonths}
-            onToggleMonth={toggleMonth}
-            selectedId={effectiveSelectedId}
-            onSelectEvent={setSelectedId}
-            emptyLabel={
-              search.trim() ? "No matching events" : "No upcoming events"
-            }
-          />
+        {yearSections.length === 0 ? (
+          <p className="px-1 py-2 text-sm text-ink-muted">
+            {search.trim() ? "No matching events" : "No upcoming events"}
+          </p>
+        ) : (
+          yearSections.map(({ year, months }) => {
+            const yearOpen = visibleExpandedYears.has(year);
+            return (
+              <div key={year} className="mb-4 last:mb-0">
+                <button
+                  type="button"
+                  onClick={() => toggleYear(year)}
+                  className="mb-3 flex w-full items-center gap-2 rounded-md py-0.5 text-left transition hover:opacity-80"
+                  aria-expanded={yearOpen}
+                >
+                  <Chevron open={yearOpen} />
+                  <span className="text-sm font-semibold text-ink">{year}</span>
+                </button>
+                {yearOpen && (
+                  <MonthList
+                    year={year}
+                    months={months}
+                    expandedMonths={visibleExpandedMonths}
+                    onToggleMonth={toggleMonth}
+                    selectedId={effectiveSelectedId}
+                    onSelectEvent={setSelectedId}
+                  />
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>

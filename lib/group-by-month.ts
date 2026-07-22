@@ -13,11 +13,18 @@ export function getCurrentYear(): number {
   return new Date().getFullYear();
 }
 
-function getEventYear(event: Event): number {
-  const d = event.timezone
+function getEventLocalDate(event: Event): Date {
+  return event.timezone
     ? toZonedTime(new Date(event.start_at), event.timezone)
     : new Date(event.start_at);
-  return d.getFullYear();
+}
+
+export function getEventYear(event: Event): number {
+  return getEventLocalDate(event).getFullYear();
+}
+
+export function getEventMonth(event: Event): number {
+  return getEventLocalDate(event).getMonth();
 }
 
 export interface YearGroup {
@@ -54,9 +61,7 @@ export function groupEventsByMonth(
   for (let m = 0; m < 12; m++) buckets.set(m, []);
 
   for (const event of events) {
-    const d = event.timezone
-      ? toZonedTime(new Date(event.start_at), event.timezone)
-      : new Date(event.start_at);
+    const d = getEventLocalDate(event);
     if (d.getFullYear() !== year) continue;
     const list = buckets.get(d.getMonth()) ?? [];
     list.push(event);
