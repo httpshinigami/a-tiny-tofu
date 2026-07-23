@@ -83,12 +83,6 @@ export default async function HomePage() {
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
-              href="/submit"
-              className="inline-flex items-center justify-center rounded-md bg-mint px-6 py-3 text-base font-semibold text-cocoa transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cocoa"
-            >
-              Submit a spot
-            </Link>
-            <Link
               href="/about"
               className="inline-flex items-center justify-center rounded-md bg-butter px-6 py-3 text-base font-semibold text-cocoa transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cocoa"
             >

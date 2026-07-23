@@ -4,7 +4,6 @@ import { EventDetailPanel } from "@/components/explorer/EventDetailPanel";
 import { ExplorerLayout } from "@/components/explorer/ExplorerLayout";
 import { InstagramEmbed } from "@/components/events/InstagramEmbed";
 import { DynamicEventMap } from "@/components/maps/DynamicEventMap";
-import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import {
   getCurrentYear,
   getEventMonth,
@@ -336,11 +335,6 @@ export function EventsExplorer({
     <ExplorerLayout
       title="Markets & Events"
       subtitle="Browse by month — select an event to zoom the map"
-      headerExtra={
-        <KawaiiButton href="/submit" variant="primary">
-          Submit event
-        </KawaiiButton>
-      }
       sidebar={sidebar}
       map={
         <DynamicEventMap
