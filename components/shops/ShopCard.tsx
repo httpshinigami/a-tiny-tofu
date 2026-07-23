@@ -1,16 +1,19 @@
 import { TagChip } from "@/components/shops/TagChip";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { formatDisplayAddress } from "@/lib/format-address";
+import { sortShopTags } from "@/lib/shop-filter-categories";
 import type { Shop } from "@/lib/types";
 
 export function ShopCard({ shop }: { shop: Shop }) {
+  const tags = sortShopTags(shop.shop_tags);
+
   return (
     <article className="border-y border-border py-5">
       <h2 className="font-display text-xl font-bold text-ink md:text-2xl">
         {shop.name}
       </h2>
       <div className="mt-2 flex flex-wrap gap-2">
-        {shop.shop_tags.map((tag) => (
+        {tags.map((tag) => (
           <TagChip key={tag} tag={tag} />
         ))}
       </div>

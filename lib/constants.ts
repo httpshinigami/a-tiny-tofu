@@ -112,7 +112,7 @@ export const TAG_COLORS: Record<ShopTag, string> = {
   asian_grocery: "#F3E6DC",
   fashion: "#E8D0DC",
   photo_booths: "#D5DDD4",
-  artist_goods: "#E2D4F0",
+  artist_goods: "#D5DDD4",
   anime_goods: "#F0D0E0",
   manga: "#F0D0E0",
   gundam: "#D0DCEC",

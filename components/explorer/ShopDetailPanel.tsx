@@ -2,6 +2,7 @@ import { TagChip } from "@/components/shops/TagChip";
 import { SafeExternalLink } from "@/components/ui/SafeExternalLink";
 import { formatDisplayAddress } from "@/lib/format-address";
 import { toSafeHttpHref } from "@/lib/safe-url";
+import { sortShopTags } from "@/lib/shop-filter-categories";
 import type { Shop } from "@/lib/types";
 
 export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
@@ -14,12 +15,13 @@ export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
   }
 
   const website = toSafeHttpHref(shop.website);
+  const tags = sortShopTags(shop.shop_tags);
 
   return (
     <div>
       <h2 className="font-display text-2xl font-bold text-ink">{shop.name}</h2>
       <div className="mt-2 flex flex-wrap gap-2">
-        {shop.shop_tags.map((tag) => (
+        {tags.map((tag) => (
           <TagChip key={tag} tag={tag} />
         ))}
       </div>
