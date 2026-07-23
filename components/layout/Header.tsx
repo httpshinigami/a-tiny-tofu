@@ -7,17 +7,17 @@ const navLinks = [
   {
     href: "/events",
     label: "Markets & Events",
-    activeClass: "bg-peach text-ink",
+    activeClass: "bg-pink text-ink",
   },
   {
     href: "/shops",
     label: "Shops",
-    activeClass: "bg-butter text-ink",
+    activeClass: "bg-pink text-ink",
   },
   {
     href: "/food",
     label: "Food & Drink",
-    activeClass: "bg-mint text-ink",
+    activeClass: "bg-pink text-ink",
   },
   {
     href: "/about",
@@ -30,8 +30,8 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="bg-white px-4 py-4 md:px-8 md:py-5">
-      <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 md:gap-4">
+    <header className="bg-white px-4 py-3 md:px-8 md:py-5">
+      <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 md:gap-4">
         <Link
           href="/"
           className="text-base font-semibold tracking-tight text-ink transition hover:text-sage-dark md:text-lg"

@@ -41,7 +41,7 @@ export function ExplorerLayout({
   }, [detailKey]);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-8">
+    <div className="mx-auto w-full max-w-6xl px-4 pt-2 pb-6 md:px-8 md:py-8">
       <div className="mb-4 hidden flex-wrap items-end justify-between gap-3 md:mb-6 md:flex md:gap-4">
         <div className="min-w-0">
           <h1 className="text-3xl font-bold tracking-tight text-cocoa md:text-4xl">
@@ -56,7 +56,7 @@ export function ExplorerLayout({
 
       <div className="relative w-full">
         {(filterToggle || filterPanel) && (
-          <div className="mb-3 flex w-full flex-col gap-2 md:absolute md:inset-y-0 md:right-full md:mb-0 md:mr-6 md:w-[340px] md:min-w-[340px] md:gap-3">
+          <div className="mb-2 flex w-full flex-col gap-2 md:absolute md:inset-y-0 md:right-full md:mb-0 md:mr-6 md:w-[340px] md:min-w-[340px] md:gap-3">
             {filterToggle}
             {filterPanel}
           </div>
@@ -68,7 +68,7 @@ export function ExplorerLayout({
         )}
 
         <div
-          className="mb-3 flex w-full rounded-md border border-border p-1 md:hidden"
+          className="mb-2 flex w-full rounded-md border border-border p-1 md:hidden"
           role="tablist"
           aria-label="View mode"
         >
