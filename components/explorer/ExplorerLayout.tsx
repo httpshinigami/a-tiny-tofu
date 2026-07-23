@@ -36,11 +36,15 @@ export function ExplorerLayout({
       </div>
 
       <div className="relative w-full">
-        {(filterToggle || filterPanel || leftPanel) && (
+        {(filterToggle || filterPanel) && (
           <div className="mb-4 flex w-full flex-col gap-3 md:absolute md:inset-y-0 md:right-full md:mb-0 md:mr-6 md:w-[340px] md:min-w-[340px]">
-            {leftPanel}
             {filterToggle}
             {filterPanel}
+          </div>
+        )}
+        {leftPanel && (
+          <div className="absolute inset-y-0 right-full mr-6 hidden w-[340px] min-w-[340px] md:block">
+            {leftPanel}
           </div>
         )}
 

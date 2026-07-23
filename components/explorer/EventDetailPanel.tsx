@@ -191,6 +191,18 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
             </SafeExternalLink>
           </MetaBlock>
         )}
+        {event.instagram_url && (
+          <div className="md:hidden">
+            <MetaBlock label="Instagram">
+              <SafeExternalLink
+                href={event.instagram_url}
+                className="font-medium text-sage-dark underline decoration-sage/40 underline-offset-2 hover:text-sage"
+              >
+                Visit on Instagram
+              </SafeExternalLink>
+            </MetaBlock>
+          </div>
+        )}
       </div>
     </div>
   );
