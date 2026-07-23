@@ -38,61 +38,32 @@ body {
   background-color: var(--color-mint);
 }
 
-/* Biscuit tiles — straight body + overlapping side scallops */
-.biscuit-tile {
-  --biscuit-r: 1.25rem;
-  --biscuit-c: #54413e;
-  /* Slightly less than a full diameter so neighbouring scallops overlap */
-  --biscuit-step: calc(var(--biscuit-r) * 1.85);
-  position: relative;
-  z-index: 0;
-  margin-inline: var(--biscuit-r);
-  background-color: var(--biscuit-c) !important;
+/* Biscuit cards — PNG alpha masks; hover swaps to bitten */
+.biscuit-card {
+  mask-image: url("/images/biscuit-mask.png");
+  -webkit-mask-image: url("/images/biscuit-mask.png");
+  mask-mode: alpha;
+  -webkit-mask-source-type: alpha;
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
 }
 
-.biscuit-tile::before,
-.biscuit-tile::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: var(--biscuit-r);
-  z-index: 0;
-  pointer-events: none;
-  background-color: transparent;
-  background-image: radial-gradient(
-    circle,
-    var(--biscuit-c) 0 var(--biscuit-r),
-    transparent calc(var(--biscuit-r) + 0.5px)
-  );
-  background-size: calc(var(--biscuit-r) * 2) var(--biscuit-step);
-  background-repeat: repeat-y;
+.biscuit-card:hover {
+  mask-image: url("/images/biscuit-bitten-mask.png");
+  -webkit-mask-image: url("/images/biscuit-bitten-mask.png");
 }
 
-.biscuit-tile::before {
-  left: calc(-1 * var(--biscuit-r));
-  background-position: left top;
-}
-
-.biscuit-tile::after {
-  right: calc(-1 * var(--biscuit-r));
-  background-position: right top;
-}
-
-.biscuit-tile > * {
-  position: relative;
-  z-index: 1;
-}
-
-.biscuit-tile--choc {
-  --biscuit-c: #54413e;
-  background-color: #54413e !important;
+.biscuit-card--choc {
+  background-color: #54413e;
   color: #f4d2a9;
 }
 
-.biscuit-tile--dough {
-  --biscuit-c: #f4d2a9;
-  background-color: #f4d2a9 !important;
+.biscuit-card--dough {
+  background-color: #f4d2a9;
   color: #54413e;
 }
 

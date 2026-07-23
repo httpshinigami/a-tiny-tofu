@@ -8,7 +8,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <div className="home-mint flex w-full flex-col overflow-hidden">
+      <div className="home-mint flex w-full flex-col">
         <MeltyAwning className="relative z-20 shrink-0" />
 
         <section className="relative z-0 -mt-14 flex h-[min(55vh,520px)] flex-col pt-14 md:-mt-16 md:h-[min(58vh,560px)] md:pt-16">
@@ -38,7 +38,7 @@ export default async function HomePage() {
             aria-hidden
           />
 
-          <div className="relative z-10 ml-8 mr-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 py-10 md:ml-16 md:px-8 md:py-12 lg:ml-24">
+          <div className="relative z-10 flex w-full max-w-7xl flex-1 flex-col justify-center px-8 py-10 md:px-16 md:py-12 lg:px-24">
             <div className="max-w-xl md:w-[55%] lg:max-w-2xl">
               <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-cocoa md:text-5xl lg:text-[3.25rem]">
                 Discover everything cute in Melbourne

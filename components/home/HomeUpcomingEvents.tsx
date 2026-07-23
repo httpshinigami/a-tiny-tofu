@@ -120,7 +120,7 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
         onPointerCancel={endDrag}
         onClickCapture={onClickCapture}
       >
-        <ul className="flex w-max snap-x snap-mandatory gap-5 pl-8 pr-10 md:gap-6 md:pl-16 md:pr-12 lg:pl-24">
+        <ul className="flex w-max snap-x snap-mandatory gap-8 pl-8 pr-10 md:gap-10 md:pl-16 md:pr-12 lg:pl-24">
           {events.map((event, i) => {
             const isChoc = i % 2 === 0;
             return (
@@ -131,8 +131,8 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
                 <Link
                   href={`/events?focus=${encodeURIComponent(event.id)}`}
                   draggable={false}
-                  className={`biscuit-tile flex h-[14rem] select-none flex-col px-8 py-6 md:h-[16rem] md:px-9 md:py-7 ${
-                    isChoc ? "biscuit-tile--choc" : "biscuit-tile--dough"
+                  className={`biscuit-card flex h-[14rem] select-none flex-col px-8 py-6 md:h-[16rem] md:px-9 md:py-7 ${
+                    isChoc ? "biscuit-card--choc" : "biscuit-card--dough"
                   }`}
                 >
                   <time
