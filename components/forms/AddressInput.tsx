@@ -19,10 +19,47 @@ interface Props {
   onSelect?: (suggestion: AddressSuggestion) => void;
 }
 
-type MapboxFeature = {
-  place_name: string;
-  center: [number, number];
+type SuggestResult = {
+  mapbox_id: string;
+  name: string;
+  feature_type: string;
+  full_address?: string;
+  place_formatted: string;
+  label: string;
 };
+
+type RetrieveFeature = {
+  geometry: { coordinates: [number, number] };
+  properties: {
+    name: string;
+    feature_type: string;
+    full_address?: string;
+    place_formatted?: string;
+  };
+};
+
+function newSessionToken() {
+  return crypto.randomUUID();
+}
+
+function formatPlaceLabel(result: {
+  name: string;
+  feature_type: string;
+  full_address?: string;
+  place_formatted?: string;
+}) {
+  const { name, feature_type, full_address, place_formatted } = result;
+  if (full_address) {
+    if (
+      feature_type === "poi" &&
+      !full_address.toLowerCase().includes(name.toLowerCase())
+    ) {
+      return `${name}, ${full_address}`;
+    }
+    return full_address;
+  }
+  return [name, place_formatted].filter(Boolean).join(", ");
+}
 
 export function AddressInput({
   id,
@@ -35,12 +72,14 @@ export function AddressInput({
 }: Props) {
   const listId = useId();
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+  const sessionToken = useRef(newSessionToken());
   const [value, setValue] = useState(defaultValue);
-  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [suggestions, setSuggestions] = useState<SuggestResult[]>([]);
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
+  const [retrieving, setRetrieving] = useState(false);
   const blurTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const skipNextFetch = useRef(false);
 
@@ -66,27 +105,32 @@ export function AddressInput({
       setLoading(true);
       try {
         const params = new URLSearchParams({
+          q: query,
           access_token: token,
-          autocomplete: "true",
-          country: "au",
+          session_token: sessionToken.current,
+          language: "en",
           limit: "5",
+          country: "au",
           proximity: `${MELBOURNE_CENTER.lng},${MELBOURNE_CENTER.lat}`,
           types: "address,poi,place",
         });
         const res = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?${params}`,
+          `https://api.mapbox.com/search/searchbox/v1/suggest?${params}`,
           { signal: controller.signal }
         );
         if (!res.ok) {
           setSuggestions([]);
           return;
         }
-        const data = (await res.json()) as { features?: MapboxFeature[] };
-        const next = (data.features ?? []).map((feature) => ({
-          placeName: feature.place_name,
-          lng: feature.center[0],
-          lat: feature.center[1],
-        }));
+        const data = (await res.json()) as {
+          suggestions?: Omit<SuggestResult, "label">[];
+        };
+        const next = (data.suggestions ?? [])
+          .filter((suggestion) => suggestion.feature_type !== "category")
+          .map((suggestion) => ({
+            ...suggestion,
+            label: formatPlaceLabel(suggestion),
+          }));
         setSuggestions(next);
         setOpen(next.length > 0);
         setActiveIndex(-1);
@@ -111,17 +155,42 @@ export function AddressInput({
     };
   }, []);
 
-  function choose(suggestion: AddressSuggestion) {
-    skipNextFetch.current = true;
-    setValue(suggestion.placeName);
-    setSuggestions([]);
-    setOpen(false);
-    setActiveIndex(-1);
-    onSelect?.(suggestion);
+  async function choose(suggestion: SuggestResult) {
+    if (!token || retrieving) return;
+
+    setRetrieving(true);
+    try {
+      const params = new URLSearchParams({
+        access_token: token,
+        session_token: sessionToken.current,
+        language: "en",
+      });
+      const res = await fetch(
+        `https://api.mapbox.com/search/searchbox/v1/retrieve/${encodeURIComponent(suggestion.mapbox_id)}?${params}`
+      );
+      if (!res.ok) return;
+
+      const data = (await res.json()) as { features?: RetrieveFeature[] };
+      const feature = data.features?.[0];
+      if (!feature) return;
+
+      const [lng, lat] = feature.geometry.coordinates;
+      const placeName = formatPlaceLabel(feature.properties);
+
+      skipNextFetch.current = true;
+      setValue(placeName);
+      setSuggestions([]);
+      setOpen(false);
+      setActiveIndex(-1);
+      sessionToken.current = newSessionToken();
+      onSelect?.({ placeName, lat, lng });
+    } finally {
+      setRetrieving(false);
+    }
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (!open || suggestions.length === 0) return;
+    if (!open || suggestions.length === 0 || retrieving) return;
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -131,7 +200,7 @@ export function AddressInput({
       setActiveIndex((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
     } else if (e.key === "Enter" && activeIndex >= 0) {
       e.preventDefault();
-      choose(suggestions[activeIndex]);
+      void choose(suggestions[activeIndex]);
     } else if (e.key === "Escape") {
       setOpen(false);
       setActiveIndex(-1);
@@ -152,6 +221,7 @@ export function AddressInput({
         aria-expanded={open}
         aria-controls={listId}
         aria-autocomplete="list"
+        aria-busy={retrieving || undefined}
         aria-activedescendant={
           activeIndex >= 0 ? `${listId}-${activeIndex}` : undefined
         }
@@ -173,28 +243,35 @@ export function AddressInput({
           className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-border bg-surface py-1 shadow-lg"
         >
           {suggestions.map((suggestion, index) => (
-            <li key={`${suggestion.placeName}-${index}`} role="option">
+            <li key={`${suggestion.mapbox_id}-${index}`} role="option">
               <button
                 id={`${listId}-${index}`}
                 type="button"
+                disabled={retrieving}
                 aria-selected={index === activeIndex}
-                className={`block w-full px-4 py-2.5 text-left text-sm transition ${
+                className={`block w-full px-4 py-2.5 text-left text-sm transition disabled:opacity-60 ${
                   index === activeIndex
                     ? "bg-sage/15 text-sage-dark"
                     : "text-ink hover:bg-surface"
                 }`}
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => choose(suggestion)}
+                onClick={() => void choose(suggestion)}
               >
-                {suggestion.placeName}
+                {suggestion.label}
               </button>
             </li>
           ))}
         </ul>
       )}
-      {token && focused && loading && value.trim().length >= 3 && !open && (
-        <p className="mt-1 text-xs text-ink-muted">Searching addresses…</p>
-      )}
+      {token &&
+        focused &&
+        (loading || retrieving) &&
+        value.trim().length >= 3 &&
+        !open && (
+          <p className="mt-1 text-xs text-ink-muted">
+            {retrieving ? "Getting location…" : "Searching places…"}
+          </p>
+        )}
     </div>
   );
 }

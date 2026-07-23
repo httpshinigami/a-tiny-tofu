@@ -15,22 +15,25 @@ async function geocodeWithMapbox(
   if (!token) return null;
 
   const params = new URLSearchParams({
+    q: address,
     access_token: token,
+    language: "en",
     country: "au",
     limit: "1",
     proximity: `${MELBOURNE_CENTER.lng},${MELBOURNE_CENTER.lat}`,
+    types: "address,poi,place",
   });
-  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?${params}`;
+  const url = `https://api.mapbox.com/search/searchbox/v1/forward?${params}`;
 
   try {
     const res = await fetch(url, { next: { revalidate: 86400 } });
     if (!res.ok) return null;
     const data = (await res.json()) as {
-      features?: { center: [number, number] }[];
+      features?: { geometry?: { coordinates?: [number, number] } }[];
     };
-    const feature = data.features?.[0];
-    if (!feature) return null;
-    return { lng: feature.center[0], lat: feature.center[1] };
+    const coords = data.features?.[0]?.geometry?.coordinates;
+    if (!coords) return null;
+    return { lng: coords[0], lat: coords[1] };
   } catch {
     return null;
   }
