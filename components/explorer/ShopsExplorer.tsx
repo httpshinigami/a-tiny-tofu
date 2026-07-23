@@ -145,14 +145,14 @@ export function ShopsExplorer({
       type="button"
       onClick={() => setFilterOpen((v) => !v)}
       aria-expanded={filterOpen}
-      aria-label={filterOpen ? "Hide filters" : "Show filters"}
+      aria-label={filterOpen ? "Close filter" : "Show filters"}
       className={`inline-flex min-h-11 items-center gap-2 px-2 text-sm font-semibold transition md:min-h-0 md:px-1 md:py-1 ${
         filterOpen ? "text-sage-dark" : "text-ink hover:text-sage-dark"
       }`}
     >
-      <FilterIcon />
-      <span>Filter</span>
-      {activeTags.length > 0 && (
+      {filterOpen ? <CloseFilterIcon /> : <FilterIcon />}
+      <span>{filterOpen ? "Close filter" : "Filter"}</span>
+      {!filterOpen && activeTags.length > 0 && (
         <span className="bg-sage/20 px-2 py-0.5 text-xs font-semibold text-sage-dark">
           {activeTags.length}
         </span>
@@ -271,6 +271,22 @@ function FilterIcon() {
         strokeLinejoin="round"
         d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
       />
+    </svg>
+  );
+}
+
+function CloseFilterIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      className="shrink-0"
+      aria-hidden
+    >
+      <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z" />
     </svg>
   );
 }
