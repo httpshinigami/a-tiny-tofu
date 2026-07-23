@@ -105,7 +105,7 @@ export function ShopsExplorer({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search shops…"
-          className="kawaii-input py-2 text-sm"
+          className="kawaii-input py-2 text-base md:text-sm"
         />
       </div>
       <ul className="min-h-0 flex-1 space-y-0.5 overflow-y-auto p-3">
@@ -178,7 +178,7 @@ export function ShopsExplorer({
                 if (e.key === "Escape") closeSearch();
               }}
               placeholder="Search shops…"
-              className="kawaii-input min-h-11 min-w-0 flex-1 py-2 text-sm"
+              className="kawaii-input min-h-11 min-w-0 flex-1 py-2 text-base"
             />
             <button
               type="button"

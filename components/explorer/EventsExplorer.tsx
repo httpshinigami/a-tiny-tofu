@@ -291,7 +291,7 @@ export function EventsExplorer({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search markets & events…"
-          className="kawaii-input py-2 text-sm"
+          className="kawaii-input py-2 text-base md:text-sm"
         />
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
