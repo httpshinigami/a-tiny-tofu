@@ -89,6 +89,10 @@ export function ShopsExplorer({
     setSearchOpen(false);
   }
 
+  function removeTag(tag: ShopTag) {
+    setActiveTags((prev) => prev.filter((t) => t !== tag));
+  }
+
   const sidebar = (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="hidden shrink-0 border-b border-border p-3 md:block">
@@ -113,7 +117,7 @@ export function ShopsExplorer({
               <button
                 type="button"
                 onClick={() => setSelectedId(shop.id)}
-                className={`w-full px-2 py-2 text-left transition ${
+                className={`min-h-11 w-full px-2 py-3 text-left transition ${
                   effectiveSelectedId === shop.id
                     ? "bg-sage/20 font-semibold text-sage-dark"
                     : "text-ink hover:bg-surface/80"
@@ -142,7 +146,7 @@ export function ShopsExplorer({
       onClick={() => setFilterOpen((v) => !v)}
       aria-expanded={filterOpen}
       aria-label={filterOpen ? "Hide filters" : "Show filters"}
-      className={`inline-flex w-1/2 items-center gap-2 px-1 py-1 text-sm font-semibold transition md:w-auto ${
+      className={`inline-flex min-h-11 items-center gap-2 px-2 text-sm font-semibold transition md:min-h-0 md:px-1 md:py-1 ${
         filterOpen ? "text-sage-dark" : "text-ink hover:text-sage-dark"
       }`}
     >
@@ -157,45 +161,66 @@ export function ShopsExplorer({
   );
 
   const filterToggle = (
-    <div className="flex w-full items-center">
-      {searchOpen ? (
-        <div className="flex w-full items-center gap-2 md:hidden">
-          <label htmlFor="shop-search-mobile" className="sr-only">
-            Search shops
-          </label>
-          <input
-            ref={mobileSearchRef}
-            id="shop-search-mobile"
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") closeSearch();
-            }}
-            placeholder="Search shops…"
-            className="kawaii-input min-w-0 flex-1 py-2 text-sm"
-          />
-          <button
-            type="button"
-            onClick={closeSearch}
-            className="shrink-0 px-2 py-1 text-sm font-medium text-ink-muted hover:text-ink"
-            aria-label="Close search"
-          >
-            Done
-          </button>
+    <div className="flex w-full flex-col gap-2">
+      <div className="flex w-full items-center">
+        {searchOpen ? (
+          <div className="flex w-full items-center gap-2 md:hidden">
+            <label htmlFor="shop-search-mobile" className="sr-only">
+              Search shops
+            </label>
+            <input
+              ref={mobileSearchRef}
+              id="shop-search-mobile"
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") closeSearch();
+              }}
+              placeholder="Search shops…"
+              className="kawaii-input min-h-11 min-w-0 flex-1 py-2 text-sm"
+            />
+            <button
+              type="button"
+              onClick={closeSearch}
+              className="inline-flex min-h-11 shrink-0 items-center px-3 text-sm font-medium text-ink-muted hover:text-ink"
+              aria-label="Close search"
+            >
+              Done
+            </button>
+          </div>
+        ) : (
+          <>
+            {filterButton}
+            <button
+              type="button"
+              onClick={openSearch}
+              className="ml-auto inline-flex size-11 items-center justify-center text-ink transition hover:text-sage-dark md:hidden"
+              aria-label="Search shops"
+            >
+              <SearchIcon />
+            </button>
+          </>
+        )}
+      </div>
+
+      {activeTags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {activeTags.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => removeTag(tag)}
+              className="inline-flex min-h-9 items-center gap-1.5 bg-sage/15 px-2.5 py-1.5 text-xs font-semibold text-sage-dark transition hover:bg-sage/25"
+              aria-label={`Remove ${SHOP_TAG_LABELS[tag]} filter`}
+            >
+              {SHOP_TAG_LABELS[tag]}
+              <span aria-hidden className="text-sm leading-none">
+                ×
+              </span>
+            </button>
+          ))}
         </div>
-      ) : (
-        <>
-          {filterButton}
-          <button
-            type="button"
-            onClick={openSearch}
-            className="ml-auto inline-flex items-center justify-center p-1.5 text-ink transition hover:text-sage-dark md:hidden"
-            aria-label="Search shops"
-          >
-            <SearchIcon />
-          </button>
-        </>
       )}
     </div>
   );
@@ -223,7 +248,9 @@ export function ShopsExplorer({
           onSelect={setSelectedId}
         />
       }
-      detail={<ShopDetailPanel shop={selected} />}
+      renderDetail={() => <ShopDetailPanel shop={selected} />}
+      hasDetail={!!selected}
+      detailKey={effectiveSelectedId}
     />
   );
 }

@@ -54,7 +54,7 @@ function MonthList({
             <button
               type="button"
               onClick={() => onToggleMonth(year, month)}
-              className="flex w-full items-center gap-2 rounded-md py-1 text-left transition hover:opacity-80"
+              className="flex min-h-11 w-full items-center gap-2 rounded-md py-2 text-left transition hover:opacity-80"
               aria-expanded={open}
             >
               <Chevron open={open} />
@@ -75,7 +75,7 @@ function MonthList({
                       <button
                         type="button"
                         onClick={() => onSelectEvent(event.id)}
-                        className={`w-full px-2 py-2.5 text-left transition ${
+                        className={`min-h-11 w-full px-2 py-2.5 text-left transition ${
                           selected
                             ? "bg-coral/15"
                             : "hover:bg-surface/80"
@@ -343,10 +343,12 @@ export function EventsExplorer({
           onSelect={setSelectedId}
         />
       }
-      detail={<EventDetailPanel event={selected} />}
+      renderDetail={() => <EventDetailPanel event={selected} />}
+      hasDetail={!!selected}
+      detailKey={effectiveSelectedId}
       leftPanel={
         selected?.instagram_url ? (
-          <div className="flex h-full min-h-0 flex-col md:-translate-x-0.2">
+          <div className="flex h-full min-h-0 flex-col">
             <div className="min-h-[560px] flex-1 overflow-y-auto overscroll-contain">
               <InstagramEmbed url={selected.instagram_url} />
             </div>

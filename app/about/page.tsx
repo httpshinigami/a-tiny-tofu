@@ -8,10 +8,10 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <PageFrame>
-      <h1 className="text-3xl font-bold tracking-tight text-cocoa md:text-4xl">
+      <h1 className="hidden text-3xl font-bold tracking-tight text-cocoa md:block md:text-4xl">
         About World of Tiny Tofu
       </h1>
-      <p className="mt-4 max-w-2xl leading-relaxed text-ink-muted">
+      <p className="max-w-2xl leading-relaxed text-ink-muted md:mt-4">
         World of Tiny Tofu began with a soft spot for trinkets, tiny treasures,
         and all things cute, and a habit of falling a little in love with every
         art market, new artist, and whimsical little spot along the way.
