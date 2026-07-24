@@ -1,15 +1,22 @@
-import { isSafeHttpUrl, MAX_URL_LENGTH } from "./safe-url";
+import {
+  isSafeHttpUrl,
+  MAX_URL_LENGTH,
+  normalizeHttpUrlInput,
+} from "./safe-url";
 
 const INSTAGRAM_HOSTS = new Set(["instagram.com", "www.instagram.com"]);
 const INSTAGRAM_POST_PATH = /^\/(p|reel|tv)\/[A-Za-z0-9_-]+\/?$/;
 
 /** Returns true for public Instagram post, reel, or IGTV URLs. */
 export function isSafeInstagramPostUrl(value: string): boolean {
-  if (value.length > MAX_URL_LENGTH || !isSafeHttpUrl(value)) return false;
+  const normalized = normalizeHttpUrlInput(value);
+  if (normalized.length > MAX_URL_LENGTH || !isSafeHttpUrl(normalized)) {
+    return false;
+  }
 
   let parsed: URL;
   try {
-    parsed = new URL(value);
+    parsed = new URL(normalized);
   } catch {
     return false;
   }
@@ -23,10 +30,10 @@ export function toSafeInstagramEmbedUrl(
   value: string | null | undefined
 ): string | null {
   if (!value) return null;
-  const trimmed = value.trim();
-  if (!isSafeInstagramPostUrl(trimmed)) return null;
+  const normalized = normalizeHttpUrlInput(value);
+  if (!isSafeInstagramPostUrl(normalized)) return null;
 
-  const parsed = new URL(trimmed);
+  const parsed = new URL(normalized);
   parsed.search = "";
   parsed.hash = "";
   const path = parsed.pathname.endsWith("/")

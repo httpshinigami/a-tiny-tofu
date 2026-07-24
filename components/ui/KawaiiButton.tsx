@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { isSafeHttpUrl, isSafeInternalPath } from "@/lib/safe-url";
+import { isSafeInternalPath, toSafeHttpHref } from "@/lib/safe-url";
 import type { ReactNode } from "react";
 
 type Variant = "primary" | "secondary" | "ghost" | "sage";
@@ -36,23 +36,24 @@ export function KawaiiButton({
   const cn = `${base} ${styles[variant]} ${className}`;
 
   if (href) {
-    if (isSafeHttpUrl(href)) {
+    if (isSafeInternalPath(href)) {
+      return (
+        <Link href={href} className={cn}>
+          {children}
+        </Link>
+      );
+    }
+    const safeHttp = toSafeHttpHref(href);
+    if (safeHttp) {
       return (
         <a
-          href={href}
+          href={safeHttp}
           target="_blank"
           rel="noopener noreferrer"
           className={cn}
         >
           {children}
         </a>
-      );
-    }
-    if (isSafeInternalPath(href)) {
-      return (
-        <Link href={href} className={cn}>
-          {children}
-        </Link>
       );
     }
     return (

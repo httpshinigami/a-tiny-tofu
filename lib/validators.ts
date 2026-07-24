@@ -1,29 +1,49 @@
 import { z } from "zod";
 import { SHOP_TAGS } from "./constants";
 import { isSafeInstagramPostUrl } from "./instagram-url";
-import { isSafeHttpUrl, MAX_URL_LENGTH } from "./safe-url";
+import {
+  isSafeHttpUrl,
+  MAX_URL_LENGTH,
+  normalizeHttpUrlInput,
+} from "./safe-url";
 
 const mapLocationField = z.string().max(100).optional().or(z.literal(""));
 
-const safeUrlMessage = "Only http and https links are allowed";
+const safeUrlMessage = "Enter a website like www.example.com";
 
-const safeHttpUrl = z
-  .url()
-  .max(MAX_URL_LENGTH)
-  .refine(isSafeHttpUrl, { message: safeUrlMessage });
+/** Normalize user input, treating blank/whitespace as "". */
+function preprocessOptionalUrl(value: unknown): unknown {
+  if (value === undefined || value === null) return value;
+  if (typeof value !== "string") return value;
+  return normalizeHttpUrlInput(value);
+}
 
-const optionalSafeHttpUrl = z.union([z.literal(""), safeHttpUrl]).optional();
+const optionalSafeHttpUrl = z.preprocess(
+  preprocessOptionalUrl,
+  z
+    .union([
+      z.literal(""),
+      z
+        .url()
+        .max(MAX_URL_LENGTH)
+        .refine(isSafeHttpUrl, { message: safeUrlMessage }),
+    ])
+    .optional()
+);
 
 const instagramUrlMessage = "Must be an Instagram post or reel link";
 
-const optionalInstagramUrl = z
-  .union([
-    z.literal(""),
-    z.url().max(MAX_URL_LENGTH).refine(isSafeInstagramPostUrl, {
-      message: instagramUrlMessage,
-    }),
-  ])
-  .optional();
+const optionalInstagramUrl = z.preprocess(
+  preprocessOptionalUrl,
+  z
+    .union([
+      z.literal(""),
+      z.url().max(MAX_URL_LENGTH).refine(isSafeInstagramPostUrl, {
+        message: instagramUrlMessage,
+      }),
+    ])
+    .optional()
+);
 
 export const eventSubmitSchema = z.object({
   title: z.string().min(1).max(200),

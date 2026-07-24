@@ -120,14 +120,30 @@ export function ShopSubmitForm({
           <label className="kawaii-label" htmlFor="website">
             Website (optional)
           </label>
-          <input id="website" name="website" type="url" className="kawaii-input" />
+          <input
+            id="website"
+            name="website"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            placeholder="www.example.com"
+            className="kawaii-input"
+          />
         </div>
       </div>
       <div>
         <label className="kawaii-label" htmlFor="image_url">
           Image link (optional)
         </label>
-        <input id="image_url" name="image_url" type="url" className="kawaii-input" />
+        <input
+          id="image_url"
+          name="image_url"
+          type="text"
+          inputMode="url"
+          autoComplete="url"
+          placeholder="www.example.com/photo.jpg"
+          className="kawaii-input"
+        />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <KawaiiButton type="submit" disabled={status === "loading"}>

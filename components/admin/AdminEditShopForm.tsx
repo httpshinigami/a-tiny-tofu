@@ -175,7 +175,10 @@ export function AdminEditShopForm({
           <input
             id="website"
             name="website"
-            type="url"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            placeholder="www.example.com"
             defaultValue={shop.website ?? ""}
             className="kawaii-input"
           />
@@ -189,7 +192,10 @@ export function AdminEditShopForm({
           <input
             id="image_url"
             name="image_url"
-            type="url"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            placeholder="www.example.com/photo.jpg"
             defaultValue={shop.image_url ?? ""}
             className="kawaii-input"
           />

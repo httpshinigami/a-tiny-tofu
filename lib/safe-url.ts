@@ -2,6 +2,34 @@ export const MAX_URL_LENGTH = 2048;
 
 const ALLOWED_SCHEMES = new Set(["http:", "https:"]);
 
+/** True when the string already has a URI scheme (e.g. https:, javascript:). */
+const HAS_SCHEME = /^[a-zA-Z][a-zA-Z0-9+.-]*:/;
+
+/**
+ * Softens user-entered links for non-technical submitters.
+ * Adds https:// when missing; leaves existing schemes alone so validation can reject unsafe ones.
+ */
+export function normalizeHttpUrlInput(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+
+  // Protocol-relative URLs
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`;
+  }
+
+  // Absolute site paths must stay paths — never turn "/submit" into https://submit
+  if (trimmed.startsWith("/")) {
+    return trimmed;
+  }
+
+  if (HAS_SCHEME.test(trimmed)) {
+    return trimmed;
+  }
+
+  return `https://${trimmed}`;
+}
+
 /** Returns true for http(s) URLs without credentials or control characters. */
 export function isSafeHttpUrl(value: string): boolean {
   if (value.length > MAX_URL_LENGTH) return false;
@@ -26,8 +54,8 @@ export function toSafeHttpHref(
   value: string | null | undefined
 ): string | null {
   if (!value) return null;
-  const trimmed = value.trim();
-  return isSafeHttpUrl(trimmed) ? trimmed : null;
+  const normalized = normalizeHttpUrlInput(value);
+  return isSafeHttpUrl(normalized) ? normalized : null;
 }
 
 /** Returns true for same-origin relative paths (e.g. `/events/map`). */

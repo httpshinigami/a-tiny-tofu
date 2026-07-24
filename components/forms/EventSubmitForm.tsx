@@ -130,7 +130,10 @@ export function EventSubmitForm() {
           <input
             id="external_url"
             name="external_url"
-            type="url"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            placeholder="www.example.com"
             className="kawaii-input"
           />
         </div>
@@ -142,7 +145,10 @@ export function EventSubmitForm() {
           <input
             id="tickets_url"
             name="tickets_url"
-            type="url"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            placeholder="www.example.com"
             className="kawaii-input"
           />
         </div>
@@ -156,7 +162,9 @@ export function EventSubmitForm() {
         <input
           id="image_url"
           name="image_url"
-          type="url"
+          type="text"
+          inputMode="url"
+          autoComplete="url"
           className="kawaii-input"
         />
       </div>

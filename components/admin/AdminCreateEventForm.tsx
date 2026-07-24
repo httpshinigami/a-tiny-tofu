@@ -119,7 +119,7 @@ export function AdminCreateEventForm() {
             Organiser link{" "}
             <span className="font-normal text-ink-muted">(optional)</span>
           </label>
-          <input id="external_url" name="external_url" type="url" className="kawaii-input" />
+          <input id="external_url" name="external_url" type="text" inputMode="url" autoComplete="url" placeholder="www.example.com" className="kawaii-input" />
           <p className="mt-1 text-xs text-ink-muted">
             Website, Instagram, or the best link to reach the organiser.
           </p>
@@ -129,7 +129,7 @@ export function AdminCreateEventForm() {
             Tickets link{" "}
             <span className="font-normal text-ink-muted">(optional)</span>
           </label>
-          <input id="tickets_url" name="tickets_url" type="url" className="kawaii-input" />
+          <input id="tickets_url" name="tickets_url" type="text" inputMode="url" autoComplete="url" placeholder="www.example.com" className="kawaii-input" />
           <p className="mt-1 text-xs text-ink-muted">
             Link to buy tickets or RSVP, if separate from the organiser link.
           </p>
@@ -143,8 +143,10 @@ export function AdminCreateEventForm() {
         <input
           id="instagram_url"
           name="instagram_url"
-          type="url"
-          placeholder="https://www.instagram.com/p/…"
+          type="text"
+          inputMode="url"
+          autoComplete="url"
+          placeholder="www.instagram.com/p/…"
           className="kawaii-input"
         />
         <p className="mt-1 text-xs text-ink-muted">
@@ -156,7 +158,7 @@ export function AdminCreateEventForm() {
           <label className="kawaii-label" htmlFor="image_url">
             Image link <span className="font-normal text-ink-muted">(optional)</span>
           </label>
-          <input id="image_url" name="image_url" type="url" className="kawaii-input" />
+          <input id="image_url" name="image_url" type="text" inputMode="url" autoComplete="url" placeholder="www.example.com/photo.jpg" className="kawaii-input" />
         </div>
       </AdminExtrasSection>
       {error && <p className="text-sm text-red-600">{error}</p>}

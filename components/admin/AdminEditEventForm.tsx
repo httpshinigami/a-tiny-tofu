@@ -163,7 +163,10 @@ export function AdminEditEventForm({ event }: { event: Event }) {
           <input
             id="external_url"
             name="external_url"
-            type="url"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            placeholder="www.example.com"
             defaultValue={event.external_url ?? ""}
             className="kawaii-input"
           />
@@ -179,7 +182,10 @@ export function AdminEditEventForm({ event }: { event: Event }) {
           <input
             id="tickets_url"
             name="tickets_url"
-            type="url"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            placeholder="www.example.com"
             defaultValue={event.tickets_url ?? ""}
             className="kawaii-input"
           />
@@ -196,8 +202,10 @@ export function AdminEditEventForm({ event }: { event: Event }) {
         <input
           id="instagram_url"
           name="instagram_url"
-          type="url"
-          placeholder="https://www.instagram.com/p/…"
+          type="text"
+          inputMode="url"
+          autoComplete="url"
+          placeholder="www.instagram.com/p/…"
           defaultValue={event.instagram_url ?? ""}
           className="kawaii-input"
         />
@@ -213,7 +221,10 @@ export function AdminEditEventForm({ event }: { event: Event }) {
           <input
             id="image_url"
             name="image_url"
-            type="url"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            placeholder="www.example.com/photo.jpg"
             defaultValue={event.image_url ?? ""}
             className="kawaii-input"
           />
