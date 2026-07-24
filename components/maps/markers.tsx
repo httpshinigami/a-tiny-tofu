@@ -1,9 +1,9 @@
 export type MarkerTone = "shop" | "shop-selected" | "event" | "event-selected";
 
 const MARKER_COLORS: Record<MarkerTone, string> = {
-  shop: "#E07A5F",
+  shop: "#4a3f38",
   "shop-selected": "#E53935",
-  event: "#E07A5F",
+  event: "#4a3f38",
   "event-selected": "#E53935",
 };
 

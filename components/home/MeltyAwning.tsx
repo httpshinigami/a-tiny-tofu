@@ -17,7 +17,7 @@ export function MeltyAwning({ className = "" }: { className?: string }) {
         <defs>
           <pattern
             id="melty-awning"
-            x={-unit / 2}
+            x={-unit / 1.5}
             width={patternWidth}
             height={height}
             patternUnits="userSpaceOnUse"
