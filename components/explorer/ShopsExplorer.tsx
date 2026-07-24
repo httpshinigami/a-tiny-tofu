@@ -119,7 +119,7 @@ export function ShopsExplorer({
                 onClick={() => setSelectedId(shop.id)}
                 className={`min-h-11 w-full px-2 py-3 text-left transition ${
                   effectiveSelectedId === shop.id
-                    ? "bg-sage/20 font-semibold text-sage-dark"
+                    ? "bg-pink/50 font-semibold text-pink-dark"
                     : "text-ink hover:bg-surface/80"
                 }`}
               >
@@ -226,32 +226,34 @@ export function ShopsExplorer({
   );
 
   return (
-    <ExplorerLayout
-      title={title}
-      subtitle={subtitle}
-      filterToggle={filterToggle}
-      filterPanel={
-        filterOpen && !searchOpen ? (
-          <ShopFilterPanel
-            categories={categories}
-            selected={activeTags}
-            onChange={setActiveTags}
-            onClose={() => setFilterOpen(false)}
+    <div className="mint-polka flex flex-1 flex-col">
+      <ExplorerLayout
+        title={title}
+        subtitle={subtitle}
+        filterToggle={filterToggle}
+        filterPanel={
+          filterOpen && !searchOpen ? (
+            <ShopFilterPanel
+              categories={categories}
+              selected={activeTags}
+              onChange={setActiveTags}
+              onClose={() => setFilterOpen(false)}
+            />
+          ) : null
+        }
+        sidebar={sidebar}
+        map={
+          <DynamicShopMap
+            shops={filtered}
+            selectedId={effectiveSelectedId}
+            onSelect={setSelectedId}
           />
-        ) : null
-      }
-      sidebar={sidebar}
-      map={
-        <DynamicShopMap
-          shops={filtered}
-          selectedId={effectiveSelectedId}
-          onSelect={setSelectedId}
-        />
-      }
-      renderDetail={() => <ShopDetailPanel shop={selected} />}
-      hasDetail={!!selected}
-      detailKey={effectiveSelectedId}
-    />
+        }
+        renderDetail={() => <ShopDetailPanel shop={selected} />}
+        hasDetail={!!selected}
+        detailKey={effectiveSelectedId}
+      />
+    </div>
   );
 }
 

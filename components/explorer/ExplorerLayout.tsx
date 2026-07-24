@@ -62,13 +62,13 @@ export function ExplorerLayout({
           </div>
         )}
         {leftPanel && (
-          <div className="absolute inset-y-0 right-full mr-6 hidden w-[340px] min-w-[340px] md:block">
+          <div className="absolute top-3 right-full mr-6 hidden h-[min(70vh,800px)] min-h-[480px] w-[340px] min-w-[340px] overflow-hidden md:block">
             {leftPanel}
           </div>
         )}
 
         <div
-          className="mb-2 flex w-full rounded-md border border-border p-1 md:hidden"
+          className="mb-2 flex w-full rounded-md border border-border bg-surface p-1 md:hidden"
           role="tablist"
           aria-label="View mode"
         >
@@ -87,7 +87,7 @@ export function ExplorerLayout({
         </div>
 
         <div
-          className={`relative grid w-full grid-cols-1 grid-rows-1 gap-0 border-y border-border md:h-[min(70vh,800px)] md:min-h-[480px] md:grid-cols-[minmax(220px,280px)_1fr] md:border md:border-border ${
+          className={`relative grid w-full grid-cols-1 grid-rows-1 gap-0 border-y border-border bg-surface md:h-[min(70vh,800px)] md:min-h-[480px] md:grid-cols-[minmax(220px,280px)_1fr] md:border md:border-border ${
             mobileView === "list"
               ? "h-[min(75dvh,720px)] min-h-[360px]"
               : "h-[min(52vh,440px)] min-h-[280px]"
@@ -154,7 +154,7 @@ function ViewTab({
       onClick={onClick}
       className={`min-h-11 flex-1 rounded-sm px-3 text-sm font-semibold transition ${
         active
-          ? "bg-peach text-ink"
+          ? "bg-pink text-ink"
           : "text-ink-muted hover:text-ink"
       }`}
     >

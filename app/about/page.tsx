@@ -9,9 +9,10 @@ export default function AboutPage() {
   return (
     <PageFrame>
       <h1 className="hidden text-3xl font-bold tracking-tight text-cocoa md:block md:text-4xl">
-        About World of Tiny Tofu
+        About World of Tiny Tofu...
       </h1>
       <p className="max-w-2xl leading-relaxed text-ink-muted md:mt-4">
+        hello everynyan!
         World of Tiny Tofu began with a soft spot for trinkets, tiny treasures,
         and all things cute, and a habit of falling a little in love with every
         art market, new artist, and whimsical little spot along the way.
@@ -22,13 +23,15 @@ export default function AboutPage() {
         place: markets, events, shops, and sweet food &amp; drink spots.
         Hopefully it makes discovering them just a bit easier for anyone who
         feels the same. ♡
+
+        so this is where we are now... 
       </p>
       <p className="mt-8 max-w-2xl leading-relaxed text-ink-muted">
-        Know a gem we should feature?{" "}
+        {" "}
         <a href="/submit" className="font-medium text-sage-dark underline">
           Submit your hidden gem
         </a>{" "}
-        and we&apos;ll take a look.
+        and we are going to make a map of the world of tiny tofu tgt...!
       </p>
       <div className="mt-8">
         <KawaiiButton href="/events" variant="primary">

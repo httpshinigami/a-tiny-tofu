@@ -3,7 +3,10 @@
 @theme inline {
   /* Page */
   --color-surface: #ffffff;
-  --color-border: #e8d5db;
+  /* Door / title brown */
+  --color-cocoa: #4a3f38;
+  --color-cocoa-dark: #3d342e;
+  --color-border: color-mix(in srgb, var(--color-cocoa) 22%, white);
 
   /* Readable ink */
   --color-ink: #2a2630;
@@ -15,13 +18,11 @@
   --color-coral: #e07a5f;
   --color-coral-dark: #c9654a;
   --color-pink: #efc4d0;
+  --color-pink-dark: #c9899a;
   --color-butter: #f0e2b0;
   --color-mint: #d8f0e4;
   --color-sage: #7f9b8a;
   --color-sage-dark: #64806f;
-  /* Door / title brown */
-  --color-cocoa: #4a3f38;
-  --color-cocoa-dark: #3d342e;
 
   --font-display: var(--font-dm-sans);
   --font-body: var(--font-dm-sans);
@@ -36,6 +37,16 @@ body {
 
 .home-mint {
   background-color: var(--color-mint);
+}
+
+/* Full-page mint with staggered polka dots (CSS tile, not a giant SVG) */
+.mint-polka {
+  background-color: var(--color-mint);
+  background-image:
+    radial-gradient(circle, rgba(87, 69, 69, 0.09) 9px, transparent 9px),
+    radial-gradient(circle, rgba(87, 69, 69, 0.09) 9px, transparent 9px);
+  background-size: 72px 144px;
+  background-position: 0 0, 36px 72px;
 }
 
 /* Biscuit cards — PNG alpha masks; hover swaps to bitten */

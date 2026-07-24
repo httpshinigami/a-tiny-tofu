@@ -77,14 +77,14 @@ function MonthList({
                         onClick={() => onSelectEvent(event.id)}
                         className={`min-h-11 w-full px-2 py-2.5 text-left transition ${
                           selected
-                            ? "bg-coral/15"
+                            ? "bg-pink/50"
                             : "hover:bg-surface/80"
                         }`}
                       >
                         <span
                           className={`block text-sm leading-snug ${
                             selected
-                              ? "font-semibold text-coral"
+                              ? "font-semibold text-pink-dark"
                               : "font-medium text-ink"
                           }`}
                         >
@@ -332,29 +332,31 @@ export function EventsExplorer({
   );
 
   return (
-    <ExplorerLayout
-      title="Markets & Events"
-      subtitle="Select an event to zoom the map and view more details"
-      sidebar={sidebar}
-      map={
-        <DynamicEventMap
-          events={filteredEvents}
-          selectedId={effectiveSelectedId}
-          onSelect={setSelectedId}
-        />
-      }
-      renderDetail={() => <EventDetailPanel event={selected} />}
-      hasDetail={!!selected}
-      detailKey={effectiveSelectedId}
-      leftPanel={
-        selected?.instagram_url ? (
-          <div className="flex h-full min-h-0 flex-col">
-            <div className="min-h-[560px] flex-1 overflow-y-auto overscroll-contain">
-              <InstagramEmbed url={selected.instagram_url} />
+    <div className="mint-polka flex flex-1 flex-col">
+      <ExplorerLayout
+        title="Markets & Events"
+        subtitle="Select an event to zoom the map and view more details"
+        sidebar={sidebar}
+        map={
+          <DynamicEventMap
+            events={filteredEvents}
+            selectedId={effectiveSelectedId}
+            onSelect={setSelectedId}
+          />
+        }
+        renderDetail={() => <EventDetailPanel event={selected} />}
+        hasDetail={!!selected}
+        detailKey={effectiveSelectedId}
+        leftPanel={
+          selected?.instagram_url ? (
+            <div className="flex h-full min-h-0 flex-col overflow-hidden">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                <InstagramEmbed url={selected.instagram_url} />
+              </div>
             </div>
-          </div>
-        ) : undefined
-      }
-    />
+          ) : undefined
+        }
+      />
+    </div>
   );
 }

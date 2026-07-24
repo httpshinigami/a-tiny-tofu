@@ -154,7 +154,7 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
         <h2 className="font-display text-xl font-bold leading-snug text-ink">
           {event.title}
         </h2>
-        <p className="mt-2 text-sm text-coral">{date}</p>
+        <p className="mt-2 text-sm text-pink-dark">{date}</p>
         {time && <p className="mt-0.5 text-sm text-ink-muted">{time}</p>}
         {event.venue_name && (
           <p className="mt-1 text-sm text-ink-muted">{event.venue_name}</p>

@@ -32,9 +32,9 @@ export default async function HomePage() {
             aria-hidden
           />
 
-          {/* Door — sits on the floor, left of the divider */}
+          {/* Door — only when wide enough not to cover the hero text */}
           <div
-            className="pointer-events-none absolute bottom-0 right-[42%] z-[5] hidden h-56 w-42 rounded-t-full bg-cocoa sm:h-72 sm:w-48 md:block md:h-[20.5rem] md:w-62"
+            className="pointer-events-none absolute bottom-0 right-[42%] z-[5] hidden h-[20.5rem] w-62 rounded-t-full bg-cocoa min-[1640px]:block"
             aria-hidden
           />
 
@@ -44,7 +44,7 @@ export default async function HomePage() {
                 Discover everything cute in Melbourne
               </h1>
               <p className="mt-5 text-base leading-relaxed text-ink-muted md:text-lg">
-                Markets, collectible shops, sweet treats, and whimsical little
+                Niche art markets, hobby shops, sweet treats, and whimsical little
                 spots, all in one cosy place.
               </p>
               <Link

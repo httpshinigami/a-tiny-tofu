@@ -131,20 +131,6 @@ export function ShopSubmitForm({
           />
         </div>
       </div>
-      <div>
-        <label className="kawaii-label" htmlFor="image_url">
-          Image link (optional)
-        </label>
-        <input
-          id="image_url"
-          name="image_url"
-          type="text"
-          inputMode="url"
-          autoComplete="url"
-          placeholder="www.example.com/photo.jpg"
-          className="kawaii-input"
-        />
-      </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <KawaiiButton type="submit" disabled={status === "loading"}>
         {status === "loading" ? "Sending…" : "Submit for review"}
