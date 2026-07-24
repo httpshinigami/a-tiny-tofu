@@ -334,7 +334,7 @@ export function EventsExplorer({
   return (
     <ExplorerLayout
       title="Markets & Events"
-      subtitle="Browse by month — select an event to zoom the map"
+      subtitle="Select an event to zoom the map and view more details"
       sidebar={sidebar}
       map={
         <DynamicEventMap

@@ -72,7 +72,7 @@ export const RETAIL_SHOP_TAGS = [
 export type RetailShopTag = (typeof RETAIL_SHOP_TAGS)[number];
 
 export const SHOP_TAG_LABELS: Record<ShopTag, string> = {
-  bubble_tea: "Bubble & fruit tea",
+  bubble_tea: "Milk tea & fruit tea",
   matcha: "Matcha",
   bakery: "Cakes & pastries",
   bingsu: "Bingsu",

@@ -18,7 +18,7 @@ export default async function ShopsPage() {
       filterTags={RETAIL_SHOP_TAGS}
       filterCategories={RETAIL_FILTER_CATEGORIES}
       title="Shops"
-      subtitle="Collectibles, character goods, and more — select a spot to zoom the map"
+      subtitle=" Select a shop to zoom the map and view more details"
       emptyMessage="No shops match"
       filterOpenByDefault
     />

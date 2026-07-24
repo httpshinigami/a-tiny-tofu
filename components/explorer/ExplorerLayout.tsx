@@ -86,7 +86,13 @@ export function ExplorerLayout({
           </ViewTab>
         </div>
 
-        <div className="relative grid h-[min(52vh,440px)] min-h-[280px] w-full grid-cols-1 grid-rows-1 gap-0 border-y border-border md:h-[min(70vh,800px)] md:min-h-[480px] md:grid-cols-[minmax(220px,280px)_1fr] md:border md:border-border">
+        <div
+          className={`relative grid w-full grid-cols-1 grid-rows-1 gap-0 border-y border-border md:h-[min(70vh,800px)] md:min-h-[480px] md:grid-cols-[minmax(220px,280px)_1fr] md:border md:border-border ${
+            mobileView === "list"
+              ? "h-[min(75dvh,720px)] min-h-[360px]"
+              : "h-[min(52vh,440px)] min-h-[280px]"
+          }`}
+        >
           <aside
             className={`col-start-1 row-start-1 flex min-h-0 flex-col overflow-hidden border-b border-border md:relative md:col-auto md:row-auto md:border-b-0 md:border-r md:border-border ${
               mobileView === "list"
@@ -107,8 +113,8 @@ export function ExplorerLayout({
           </div>
         </div>
 
-        {/* Mobile: details under the map, page scrolls */}
-        {hasDetail && (
+        {/* Mobile: details only under the map (not under the list) */}
+        {hasDetail && mobileView === "map" && (
           <div
             className="mt-5 border-t border-border pt-5 md:hidden"
             aria-label="Details"
