@@ -2,6 +2,7 @@
 
 import { DateTimePicker } from "@/components/forms/DateTimePicker";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
+import { isNaiveLocalDateTime } from "@/lib/naive-local-datetime";
 import type { EventSessionInput } from "@/lib/types";
 import { format, isValid, parse } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
@@ -14,13 +15,26 @@ interface Props {
   timeZone?: string;
 }
 
+function pad(n: number) {
+  return String(n).padStart(2, "0");
+}
+
+function snapTime(hours: number, minutes: number): string {
+  const snapped = Math.round(minutes / 5) * 5;
+  if (snapped === 60) {
+    return `${pad((hours + 1) % 24)}:00`;
+  }
+  return `${pad(hours)}:${pad(snapped)}`;
+}
+
+/** Wall-clock calendar day in the venue timezone (or as-written for naive values). */
 function calendarDateFromValue(
   value?: string | null,
   timeZone?: string
 ): Date | undefined {
   if (!value) return undefined;
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) {
-    const parsed = parse(value.slice(0, 16), "yyyy-MM-dd'T'HH:mm", new Date());
+  if (isNaiveLocalDateTime(value)) {
+    const parsed = parse(value, "yyyy-MM-dd'T'HH:mm", new Date());
     return isValid(parsed) ? parsed : undefined;
   }
   const instant = new Date(value);
@@ -31,16 +45,26 @@ function calendarDateFromValue(
 
 function timeFromValue(value?: string | null, timeZone?: string): string {
   if (!value) return "";
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) {
+  if (isNaiveLocalDateTime(value)) {
     return value.slice(11, 16);
   }
   const instant = new Date(value);
   if (!isValid(instant)) return "";
   const zoned = timeZone ? toZonedTime(instant, timeZone) : instant;
-  const snapped = Math.round(zoned.getMinutes() / 5) * 5;
-  const minutes = snapped === 60 ? 0 : snapped;
-  const hours = snapped === 60 ? (zoned.getHours() + 1) % 24 : zoned.getHours();
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  return snapTime(zoned.getHours(), zoned.getMinutes());
+}
+
+/** Convert stored UTC (or naive) datetimes to picker wall-clock strings. */
+function toNaiveLocal(
+  value?: string | null,
+  timeZone?: string
+): string {
+  if (!value) return "";
+  if (isNaiveLocalDateTime(value)) return value;
+  const date = calendarDateFromValue(value, timeZone);
+  const time = timeFromValue(value, timeZone);
+  if (!date || !time) return "";
+  return `${format(date, "yyyy-MM-dd")}T${time}`;
 }
 
 /** Keep end time, force end calendar day to match start. */
@@ -50,7 +74,7 @@ function syncEndToStartDate(
   timeZone?: string
 ): string | null {
   const startDate = calendarDateFromValue(start_at, timeZone);
-  if (!startDate) return end_at;
+  if (!startDate) return end_at ? toNaiveLocal(end_at, timeZone) || null : null;
   const endTime = timeFromValue(end_at, timeZone);
   if (!endTime) return null;
   return `${format(startDate, "yyyy-MM-dd")}T${endTime}`;
@@ -61,7 +85,7 @@ export function EventSessionsFields({ value, timeZone }: Props) {
   const nextKeyRef = useRef(0);
 
   function makeField(session?: EventSessionInput): SessionField {
-    const start_at = session?.start_at ?? "";
+    const start_at = toNaiveLocal(session?.start_at ?? "", timeZone);
     const end_at = syncEndToStartDate(
       start_at,
       session?.end_at ?? null,
@@ -114,7 +138,22 @@ export function EventSessionsFields({ value, timeZone }: Props) {
         ...field,
         end_at: syncEndToStartDate(field.start_at, field.end_at, timeZone),
       }));
-      return [...synced, makeField()];
+      const last = synced[synced.length - 1];
+      const lastDate = calendarDateFromValue(last?.start_at, timeZone);
+      const startTime = timeFromValue(last?.start_at, timeZone);
+      const endTime = timeFromValue(last?.end_at, timeZone);
+
+      if (!lastDate || !startTime) {
+        return [...synced, makeField()];
+      }
+
+      const nextDate = new Date(lastDate);
+      nextDate.setDate(nextDate.getDate() + 1);
+      const dateStr = format(nextDate, "yyyy-MM-dd");
+      const start_at = `${dateStr}T${startTime}`;
+      const end_at = endTime ? `${dateStr}T${endTime}` : null;
+
+      return [...synced, makeField({ start_at, end_at })];
     });
   }
 

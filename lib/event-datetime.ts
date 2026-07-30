@@ -1,18 +1,14 @@
 import { fromZonedTime } from "date-fns-tz";
 import { find as findTimezone } from "geo-tz";
 import { resolveCoords, type GeocodeResult } from "./geocode";
+import { isNaiveLocalDateTime } from "./naive-local-datetime";
 import type { EventSessionInput } from "./types";
 
-const NAIVE_LOCAL_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+export { isNaiveLocalDateTime } from "./naive-local-datetime";
 
 export function getTimezoneFromCoords(lat: number, lng: number): string {
   const zones = findTimezone(lat, lng);
   return zones[0] ?? "UTC";
-}
-
-/** True when the value is a wall-clock datetime from DateTimePicker (no timezone). */
-export function isNaiveLocalDateTime(value: string): boolean {
-  return NAIVE_LOCAL_RE.test(value);
 }
 
 /** Convert a venue-local wall-clock time to UTC ISO for storage. */

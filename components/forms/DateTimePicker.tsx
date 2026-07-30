@@ -1,7 +1,8 @@
 "use client";
 
 import { RequiredMark } from "@/components/ui/RequiredMark";
-import { format, isValid } from "date-fns";
+import { isNaiveLocalDateTime } from "@/lib/naive-local-datetime";
+import { format, isValid, parse } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { useEffect, useId, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
@@ -57,6 +58,21 @@ function splitValue(
   timeZone?: string
 ): { date?: Date; time: string } {
   if (!value) return { time: "" };
+
+  // Already a form wall-clock value — do not apply timezone conversion again.
+  if (isNaiveLocalDateTime(value)) {
+    const parsed = parse(value, "yyyy-MM-dd'T'HH:mm", new Date());
+    if (!isValid(parsed)) return { time: "" };
+    const snapped = Math.round(parsed.getMinutes() / 5) * 5;
+    const minutes = snapped === 60 ? 0 : snapped;
+    const hours =
+      snapped === 60 ? (parsed.getHours() + 1) % 24 : parsed.getHours();
+    return {
+      date: parsed,
+      time: `${pad(hours)}:${pad(minutes)}`,
+    };
+  }
+
   const instant = new Date(value);
   if (!isValid(instant)) return { time: "" };
   const d = timeZone ? toZonedTime(instant, timeZone) : instant;
