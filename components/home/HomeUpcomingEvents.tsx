@@ -113,7 +113,7 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
 
       <div
         ref={scrollerRef}
-        className="mt-6 cursor-grab touch-pan-x overflow-x-auto overscroll-x-contain active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mt-6 cursor-grab touch-pan-y overflow-x-auto overscroll-x-contain active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
