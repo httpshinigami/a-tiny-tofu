@@ -15,27 +15,23 @@ function formatTime(iso: string, timeZone?: string | null): string {
   });
 }
 
-function formatSingleDate(iso: string, timeZone?: string | null): string {
+function formatSessionDate(iso: string, timeZone?: string | null): string {
   return new Date(iso).toLocaleDateString("en-AU", {
     weekday: "short",
     day: "numeric",
     month: "short",
-    year: "numeric",
     ...tzOpts(timeZone),
   });
 }
 
-function formatSessionLine(
+function formatSessionTimes(
   startIso: string,
   endIso: string | null,
   timeZone?: string | null
 ): string {
-  const date = formatSingleDate(startIso, timeZone);
-  if (!endIso) return `${date} — ${formatTime(startIso, timeZone)}`;
-  return `${date} — ${formatTime(startIso, timeZone)} – ${formatTime(
-    endIso,
-    timeZone
-  )}`;
+  const start = formatTime(startIso, timeZone);
+  if (!endIso) return start;
+  return `${start} to ${formatTime(endIso, timeZone)}`;
 }
 
 function MetaBlock({
@@ -64,11 +60,25 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
     );
   }
 
-  const scheduleLines = event.sessions.length
-    ? event.sessions.map((session) =>
-        formatSessionLine(session.start_at, session.end_at, event.timezone)
-      )
-    : [formatSessionLine(event.start_at, event.end_at, event.timezone)];
+  const scheduleRows = event.sessions.length
+    ? event.sessions.map((session) => ({
+        date: formatSessionDate(session.start_at, event.timezone),
+        times: formatSessionTimes(
+          session.start_at,
+          session.end_at,
+          event.timezone
+        ),
+      }))
+    : [
+        {
+          date: formatSessionDate(event.start_at, event.timezone),
+          times: formatSessionTimes(
+            event.start_at,
+            event.end_at,
+            event.timezone
+          ),
+        },
+      ];
 
   return (
     <div className="space-y-5">
@@ -76,13 +86,17 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
         <h2 className="font-display text-xl font-bold leading-snug text-ink">
           {event.title}
         </h2>
-        <div className="mt-2 space-y-1">
-          {scheduleLines.map((line, index) => (
-            <p key={`${event.id}-session-${index}`} className="text-sm text-pink-dark">
-              {line}
-            </p>
+        <ul className="mt-2 space-y-1.5">
+          {scheduleRows.map((row, index) => (
+            <li
+              key={`${event.id}-session-${index}`}
+              className="flex items-baseline justify-between gap-3 text-sm text-pink-dark"
+            >
+              <span className="min-w-0 font-medium">{row.date}</span>
+              <span className="shrink-0 tabular-nums">{row.times}</span>
+            </li>
           ))}
-        </div>
+        </ul>
         {event.venue_name && (
           <p className="mt-1 text-sm text-ink-muted">{event.venue_name}</p>
         )}
