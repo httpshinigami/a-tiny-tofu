@@ -9,6 +9,20 @@ export const SEED_EVENTS: Event[] = [
       "A weekend market stall row of cute illustrators, blind boxes, and plush traders.",
     start_at: new Date(new Date().getFullYear(), 5, 14, 10, 0).toISOString(),
     end_at: new Date(new Date().getFullYear(), 5, 15, 16, 0).toISOString(),
+    sessions: [
+      {
+        id: "e1s1",
+        event_id: "e1",
+        start_at: new Date(new Date().getFullYear(), 5, 14, 10, 0).toISOString(),
+        end_at: new Date(new Date().getFullYear(), 5, 14, 16, 0).toISOString(),
+      },
+      {
+        id: "e1s2",
+        event_id: "e1",
+        start_at: new Date(new Date().getFullYear(), 5, 15, 10, 0).toISOString(),
+        end_at: new Date(new Date().getFullYear(), 5, 15, 16, 0).toISOString(),
+      },
+    ],
     venue_name: "Queen Victoria Market",
     address: "Queen St, Melbourne VIC 3000",
     lat: -37.8076,
@@ -29,7 +43,15 @@ export const SEED_EVENTS: Event[] = [
     description:
       "Local artists showcase kawaii illustrations, stickers, and zines. Free entry, donations welcome.",
     start_at: new Date(new Date().getFullYear(), 6, 5, 11, 0).toISOString(),
-    end_at: null,
+    end_at: new Date(new Date().getFullYear(), 6, 5, 16, 0).toISOString(),
+    sessions: [
+      {
+        id: "e2s1",
+        event_id: "e2",
+        start_at: new Date(new Date().getFullYear(), 6, 5, 11, 0).toISOString(),
+        end_at: new Date(new Date().getFullYear(), 6, 5, 16, 0).toISOString(),
+      },
+    ],
     venue_name: "Flinders Lane Studio",
     address: "45 Flinders Ln, Melbourne VIC 3000",
     lat: -37.815,
@@ -51,6 +73,14 @@ export const SEED_EVENTS: Event[] = [
       "Bring your doubles and trade with fellow collectors. Beginner-friendly vibe.",
     start_at: new Date(new Date().getFullYear(), 7, 20, 13, 0).toISOString(),
     end_at: new Date(new Date().getFullYear(), 7, 20, 18, 0).toISOString(),
+    sessions: [
+      {
+        id: "e3s1",
+        event_id: "e3",
+        start_at: new Date(new Date().getFullYear(), 7, 20, 13, 0).toISOString(),
+        end_at: new Date(new Date().getFullYear(), 7, 20, 18, 0).toISOString(),
+      },
+    ],
     venue_name: "Community Hall Carlton",
     address: "220 Rathdowne St, Carlton VIC 3053",
     lat: -37.8,

@@ -1,6 +1,7 @@
 import { fromZonedTime } from "date-fns-tz";
 import { find as findTimezone } from "geo-tz";
 import { resolveCoords, type GeocodeResult } from "./geocode";
+import type { EventSessionInput } from "./types";
 
 const NAIVE_LOCAL_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
 
@@ -26,36 +27,62 @@ export function localDateTimeToUtcIso(
   return fromZonedTime(normalized, timeZone).toISOString();
 }
 
-export interface ResolvedEventSchedule extends GeocodeResult {
+export interface ResolvedEventSessions extends GeocodeResult {
   timezone: string;
   start_at: string;
   end_at: string | null;
+  sessions: EventSessionInput[];
 }
 
-export async function resolveEventSchedule(input: {
-  address: string;
-  mapLocation?: string;
-  startAt: string;
-  endAt?: string | null;
-}): Promise<ResolvedEventSchedule> {
-  const coords = await resolveCoords(input.address, input.mapLocation);
-  const timezone = getTimezoneFromCoords(coords.lat, coords.lng);
-
-  const start_at = isNaiveLocalDateTime(input.startAt)
-    ? localDateTimeToUtcIso(input.startAt, timezone)
-    : new Date(input.startAt).toISOString();
+function normalizeSession(
+  session: EventSessionInput,
+  timezone: string
+): EventSessionInput {
+  const start_at = isNaiveLocalDateTime(session.start_at)
+    ? localDateTimeToUtcIso(session.start_at, timezone)
+    : new Date(session.start_at).toISOString();
 
   let end_at: string | null = null;
-  if (input.endAt) {
-    end_at = isNaiveLocalDateTime(input.endAt)
-      ? localDateTimeToUtcIso(input.endAt, timezone)
-      : new Date(input.endAt).toISOString();
+  if (!session.end_at) {
+    throw new Error("Session end time is required");
   }
+  end_at = isNaiveLocalDateTime(session.end_at)
+    ? localDateTimeToUtcIso(session.end_at, timezone)
+    : new Date(session.end_at).toISOString();
+
+  if (new Date(end_at).getTime() <= new Date(start_at).getTime()) {
+    throw new Error("Session end must be after start");
+  }
+
+  return { start_at, end_at };
+}
+
+export async function resolveEventSessions(input: {
+  address: string;
+  mapLocation?: string;
+  sessions: EventSessionInput[];
+}): Promise<ResolvedEventSessions> {
+  if (input.sessions.length === 0) {
+    throw new Error("At least one session is required");
+  }
+
+  const coords = await resolveCoords(input.address, input.mapLocation);
+  const timezone = getTimezoneFromCoords(coords.lat, coords.lng);
+  const sessions = input.sessions
+    .map((session) => normalizeSession(session, timezone))
+    .sort(
+      (a, b) =>
+        new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
+    );
+
+  const start_at = sessions[0].start_at;
+  const end_at = sessions[sessions.length - 1].end_at;
 
   return {
     ...coords,
     timezone,
     start_at,
     end_at,
+    sessions,
   };
 }

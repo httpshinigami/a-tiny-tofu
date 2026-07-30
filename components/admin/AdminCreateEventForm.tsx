@@ -3,10 +3,11 @@
 import { AdminExtrasSection } from "@/components/admin/AdminExtrasSection";
 import { AdminMapLocationField } from "@/components/admin/AdminMapLocationField";
 import { AddressInput } from "@/components/forms/AddressInput";
-import { DateTimePicker } from "@/components/forms/DateTimePicker";
+import { EventSessionsFields } from "@/components/forms/EventSessionsFields";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
 import type { Status } from "@/lib/constants";
+import { extractEventSessionsFromFormData } from "@/lib/event-form-sessions";
 import { formatMapLocation } from "@/lib/map-location";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -31,8 +32,7 @@ export function AdminCreateEventForm() {
       body: JSON.stringify({
         title: fd.get("title"),
         description: fd.get("description"),
-        start_at: fd.get("start_at"),
-        end_at: fd.get("end_at") || "",
+        sessions: extractEventSessionsFromFormData(fd),
         venue_name: fd.get("venue_name"),
         address: fd.get("address"),
         map_location: fd.get("map_location") || "",
@@ -74,20 +74,7 @@ export function AdminCreateEventForm() {
         </label>
         <textarea id="description" name="description" rows={3} className="kawaii-input" />
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <DateTimePicker
-          id="start_at"
-          name="start_at"
-          label="Start"
-          required
-        />
-        <DateTimePicker
-          id="end_at"
-          name="end_at"
-          label="End"
-          optional
-        />
-      </div>
+      <EventSessionsFields />
       <div>
         <label className="kawaii-label" htmlFor="venue_name">
           Venue

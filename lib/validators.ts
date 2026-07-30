@@ -45,11 +45,25 @@ const optionalInstagramUrl = z.preprocess(
     .optional()
 );
 
+const eventSessionSchema = z
+  .object({
+    start_at: z.string().min(1),
+    end_at: z.string().min(1),
+  })
+  .superRefine((session, ctx) => {
+    if (session.end_at <= session.start_at) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["end_at"],
+        message: "End time must be after start time",
+      });
+    }
+  });
+
 export const eventSubmitSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().max(5000).optional().or(z.literal("")),
-  start_at: z.string().min(1),
-  end_at: z.string().optional().or(z.literal("")),
+  sessions: z.array(eventSessionSchema).min(1),
   venue_name: z.string().min(1).max(200),
   address: z.string().min(1).max(500),
   external_url: optionalSafeHttpUrl,

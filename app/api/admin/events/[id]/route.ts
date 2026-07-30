@@ -1,6 +1,6 @@
 import { updateEvent } from "@/lib/queries";
 import { requireAdmin } from "@/lib/admin-auth";
-import { resolveEventSchedule } from "@/lib/event-datetime";
+import { resolveEventSessions } from "@/lib/event-datetime";
 import { adminEventSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
 
@@ -21,11 +21,13 @@ export async function PATCH(request: Request, { params }: Params) {
   const d = parsed.data;
   let schedule;
   try {
-    schedule = await resolveEventSchedule({
+    schedule = await resolveEventSessions({
       address: d.address,
       mapLocation: d.map_location,
-      startAt: d.start_at,
-      endAt: d.end_at || null,
+      sessions: d.sessions.map((session) => ({
+        start_at: session.start_at,
+        end_at: session.end_at || null,
+      })),
     });
   } catch {
     return NextResponse.json({ error: "Invalid date or time" }, { status: 400 });
@@ -36,6 +38,7 @@ export async function PATCH(request: Request, { params }: Params) {
     description: d.description ?? "",
     start_at: schedule.start_at,
     end_at: schedule.end_at,
+    sessions: schedule.sessions,
     venue_name: d.venue_name,
     address: d.address,
     lat: schedule.lat,

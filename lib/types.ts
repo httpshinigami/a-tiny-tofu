@@ -1,5 +1,18 @@
 import type { ShopTag, Status } from "./constants";
 
+export interface EventSession {
+  id: string;
+  event_id: string;
+  start_at: string;
+  end_at: string | null;
+  created_at?: string;
+}
+
+export interface EventSessionInput {
+  start_at: string;
+  end_at: string | null;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -7,6 +20,7 @@ export interface Event {
   description: string;
   start_at: string;
   end_at: string | null;
+  sessions: EventSession[];
   venue_name: string;
   address: string;
   lat: number;

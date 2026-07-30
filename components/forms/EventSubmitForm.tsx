@@ -1,9 +1,10 @@
 "use client";
 
 import { AddressInput } from "@/components/forms/AddressInput";
-import { DateTimePicker } from "@/components/forms/DateTimePicker";
+import { EventSessionsFields } from "@/components/forms/EventSessionsFields";
 import { KawaiiButton } from "@/components/ui/KawaiiButton";
 import { RequiredMark } from "@/components/ui/RequiredMark";
+import { extractEventSessionsFromFormData } from "@/lib/event-form-sessions";
 import { useState } from "react";
 
 export function EventSubmitForm() {
@@ -18,7 +19,10 @@ export function EventSubmitForm() {
     setError("");
     const form = e.currentTarget;
     const fd = new FormData(form);
-    const body = Object.fromEntries(fd.entries());
+    const body = {
+      ...Object.fromEntries(fd.entries()),
+      sessions: extractEventSessionsFromFormData(fd),
+    };
 
     const res = await fetch("/api/submit/event", {
       method: "POST",
@@ -83,20 +87,7 @@ export function EventSubmitForm() {
           className="kawaii-input"
         />
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
-        <DateTimePicker
-          id="start_at"
-          name="start_at"
-          label="Start date & time"
-          required
-        />
-        <DateTimePicker
-          id="end_at"
-          name="end_at"
-          label="End"
-          optional
-        />
-      </div>
+      <EventSessionsFields />
       <div>
         <label className="kawaii-label" htmlFor="venue_name">
           Venue name

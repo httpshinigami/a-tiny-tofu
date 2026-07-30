@@ -25,95 +25,17 @@ function formatSingleDate(iso: string, timeZone?: string | null): string {
   });
 }
 
-function sameCalendarDay(
-  a: string,
-  b: string,
-  timeZone?: string | null
-): boolean {
-  const opts: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    ...tzOpts(timeZone),
-  };
-  const start = new Date(a).toLocaleDateString("en-AU", opts);
-  const end = new Date(b).toLocaleDateString("en-AU", opts);
-  return start === end;
-}
-
-/** Compact range for multi-day events, e.g. "14–15 Jun 2026" or "28 Jun – 2 Jul 2026". */
-function formatDateRange(
+function formatSessionLine(
   startIso: string,
-  endIso: string,
+  endIso: string | null,
   timeZone?: string | null
 ): string {
-  const start = new Date(startIso);
-  const end = new Date(endIso);
-  const opts = tzOpts(timeZone);
-
-  const startYear = start.toLocaleDateString("en-AU", { year: "numeric", ...opts });
-  const endYear = end.toLocaleDateString("en-AU", { year: "numeric", ...opts });
-  const startMonth = start.toLocaleDateString("en-AU", { month: "numeric", ...opts });
-  const endMonth = end.toLocaleDateString("en-AU", { month: "numeric", ...opts });
-
-  if (startYear === endYear && startMonth === endMonth) {
-    const startDay = start.toLocaleDateString("en-AU", { day: "numeric", ...opts });
-    const endDay = end.toLocaleDateString("en-AU", { day: "numeric", ...opts });
-    const monthYear = start.toLocaleDateString("en-AU", {
-      month: "short",
-      year: "numeric",
-      ...opts,
-    });
-    return `${startDay}–${endDay} ${monthYear}`;
-  }
-
-  if (startYear === endYear) {
-    const startPart = start.toLocaleDateString("en-AU", {
-      day: "numeric",
-      month: "short",
-      ...opts,
-    });
-    const endPart = end.toLocaleDateString("en-AU", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      ...opts,
-    });
-    return `${startPart} – ${endPart}`;
-  }
-
-  const fullOpts: Intl.DateTimeFormatOptions = {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    ...opts,
-  };
-  return `${start.toLocaleDateString("en-AU", fullOpts)} – ${end.toLocaleDateString("en-AU", fullOpts)}`;
-}
-
-function getScheduleLines(
-  start: string,
-  end: string | null,
-  timeZone?: string | null
-): { date: string; time: string | null } {
-  if (!end) {
-    return {
-      date: formatSingleDate(start, timeZone),
-      time: formatTime(start, timeZone),
-    };
-  }
-
-  if (sameCalendarDay(start, end, timeZone)) {
-    return {
-      date: formatSingleDate(start, timeZone),
-      time: `${formatTime(start, timeZone)} – ${formatTime(end, timeZone)}`,
-    };
-  }
-
-  return {
-    date: formatDateRange(start, end, timeZone),
-    time: `${formatTime(start, timeZone)} – ${formatTime(end, timeZone)}`,
-  };
+  const date = formatSingleDate(startIso, timeZone);
+  if (!endIso) return `${date} — ${formatTime(startIso, timeZone)}`;
+  return `${date} — ${formatTime(startIso, timeZone)} – ${formatTime(
+    endIso,
+    timeZone
+  )}`;
 }
 
 function MetaBlock({
@@ -142,11 +64,11 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
     );
   }
 
-  const { date, time } = getScheduleLines(
-    event.start_at,
-    event.end_at,
-    event.timezone
-  );
+  const scheduleLines = event.sessions.length
+    ? event.sessions.map((session) =>
+        formatSessionLine(session.start_at, session.end_at, event.timezone)
+      )
+    : [formatSessionLine(event.start_at, event.end_at, event.timezone)];
 
   return (
     <div className="space-y-5">
@@ -154,8 +76,13 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
         <h2 className="font-display text-xl font-bold leading-snug text-ink">
           {event.title}
         </h2>
-        <p className="mt-2 text-sm text-pink-dark">{date}</p>
-        {time && <p className="mt-0.5 text-sm text-ink-muted">{time}</p>}
+        <div className="mt-2 space-y-1">
+          {scheduleLines.map((line, index) => (
+            <p key={`${event.id}-session-${index}`} className="text-sm text-pink-dark">
+              {line}
+            </p>
+          ))}
+        </div>
         {event.venue_name && (
           <p className="mt-1 text-sm text-ink-muted">{event.venue_name}</p>
         )}

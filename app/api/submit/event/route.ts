@@ -2,7 +2,7 @@ import {
   CONTENT_REJECT_MESSAGE,
   rejectEventSubmissionContent,
 } from "@/lib/content-moderation";
-import { resolveEventSchedule } from "@/lib/event-datetime";
+import { resolveEventSessions } from "@/lib/event-datetime";
 import { insertEvent } from "@/lib/queries";
 import {
   consumeSubmissionRateLimit,
@@ -47,10 +47,12 @@ export async function POST(request: Request) {
 
   let schedule;
   try {
-    schedule = await resolveEventSchedule({
+    schedule = await resolveEventSessions({
       address: data.address,
-      startAt: data.start_at,
-      endAt: data.end_at || null,
+      sessions: data.sessions.map((session) => ({
+        start_at: session.start_at,
+        end_at: session.end_at || null,
+      })),
     });
   } catch {
     return NextResponse.json({ error: "Invalid date or time" }, { status: 400 });
@@ -61,6 +63,7 @@ export async function POST(request: Request) {
     description: data.description ?? "",
     start_at: schedule.start_at,
     end_at: schedule.end_at,
+    sessions: schedule.sessions,
     venue_name: data.venue_name,
     address: data.address,
     lat: schedule.lat,

@@ -4,7 +4,7 @@ import { SEED_EVENTS, SEED_SHOPS } from "./seed-data";
 import { createAdminClient } from "./supabase/admin";
 import { toSafeHttpHref } from "./safe-url";
 import { toSafeInstagramEmbedUrl } from "./instagram-url";
-import type { Event, Shop } from "./types";
+import type { Event, EventSession, EventSessionInput, Shop } from "./types";
 import { isSupabaseConfigured, slugify } from "./utils";
 
 function mapShopRow(
@@ -29,7 +29,20 @@ function mapShopRow(
   };
 }
 
-function mapEventRow(row: Record<string, unknown>): Event {
+function mapEventSessionRow(row: Record<string, unknown>): EventSession {
+  return {
+    id: row.id as string,
+    event_id: row.event_id as string,
+    start_at: row.start_at as string,
+    end_at: (row.end_at as string) ?? null,
+    created_at: (row.created_at as string) ?? undefined,
+  };
+}
+
+function mapEventRow(
+  row: Record<string, unknown>,
+  sessions: EventSession[] = []
+): Event {
   return {
     id: row.id as string,
     title: row.title as string,
@@ -37,6 +50,7 @@ function mapEventRow(row: Record<string, unknown>): Event {
     description: row.description as string,
     start_at: row.start_at as string,
     end_at: (row.end_at as string) ?? null,
+    sessions,
     venue_name: row.venue_name as string,
     address: row.address as string,
     lat: row.lat as number,
@@ -52,6 +66,42 @@ function mapEventRow(row: Record<string, unknown>): Event {
     admin_note: (row.admin_note as string) ?? null,
     created_at: row.created_at as string,
   };
+}
+
+async function getEventSessionsByEventId(
+  eventIds: string[]
+): Promise<Map<string, EventSession[]>> {
+  const map = new Map<string, EventSession[]>();
+  if (!eventIds.length) return map;
+
+  const supabase = createAdminClient();
+  if (!supabase) return map;
+
+  const { data } = await supabase
+    .from("event_sessions")
+    .select("*")
+    .in("event_id", eventIds)
+    .order("start_at", { ascending: true });
+
+  for (const row of data ?? []) {
+    const session = mapEventSessionRow(row);
+    const list = map.get(session.event_id) ?? [];
+    list.push(session);
+    map.set(session.event_id, list);
+  }
+
+  return map;
+}
+
+async function attachEventSessions(
+  rows: Record<string, unknown>[]
+): Promise<Event[]> {
+  const sessionsByEvent = await getEventSessionsByEventId(
+    rows.map((row) => row.id as string)
+  );
+  return rows.map((row) =>
+    mapEventRow(row, sessionsByEvent.get(row.id as string) ?? [])
+  );
 }
 
 export async function getApprovedEvents(includePast = false): Promise<Event[]> {
@@ -79,7 +129,7 @@ export async function getApprovedEvents(includePast = false): Promise<Event[]> {
 
   const { data, error } = await query;
   if (error || !data) return SEED_EVENTS;
-  return data.map((row) => mapEventRow(row));
+  return attachEventSessions(data);
 }
 
 export async function getApprovedShops(tags?: ShopTag[]): Promise<Shop[]> {
@@ -131,7 +181,7 @@ export async function getPendingEvents(): Promise<Event[]> {
     .select("*")
     .eq("status", "pending")
     .order("created_at", { ascending: false });
-  return (data ?? []).map((row) => mapEventRow(row));
+  return attachEventSessions(data ?? []);
 }
 
 export async function getPendingShops(): Promise<Shop[]> {
@@ -164,7 +214,7 @@ export async function getAllEventsAdmin(): Promise<Event[]> {
     .from("events")
     .select("*")
     .order("created_at", { ascending: false });
-  return (data ?? []).map((row) => mapEventRow(row));
+  return attachEventSessions(data ?? []);
 }
 
 export async function getAllShopsAdmin(): Promise<Shop[]> {
@@ -186,7 +236,8 @@ export async function getAllShopsAdmin(): Promise<Shop[]> {
 }
 
 export async function insertEvent(
-  payload: Omit<Event, "id" | "slug" | "created_at" | "admin_note"> & {
+  payload: Omit<Event, "id" | "slug" | "created_at" | "admin_note" | "sessions"> & {
+    sessions: EventSessionInput[];
     slug?: string;
   }
 ): Promise<{ ok: boolean; error?: string }> {
@@ -196,7 +247,9 @@ export async function insertEvent(
   }
   const supabase = createAdminClient();
   if (!supabase) return { ok: false, error: "Database not configured" };
-  const { error } = await supabase.from("events").insert({
+  const { data, error } = await supabase
+    .from("events")
+    .insert({
     title: payload.title,
     slug,
     description: payload.description,
@@ -212,8 +265,24 @@ export async function insertEvent(
     tickets_url: payload.tickets_url,
     instagram_url: payload.instagram_url,
     status: payload.status,
-  });
-  return error ? { ok: false, error: error.message } : { ok: true };
+    })
+    .select("id")
+    .single();
+  if (error || !data) return { ok: false, error: error?.message ?? "Insert failed" };
+
+  const sessions = payload.sessions.map((session) => ({
+    event_id: data.id,
+    start_at: session.start_at,
+    end_at: session.end_at,
+  }));
+  if (sessions.length) {
+    const { error: sessionError } = await supabase
+      .from("event_sessions")
+      .insert(sessions);
+    if (sessionError) return { ok: false, error: sessionError.message };
+  }
+
+  return { ok: true };
 }
 
 export async function insertShop(
@@ -287,6 +356,7 @@ export async function deleteEvent(id: string): Promise<{ ok: boolean }> {
   if (!isSupabaseConfigured()) return { ok: true };
   const supabase = createAdminClient();
   if (!supabase) return { ok: false };
+  await supabase.from("event_sessions").delete().eq("event_id", id);
   await supabase.from("events").delete().eq("id", id);
   return { ok: true };
 }
@@ -307,7 +377,9 @@ export async function getEventById(id: string): Promise<Event | null> {
   const supabase = createAdminClient();
   if (!supabase) return null;
   const { data } = await supabase.from("events").select("*").eq("id", id).single();
-  return data ? mapEventRow(data) : null;
+  if (!data) return null;
+  const sessionsByEvent = await getEventSessionsByEventId([id]);
+  return mapEventRow(data, sessionsByEvent.get(id) ?? []);
 }
 
 export async function getShopById(id: string): Promise<Shop | null> {
@@ -332,7 +404,10 @@ export async function getShopById(id: string): Promise<Shop | null> {
 
 export async function updateEvent(
   id: string,
-  payload: Omit<Event, "id" | "created_at" | "slug"> & { slug?: string }
+  payload: Omit<Event, "id" | "created_at" | "slug" | "sessions"> & {
+    sessions: EventSessionInput[];
+    slug?: string;
+  }
 ): Promise<{ ok: boolean; error?: string }> {
   const slug = payload.slug ?? slugify(payload.title);
   if (!isSupabaseConfigured()) return { ok: true };
@@ -359,7 +434,29 @@ export async function updateEvent(
       admin_note: payload.admin_note,
     })
     .eq("id", id);
-  return error ? { ok: false, error: error.message } : { ok: true };
+  if (error) return { ok: false, error: error.message };
+
+  const { error: deleteSessionsError } = await supabase
+    .from("event_sessions")
+    .delete()
+    .eq("event_id", id);
+  if (deleteSessionsError) {
+    return { ok: false, error: deleteSessionsError.message };
+  }
+
+  const sessions = payload.sessions.map((session) => ({
+    event_id: id,
+    start_at: session.start_at,
+    end_at: session.end_at,
+  }));
+  if (sessions.length) {
+    const { error: sessionError } = await supabase
+      .from("event_sessions")
+      .insert(sessions);
+    if (sessionError) return { ok: false, error: sessionError.message };
+  }
+
+  return { ok: true };
 }
 
 export async function updateShop(
