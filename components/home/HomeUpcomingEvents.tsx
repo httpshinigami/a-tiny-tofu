@@ -40,17 +40,20 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
     dragging: false,
     pointerId: -1,
     startX: 0,
+    startY: 0,
     scrollLeft: 0,
   });
 
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
-    if (!el || e.button !== 0) return;
+    // Touch/pen: native overflow + page scroll. Mouse: custom drag-to-scroll.
+    if (!el || e.button !== 0 || e.pointerType !== "mouse") return;
     drag.current = {
       active: true,
       dragging: false,
       pointerId: e.pointerId,
       startX: e.clientX,
+      startY: e.clientY,
       scrollLeft: el.scrollLeft,
     };
   }, []);
@@ -61,8 +64,15 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
     if (!el || !state.active || e.pointerId !== state.pointerId) return;
 
     const dx = e.clientX - state.startX;
+    const dy = e.clientY - state.startY;
     if (!state.dragging) {
-      if (Math.abs(dx) < DRAG_THRESHOLD) return;
+      if (Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) return;
+      // Vertical intent — abandon custom drag so the page can scroll.
+      if (Math.abs(dy) >= Math.abs(dx)) {
+        state.active = false;
+        state.pointerId = -1;
+        return;
+      }
       state.dragging = true;
       el.setPointerCapture(e.pointerId);
       el.style.cursor = "grabbing";
@@ -113,7 +123,7 @@ export function HomeUpcomingEvents({ events }: { events: Event[] }) {
 
       <div
         ref={scrollerRef}
-        className="mt-6 cursor-grab touch-pan-y overflow-x-auto overscroll-x-contain active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mt-6 cursor-grab overflow-x-auto overscroll-x-contain active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
