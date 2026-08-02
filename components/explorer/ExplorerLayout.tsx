@@ -40,7 +40,7 @@ export function ExplorerLayout({
     <div className="flex w-full min-h-full flex-col md:flex-row md:items-start">
       {/* Desktop list: flush left; stays in view while the page scrolls */}
       <aside
-        className={`hidden w-[min(300px,30vw)] shrink-0 flex-col border-r border-border bg-surface md:flex ${STICKY_PANEL}`}
+        className={`hidden w-[min(340px,32vw)] shrink-0 flex-col border-r border-border bg-surface md:flex ${STICKY_PANEL}`}
         aria-label="List"
       >
         {sidebar}
@@ -50,10 +50,9 @@ export function ExplorerLayout({
       <div
         className={`flex min-h-0 min-w-0 flex-1 flex-col px-3 pt-2 pb-4 md:px-8 md:pt-6 md:pb-6 lg:px-10 ${STICKY_PANEL}`}
       >
-        {(filterToggle || filterPanel) && (
+        {filterToggle && (
           <div className="mb-3 flex w-full shrink-0 flex-col gap-2 md:mb-4">
             {filterToggle}
-            {filterPanel}
           </div>
         )}
 
@@ -83,6 +82,13 @@ export function ExplorerLayout({
               : "min-h-[280px] md:min-h-0"
           }`}
         >
+          {/* Filter popup over the map (does not push layout) */}
+          {filterPanel && (
+            <div className="absolute inset-x-3 top-3 z-20 max-h-[min(92%,48rem)] overflow-hidden rounded-2xl border border-border bg-surface shadow-lg md:inset-x-auto md:left-4 md:top-4 md:w-[min(100%-2rem,34rem)]">
+              {filterPanel}
+            </div>
+          )}
+
           {/* Mobile list only */}
           <aside
             className={`col-start-1 row-start-1 flex min-h-0 flex-col overflow-hidden md:hidden ${
@@ -115,9 +121,13 @@ export function ExplorerLayout({
         )}
       </div>
 
-      {/* Desktop info + embed: page scroll, no inner scrollbar */}
+      {/* Desktop info: sticky+centered when empty; natural height when selected */}
       <aside
-        className="hidden w-[22rem] shrink-0 flex-col px-4 py-6 mr-6 md:flex lg:w-[24rem] lg:px-5 lg:mr-10"
+        className={`hidden w-[22rem] shrink-0 flex-col px-4 py-6 mr-6 md:flex lg:w-[24rem] lg:px-5 lg:mr-10 ${
+          hasDetail
+            ? ""
+            : `${STICKY_PANEL} items-center justify-center`
+        }`}
         aria-label="Details"
       >
         {renderDetail()}

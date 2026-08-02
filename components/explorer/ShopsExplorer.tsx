@@ -9,7 +9,34 @@ import { SHOP_TAG_LABELS, type ShopTag } from "@/lib/constants";
 import { filterShopsByAllTags } from "@/lib/shop-categories";
 import type { ShopFilterCategory } from "@/lib/shop-filter-categories";
 import type { Shop } from "@/lib/types";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ButtonHTMLAttributes } from "react";
+
+type LocationFilter = "VIC" | "NSW";
+
+const LOCATION_OPTIONS: { id: LocationFilter; label: string }[] = [
+  { id: "VIC", label: "Victoria" },
+  { id: "NSW", label: "NSW" },
+];
+
+function shopMatchesLocations(
+  shop: Shop,
+  locations: LocationFilter[]
+): boolean {
+  if (locations.length === 0) return true;
+  const addr = shop.address.toLowerCase();
+  return locations.some((loc) => {
+    if (loc === "VIC") {
+      return (
+        /\bvic\b/.test(addr) ||
+        /\bvictoria\b(?=\s*,?\s*(?:\d{4}\b|australia\b|$))/.test(addr)
+      );
+    }
+    return (
+      /\bnsw\b/.test(addr) ||
+      /\bnew south wales\b/.test(addr)
+    );
+  });
+}
 
 interface Props {
   shops: Shop[];
@@ -28,11 +55,14 @@ export function ShopsExplorer({
   filterOpenByDefault = false,
 }: Props) {
   const [activeTags, setActiveTags] = useState<ShopTag[]>([]);
+  const [locations, setLocations] = useState<LocationFilter[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [locationOpen, setLocationOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const mobileSearchRef = useRef<HTMLInputElement>(null);
+  const locationMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!filterOpenByDefault) return;
@@ -44,6 +74,24 @@ export function ShopsExplorer({
     if (searchOpen) mobileSearchRef.current?.focus();
   }, [searchOpen]);
 
+  useEffect(() => {
+    if (!locationOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setLocationOpen(false);
+    }
+    function onPointerDown(e: PointerEvent) {
+      if (!locationMenuRef.current?.contains(e.target as Node)) {
+        setLocationOpen(false);
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [locationOpen]);
+
   const categories = useMemo(
     () =>
       filterCategories ??
@@ -52,7 +100,9 @@ export function ShopsExplorer({
   );
 
   const filtered = useMemo(() => {
-    let list = filterShopsByAllTags(shops, activeTags);
+    let list = filterShopsByAllTags(shops, activeTags).filter((shop) =>
+      shopMatchesLocations(shop, locations)
+    );
     const q = search.trim().toLowerCase();
     if (!q) return list;
     return list.filter((shop) => {
@@ -66,7 +116,7 @@ export function ShopsExplorer({
         tagLabels.includes(q)
       );
     });
-  }, [shops, activeTags, search]);
+  }, [shops, activeTags, locations, search]);
 
   const effectiveSelectedId =
     selectedId && filtered.some((s) => s.id === selectedId)
@@ -78,6 +128,7 @@ export function ShopsExplorer({
 
   function openSearch() {
     setFilterOpen(false);
+    setLocationOpen(false);
     setSearchOpen(true);
   }
 
@@ -88,6 +139,12 @@ export function ShopsExplorer({
 
   function removeTag(tag: ShopTag) {
     setActiveTags((prev) => prev.filter((t) => t !== tag));
+  }
+
+  function toggleLocation(id: LocationFilter) {
+    setLocations((prev) =>
+      prev.includes(id) ? prev.filter((l) => l !== id) : [...prev, id]
+    );
   }
 
   const sidebar = (
@@ -137,29 +194,97 @@ export function ShopsExplorer({
     </div>
   );
 
-  const filterButton = (
-    <button
-      type="button"
-      onClick={() => setFilterOpen((v) => !v)}
+  const locationButton = (
+    <div className="relative" ref={locationMenuRef}>
+      <PillButton
+        active={locationOpen || locations.length > 0}
+        aria-expanded={locationOpen}
+        aria-haspopup="listbox"
+        onClick={() => {
+          setLocationOpen((v) => !v);
+          setFilterOpen(false);
+        }}
+      >
+        <span>
+          {locations.length === 0
+            ? "Location"
+            : locations.length === 1
+              ? LOCATION_OPTIONS.find((o) => o.id === locations[0])?.label
+              : `Location · ${locations.length}`}
+        </span>
+        <ChevronDown />
+        {locations.length > 0 && (
+          <span className="rounded-full bg-ink px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+            {locations.length}
+          </span>
+        )}
+      </PillButton>
+      {locationOpen && (
+        <div
+          className="absolute left-0 top-full z-30 mt-2 w-52 rounded-2xl border border-border bg-surface p-3 shadow-lg"
+          role="listbox"
+          aria-label="Location"
+        >
+          <ul className="space-y-1">
+            {LOCATION_OPTIONS.map((option) => {
+              const checked = locations.includes(option.id);
+              return (
+                <li key={option.id}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={checked}
+                    onClick={() => toggleLocation(option.id)}
+                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                      checked
+                        ? "bg-pink/40 font-semibold text-ink"
+                        : "text-ink hover:bg-surface/80"
+                    }`}
+                  >
+                    {option.label}
+                    {checked && <span aria-hidden>✓</span>}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          {locations.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setLocations([])}
+              className="mt-2 w-full text-left text-xs font-medium text-sage-dark underline"
+            >
+              Clear location
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  const filtersButton = (
+    <PillButton
+      active={filterOpen || activeTags.length > 0}
       aria-expanded={filterOpen}
-      aria-label={filterOpen ? "Close filter" : "Show filters"}
-      className={`inline-flex min-h-11 items-center gap-2 px-2 text-sm font-semibold transition md:min-h-0 md:px-1 md:py-1 ${
-        filterOpen ? "text-sage-dark" : "text-ink hover:text-sage-dark"
-      }`}
+      aria-label={filterOpen ? "Close filters" : "Show filters"}
+      onClick={() => {
+        setFilterOpen((v) => !v);
+        setLocationOpen(false);
+      }}
     >
-      {filterOpen ? <CloseFilterIcon /> : <FilterIcon />}
-      <span>{filterOpen ? "Close filter" : "Filter"}</span>
-      {!filterOpen && activeTags.length > 0 && (
-        <span className="bg-sage/20 px-2 py-0.5 text-xs font-semibold text-sage-dark">
+      <FiltersIcon />
+      <span>Filters</span>
+      {activeTags.length > 0 && (
+        <span className="rounded-full bg-ink px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
           {activeTags.length}
         </span>
       )}
-    </button>
+    </PillButton>
   );
 
   const filterToggle = (
     <div className="flex w-full flex-col gap-2">
-      <div className="flex w-full items-center">
+      <div className="flex w-full items-center gap-2">
         {searchOpen ? (
           <div className="flex w-full items-center gap-2 md:hidden">
             <label htmlFor="shop-search-mobile" className="sr-only">
@@ -188,7 +313,8 @@ export function ShopsExplorer({
           </div>
         ) : (
           <>
-            {filterButton}
+            {locationButton}
+            {filtersButton}
             <button
               type="button"
               onClick={openSearch}
@@ -208,7 +334,7 @@ export function ShopsExplorer({
               key={tag}
               type="button"
               onClick={() => removeTag(tag)}
-              className="inline-flex min-h-9 items-center gap-1.5 bg-sage/15 px-2.5 py-1.5 text-xs font-semibold text-sage-dark transition hover:bg-sage/25"
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sage/15 px-2.5 py-1.5 text-xs font-semibold text-sage-dark transition hover:bg-sage/25"
               aria-label={`Remove ${SHOP_TAG_LABELS[tag]} filter`}
             >
               {SHOP_TAG_LABELS[tag]}
@@ -252,38 +378,74 @@ export function ShopsExplorer({
   );
 }
 
-function FilterIcon() {
+function PillButton({
+  active,
+  children,
+  className = "",
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
+  return (
+    <button
+      type="button"
+      className={`inline-flex min-h-11 items-center gap-2 rounded-full border bg-surface px-4 py-2.5 text-sm font-medium text-ink transition md:min-h-0 ${
+        active
+          ? "border-ink shadow-sm"
+          : "border-border hover:border-ink/50 hover:bg-white"
+      } ${className}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+function FiltersIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
       fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="size-5 shrink-0"
+      className="shrink-0"
       aria-hidden
     >
       <path
+        d="M2 4.5h8.5M12.5 4.5H14"
+        stroke="currentColor"
+        strokeWidth="1.5"
         strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
       />
+      <circle cx="11" cy="4.5" r="1.75" stroke="currentColor" strokeWidth="1.5" />
+      <path
+        d="M2 11.5h3.5M7.5 11.5H14"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <circle cx="6" cy="11.5" r="1.75" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }
 
-function CloseFilterIcon() {
+function ChevronDown() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      fill="currentColor"
-      viewBox="0 0 256 256"
-      className="shrink-0"
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      className="shrink-0 text-ink-muted"
       aria-hidden
     >
-      <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z" />
+      <path
+        d="M4 6l4 4 4-4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

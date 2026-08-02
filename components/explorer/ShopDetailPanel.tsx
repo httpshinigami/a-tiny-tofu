@@ -8,7 +8,7 @@ import type { Shop } from "@/lib/types";
 export function ShopDetailPanel({ shop }: { shop: Shop | null }) {
   if (!shop) {
     return (
-      <p className="text-center text-ink-muted">
+      <p className="max-w-[16rem] text-center text-sm leading-relaxed text-ink-muted">
         Pick a shop from the list or use filters to explore the map.
       </p>
     );

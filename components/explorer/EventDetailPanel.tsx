@@ -54,7 +54,7 @@ function MetaBlock({
 export function EventDetailPanel({ event }: { event: Event | null }) {
   if (!event) {
     return (
-      <p className="text-center text-sm text-ink-muted">
+      <p className="max-w-[16rem] text-center text-sm leading-relaxed text-ink-muted">
         Pick an event from the list to see details and zoom the map.
       </p>
     );
