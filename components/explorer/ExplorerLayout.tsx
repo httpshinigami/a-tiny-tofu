@@ -117,7 +117,7 @@ export function ExplorerLayout({
 
       {/* Desktop info + embed: page scroll, no inner scrollbar */}
       <aside
-        className="hidden w-[17.5rem] shrink-0 flex-col px-4 py-6 mr-6 md:flex lg:w-[19rem] lg:px-5 lg:mr-10"
+        className="hidden w-[22rem] shrink-0 flex-col px-4 py-6 mr-6 md:flex lg:w-[24rem] lg:px-5 lg:mr-10"
         aria-label="Details"
       >
         {renderDetail()}

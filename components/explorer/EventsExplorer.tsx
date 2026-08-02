@@ -348,9 +348,6 @@ export function EventsExplorer({
             <EventDetailPanel event={selected} />
             {selected?.instagram_url && (
               <div className="border-t border-border pt-5">
-                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted/70">
-                  Instagram
-                </p>
                 <InstagramEmbed url={selected.instagram_url} />
               </div>
             )}

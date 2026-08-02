@@ -42,7 +42,7 @@ export function toSafeInstagramEmbedUrl(
   return `https://www.instagram.com${path}`;
 }
 
-/** Returns the iframe src for an Instagram post/reel embed. */
+/** Returns the iframe src for an Instagram post/reel embed (media only, no caption). */
 export function getInstagramIframeSrc(
   value: string | null | undefined
 ): string | null {
@@ -52,5 +52,12 @@ export function getInstagramIframeSrc(
   const match = safe.match(/instagram\.com\/(p|reel|tv)\/([A-Za-z0-9_-]+)/i);
   if (!match) return null;
 
-  return `https://www.instagram.com/${match[1]}/${match[2]}/embed`;
+  // hidecaption=1 drops the caption block; we CSS-crop the remaining chrome.
+  return `https://www.instagram.com/${match[1]}/${match[2]}/embed/?hidecaption=1`;
+}
+
+/** True when the URL points at a Reel (taller media). */
+export function isInstagramReelUrl(value: string | null | undefined): boolean {
+  if (!value) return false;
+  return /instagram\.com\/reel\//i.test(value);
 }
