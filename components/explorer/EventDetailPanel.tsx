@@ -86,14 +86,11 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
         <h2 className="font-display text-xl font-bold leading-snug text-ink">
           {event.title}
         </h2>
-        <ul className="mt-2 space-y-1.5">
+        <ul className="mt-2 grid grid-cols-[auto_auto] justify-start gap-x-4 gap-y-1.5 text-sm text-pink-dark">
           {scheduleRows.map((row, index) => (
-            <li
-              key={`${event.id}-session-${index}`}
-              className="flex items-baseline justify-between gap-3 text-sm text-pink-dark"
-            >
-              <span className="min-w-0 font-medium">{row.date}</span>
-              <span className="shrink-0 tabular-nums">{row.times}</span>
+            <li key={`${event.id}-session-${index}`} className="contents">
+              <span className="font-medium">{row.date}</span>
+              <span className="tabular-nums text-right">{row.times}</span>
             </li>
           ))}
         </ul>
@@ -112,25 +109,35 @@ export function EventDetailPanel({ event }: { event: Event | null }) {
         <MetaBlock label="Address">
           {formatDisplayAddress(event.address)}
         </MetaBlock>
-        {event.external_url && (
-          <MetaBlock label="Organiser link">
-            <SafeExternalLink
-              href={event.external_url}
-              className="font-medium text-sage-dark underline decoration-sage/40 underline-offset-2 hover:text-sage"
-            >
-              Open link
-            </SafeExternalLink>
-          </MetaBlock>
-        )}
-        {event.tickets_url && (
-          <MetaBlock label="Tickets">
-            <SafeExternalLink
-              href={event.tickets_url}
-              className="font-medium text-sage-dark underline decoration-sage/40 underline-offset-2 hover:text-sage"
-            >
-              Get tickets
-            </SafeExternalLink>
-          </MetaBlock>
+        {(event.external_url || event.tickets_url) && (
+          <div
+            className={
+              event.external_url && event.tickets_url
+                ? "grid grid-cols-2 gap-4"
+                : undefined
+            }
+          >
+            {event.external_url && (
+              <MetaBlock label="Organiser link">
+                <SafeExternalLink
+                  href={event.external_url}
+                  className="font-medium text-sage-dark underline decoration-sage/40 underline-offset-2 hover:text-sage"
+                >
+                  Open link
+                </SafeExternalLink>
+              </MetaBlock>
+            )}
+            {event.tickets_url && (
+              <MetaBlock label="Tickets">
+                <SafeExternalLink
+                  href={event.tickets_url}
+                  className="font-medium text-sage-dark underline decoration-sage/40 underline-offset-2 hover:text-sage"
+                >
+                  Get tickets
+                </SafeExternalLink>
+              </MetaBlock>
+            )}
+          </div>
         )}
       </div>
     </div>
