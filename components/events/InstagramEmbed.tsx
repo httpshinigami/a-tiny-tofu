@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  getInstagramIframeSrc,
-  isInstagramReelUrl,
-} from "@/lib/instagram-url";
+import { getInstagramIframeSrc } from "@/lib/instagram-url";
 import { SafeExternalLink } from "@/components/ui/SafeExternalLink";
 
 interface Props {
@@ -16,7 +13,6 @@ const FOOTER_CROP = 72;
 
 export function InstagramEmbed({ url }: Props) {
   const iframeSrc = getInstagramIframeSrc(url);
-  const isReel = isInstagramReelUrl(url);
 
   if (!iframeSrc) {
     return (
@@ -31,8 +27,7 @@ export function InstagramEmbed({ url }: Props) {
 
   return (
     <div
-      className="instagram-embed-host relative w-full max-w-full overflow-hidden rounded-md bg-black/5"
-      style={{ aspectRatio: isReel ? "9 / 16" : "4 / 5" }}
+      className="instagram-embed-host relative aspect-square w-full max-w-full overflow-hidden rounded-md bg-black/5"
     >
       <iframe
         src={iframeSrc}
