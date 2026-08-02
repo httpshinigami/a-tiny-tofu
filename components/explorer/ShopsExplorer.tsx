@@ -1,6 +1,7 @@
 "use client";
 
 import { ExplorerLayout } from "@/components/explorer/ExplorerLayout";
+import { ExplorerPageShell } from "@/components/explorer/ExplorerPageShell";
 import { ShopDetailPanel } from "@/components/explorer/ShopDetailPanel";
 import { ShopFilterPanel } from "@/components/explorer/ShopFilterPanel";
 import { DynamicShopMap } from "@/components/maps/DynamicShopMap";
@@ -14,8 +15,6 @@ interface Props {
   shops: Shop[];
   filterTags: readonly ShopTag[];
   filterCategories?: readonly ShopFilterCategory[];
-  title: string;
-  subtitle: string;
   emptyMessage: string;
   /** Open filters by default on desktop only; mobile always starts closed. */
   filterOpenByDefault?: boolean;
@@ -25,8 +24,6 @@ export function ShopsExplorer({
   shops,
   filterTags,
   filterCategories,
-  title,
-  subtitle,
   emptyMessage,
   filterOpenByDefault = false,
 }: Props) {
@@ -226,10 +223,8 @@ export function ShopsExplorer({
   );
 
   return (
-    <div className="mint-polka flex flex-1 flex-col">
+    <ExplorerPageShell>
       <ExplorerLayout
-        title={title}
-        subtitle={subtitle}
         filterToggle={filterToggle}
         filterPanel={
           filterOpen && !searchOpen ? (
@@ -253,7 +248,7 @@ export function ShopsExplorer({
         hasDetail={!!selected}
         detailKey={effectiveSelectedId}
       />
-    </div>
+    </ExplorerPageShell>
   );
 }
 

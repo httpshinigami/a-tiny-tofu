@@ -2,6 +2,7 @@
 
 import { EventDetailPanel } from "@/components/explorer/EventDetailPanel";
 import { ExplorerLayout } from "@/components/explorer/ExplorerLayout";
+import { ExplorerPageShell } from "@/components/explorer/ExplorerPageShell";
 import { InstagramEmbed } from "@/components/events/InstagramEmbed";
 import { DynamicEventMap } from "@/components/maps/DynamicEventMap";
 import {
@@ -332,10 +333,8 @@ export function EventsExplorer({
   );
 
   return (
-    <div className="mint-polka flex flex-1 flex-col">
+    <ExplorerPageShell>
       <ExplorerLayout
-        title="Markets & Events"
-        subtitle="Select an event to zoom the map and view more details"
         sidebar={sidebar}
         map={
           <DynamicEventMap
@@ -344,19 +343,22 @@ export function EventsExplorer({
             onSelect={setSelectedId}
           />
         }
-        renderDetail={() => <EventDetailPanel event={selected} />}
-        hasDetail={!!selected}
-        detailKey={effectiveSelectedId}
-        leftPanel={
-          selected?.instagram_url ? (
-            <div className="flex h-full min-h-0 flex-col overflow-hidden">
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        renderDetail={() => (
+          <div className="space-y-5">
+            <EventDetailPanel event={selected} />
+            {selected?.instagram_url && (
+              <div className="border-t border-border pt-5">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted/70">
+                  Instagram
+                </p>
                 <InstagramEmbed url={selected.instagram_url} />
               </div>
-            </div>
-          ) : undefined
-        }
+            )}
+          </div>
+        )}
+        hasDetail={!!selected}
+        detailKey={effectiveSelectedId}
       />
-    </div>
+    </ExplorerPageShell>
   );
 }

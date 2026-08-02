@@ -4,17 +4,17 @@ import { useEffect, useState, type ReactNode } from "react";
 
 type MobileView = "list" | "map";
 
+/** Approx. header+footer so sticky list/map fill the main area between them. */
+const STICKY_PANEL =
+  "md:sticky md:top-0 md:h-[calc(100dvh-10rem)] md:max-h-[calc(100dvh-10rem)]";
+
 interface Props {
-  title: string;
-  subtitle?: string;
   sidebar: ReactNode;
   map: ReactNode;
   /** Called for desktop panel and mobile section separately. */
   renderDetail: () => ReactNode;
-  headerExtra?: ReactNode;
   filterToggle?: ReactNode;
   filterPanel?: ReactNode;
-  leftPanel?: ReactNode;
   /** When true, mobile shows details under the map. */
   hasDetail?: boolean;
   /** Changes when selection changes — switches mobile view to map. */
@@ -22,15 +22,11 @@ interface Props {
 }
 
 export function ExplorerLayout({
-  title,
-  subtitle,
   sidebar,
   map,
   renderDetail,
-  headerExtra,
   filterToggle,
   filterPanel,
-  leftPanel,
   hasDetail = false,
   detailKey = null,
 }: Props) {
@@ -41,34 +37,28 @@ export function ExplorerLayout({
   }, [detailKey]);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 pt-2 pb-6 md:px-8 md:py-8">
-      <div className="mb-4 hidden flex-wrap items-end justify-between gap-3 md:mb-6 md:flex md:gap-4">
-        <div className="min-w-0">
-          <h1 className="text-3xl font-bold tracking-tight text-cocoa md:text-4xl">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="mt-2 text-ink-muted">{subtitle}</p>
-          )}
-        </div>
-        {headerExtra}
-      </div>
+    <div className="flex w-full min-h-full flex-col md:flex-row md:items-start">
+      {/* Desktop list: flush left; stays in view while the page scrolls */}
+      <aside
+        className={`hidden w-[min(300px,30vw)] shrink-0 flex-col border-r border-border bg-surface md:flex ${STICKY_PANEL}`}
+        aria-label="List"
+      >
+        {sidebar}
+      </aside>
 
-      <div className="relative w-full">
+      {/* Center: map */}
+      <div
+        className={`flex min-h-0 min-w-0 flex-1 flex-col px-3 pt-2 pb-4 md:px-8 md:pt-6 md:pb-6 lg:px-10 ${STICKY_PANEL}`}
+      >
         {(filterToggle || filterPanel) && (
-          <div className="mb-2 flex w-full flex-col gap-2 md:absolute md:inset-y-0 md:right-full md:mb-0 md:mr-6 md:w-[340px] md:min-w-[340px] md:gap-3">
+          <div className="mb-3 flex w-full shrink-0 flex-col gap-2 md:mb-4">
             {filterToggle}
             {filterPanel}
           </div>
         )}
-        {leftPanel && (
-          <div className="absolute top-3 right-full mr-6 hidden h-[min(70vh,800px)] min-h-[480px] w-[340px] min-w-[340px] overflow-hidden md:block">
-            {leftPanel}
-          </div>
-        )}
 
         <div
-          className="mb-2 flex w-full rounded-md border border-border bg-surface p-1 md:hidden"
+          className="mb-2 flex w-full shrink-0 rounded-md border border-border bg-surface p-1 md:hidden"
           role="tablist"
           aria-label="View mode"
         >
@@ -87,23 +77,25 @@ export function ExplorerLayout({
         </div>
 
         <div
-          className={`relative grid w-full grid-cols-1 grid-rows-1 gap-0 border-y border-border bg-surface md:h-[min(70vh,800px)] md:min-h-[480px] md:grid-cols-[minmax(220px,280px)_1fr] md:border md:border-border ${
+          className={`relative mx-auto min-h-0 w-full max-w-[68rem] flex-1 grid grid-cols-1 grid-rows-1 gap-0 border-y border-border bg-surface md:border md:border-border ${
             mobileView === "list"
-              ? "h-[min(75dvh,720px)] min-h-[360px]"
-              : "h-[min(52vh,440px)] min-h-[280px]"
+              ? "min-h-[360px]"
+              : "min-h-[280px] md:min-h-0"
           }`}
         >
+          {/* Mobile list only */}
           <aside
-            className={`col-start-1 row-start-1 flex min-h-0 flex-col overflow-hidden border-b border-border md:relative md:col-auto md:row-auto md:border-b-0 md:border-r md:border-border ${
+            className={`col-start-1 row-start-1 flex min-h-0 flex-col overflow-hidden md:hidden ${
               mobileView === "list"
                 ? "z-[1]"
-                : "pointer-events-none invisible md:pointer-events-auto md:visible"
+                : "pointer-events-none invisible"
             }`}
           >
             {sidebar}
           </aside>
+
           <div
-            className={`col-start-1 row-start-1 min-h-0 overflow-hidden md:relative md:col-auto md:row-auto ${
+            className={`col-start-1 row-start-1 min-h-0 overflow-hidden md:relative ${
               mobileView === "map"
                 ? "z-[1]"
                 : "pointer-events-none invisible md:pointer-events-auto md:visible"
@@ -113,26 +105,23 @@ export function ExplorerLayout({
           </div>
         </div>
 
-        {/* Mobile: details only under the map (not under the list) */}
         {hasDetail && mobileView === "map" && (
           <div
-            className="mt-5 border-t border-border pt-5 md:hidden"
+            className="mt-5 shrink-0 border-t border-border pt-5 md:hidden"
             aria-label="Details"
           >
             {renderDetail()}
           </div>
         )}
-
-        {/* Desktop detail column */}
-        <div className="mt-6 hidden w-full border-t border-border pt-5 md:absolute md:top-0 md:left-full md:mt-0 md:ml-5 md:block md:h-[min(70vh,800px)] md:min-h-[480px] md:w-64 md:border-t-0 md:border-l md:border-border md:pt-0 md:pl-5 lg:w-72">
-          <aside
-            className="h-auto max-h-[50vh] w-full overflow-y-auto md:max-h-full"
-            aria-label="Details"
-          >
-            {renderDetail()}
-          </aside>
-        </div>
       </div>
+
+      {/* Desktop info + embed: page scroll, no inner scrollbar */}
+      <aside
+        className="hidden w-[17.5rem] shrink-0 flex-col px-4 py-6 mr-6 md:flex lg:w-[19rem] lg:px-5 lg:mr-10"
+        aria-label="Details"
+      >
+        {renderDetail()}
+      </aside>
     </div>
   );
 }
@@ -153,9 +142,7 @@ function ViewTab({
       aria-selected={active}
       onClick={onClick}
       className={`min-h-11 flex-1 rounded-sm px-3 text-sm font-semibold transition ${
-        active
-          ? "bg-pink text-ink"
-          : "text-ink-muted hover:text-ink"
+        active ? "bg-pink text-ink" : "text-ink-muted hover:text-ink"
       }`}
     >
       {children}

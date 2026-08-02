@@ -2,9 +2,9 @@ export type MarkerTone = "shop" | "shop-selected" | "event" | "event-selected";
 
 const MARKER_COLORS: Record<MarkerTone, string> = {
   shop: "#4a3f38",
-  "shop-selected": "#E53935",
+  "shop-selected": "#c9899a",
   event: "#4a3f38",
-  "event-selected": "#E53935",
+  "event-selected": "#c9899a",
 };
 
 export function markerSize(selected: boolean): number {

@@ -25,13 +25,13 @@ export function InstagramEmbed({ url }: Props) {
   }
 
   return (
-    <div className="instagram-embed-host w-[326px] max-w-full shrink-0">
+    <div className="instagram-embed-host w-full max-w-full">
       <iframe
         src={iframeSrc}
         title="Instagram post"
         width={EMBED_WIDTH}
         height={EMBED_HEIGHT}
-        className="block w-full border-0"
+        className="block w-full max-w-full border-0"
         loading="lazy"
         scrolling="no"
         allow="encrypted-media"

@@ -17,10 +17,7 @@ export default async function ShopsPage() {
       shops={shops}
       filterTags={RETAIL_SHOP_TAGS}
       filterCategories={RETAIL_FILTER_CATEGORIES}
-      title="Shops"
-      subtitle=" Select a shop to zoom the map and view more details"
       emptyMessage="No shops match"
-      filterOpenByDefault
     />
   );
 }
