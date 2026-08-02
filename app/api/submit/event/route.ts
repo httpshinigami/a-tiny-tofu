@@ -68,6 +68,7 @@ export async function POST(request: Request) {
     address: data.address,
     lat: schedule.lat,
     lng: schedule.lng,
+    state: schedule.state,
     timezone: schedule.timezone,
     image_url: null,
     external_url: data.external_url || null,

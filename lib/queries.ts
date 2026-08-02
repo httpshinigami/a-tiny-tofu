@@ -1,3 +1,8 @@
+import type { AuState } from "./au-state";
+import {
+  parseAuStateFromAddress,
+  parseAuStateFromRegionLabel,
+} from "./au-state";
 import type { ShopTag, Status } from "./constants";
 import { shopHasAllTags } from "./shop-categories";
 import { SEED_EVENTS, SEED_SHOPS } from "./seed-data";
@@ -7,18 +12,29 @@ import { toSafeInstagramEmbedUrl } from "./instagram-url";
 import type { Event, EventSession, EventSessionInput, Shop } from "./types";
 import { isSupabaseConfigured, slugify } from "./utils";
 
+function mapAuState(value: unknown, address: string): AuState | null {
+  if (typeof value === "string" && value) {
+    return (
+      parseAuStateFromRegionLabel(value) ?? parseAuStateFromAddress(address)
+    );
+  }
+  return parseAuStateFromAddress(address);
+}
+
 function mapShopRow(
   row: Record<string, unknown>,
   tags: ShopTag[] = []
 ): Shop {
+  const address = row.address as string;
   return {
     id: row.id as string,
     name: row.name as string,
     slug: row.slug as string,
     description: row.description as string,
-    address: row.address as string,
+    address,
     lat: row.lat as number,
     lng: row.lng as number,
+    state: mapAuState(row.state, address),
     website: toSafeHttpHref(row.website as string | null | undefined),
     hours: (row.hours as string) ?? null,
     image_url: toSafeHttpHref(row.image_url as string | null | undefined),
@@ -43,6 +59,7 @@ function mapEventRow(
   row: Record<string, unknown>,
   sessions: EventSession[] = []
 ): Event {
+  const address = row.address as string;
   return {
     id: row.id as string,
     title: row.title as string,
@@ -52,9 +69,10 @@ function mapEventRow(
     end_at: (row.end_at as string) ?? null,
     sessions,
     venue_name: row.venue_name as string,
-    address: row.address as string,
+    address,
     lat: row.lat as number,
     lng: row.lng as number,
+    state: mapAuState(row.state, address),
     timezone: (row.timezone as string) ?? null,
     image_url: toSafeHttpHref(row.image_url as string | null | undefined),
     external_url: toSafeHttpHref(row.external_url as string | null | undefined),
@@ -259,6 +277,7 @@ export async function insertEvent(
     address: payload.address,
     lat: payload.lat,
     lng: payload.lng,
+    state: payload.state,
     timezone: payload.timezone,
     image_url: payload.image_url,
     external_url: payload.external_url,
@@ -306,6 +325,7 @@ export async function insertShop(
       address: payload.address,
       lat: payload.lat,
       lng: payload.lng,
+      state: payload.state,
       website: payload.website,
       hours: payload.hours,
       image_url: payload.image_url,
@@ -425,6 +445,7 @@ export async function updateEvent(
       address: payload.address,
       lat: payload.lat,
       lng: payload.lng,
+      state: payload.state,
       timezone: payload.timezone,
       image_url: payload.image_url,
       external_url: payload.external_url,
@@ -479,6 +500,7 @@ export async function updateShop(
       address: payload.address,
       lat: payload.lat,
       lng: payload.lng,
+      state: payload.state,
       website: payload.website,
       hours: payload.hours,
       image_url: payload.image_url,

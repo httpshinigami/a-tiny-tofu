@@ -28,6 +28,7 @@ export async function POST(request: Request) {
     address: d.address,
     lat: coords.lat,
     lng: coords.lng,
+    state: coords.state,
     website: d.website || null,
     hours: d.hours || null,
     image_url: d.image_url || null,

@@ -1,3 +1,4 @@
+import type { AuState } from "./au-state";
 import type { ShopTag, Status } from "./constants";
 
 export interface EventSession {
@@ -25,6 +26,7 @@ export interface Event {
   address: string;
   lat: number;
   lng: number;
+  state: AuState | null;
   timezone: string | null;
   image_url: string | null;
   external_url: string | null;
@@ -43,6 +45,7 @@ export interface Shop {
   address: string;
   lat: number;
   lng: number;
+  state: AuState | null;
   website: string | null;
   hours: string | null;
   image_url: string | null;

@@ -53,6 +53,7 @@ export async function POST(request: Request) {
     address: data.address,
     lat: coords.lat,
     lng: coords.lng,
+    state: coords.state,
     website: data.website || null,
     hours: data.hours || null,
     image_url: data.image_url || null,

@@ -3,8 +3,13 @@
 import { EventDetailPanel } from "@/components/explorer/EventDetailPanel";
 import { ExplorerLayout } from "@/components/explorer/ExplorerLayout";
 import { ExplorerPageShell } from "@/components/explorer/ExplorerPageShell";
+import { LocationFilterMenu } from "@/components/explorer/LocationFilterMenu";
 import { InstagramEmbed } from "@/components/events/InstagramEmbed";
 import { DynamicEventMap } from "@/components/maps/DynamicEventMap";
+import {
+  matchesLocationFilter,
+  type LocationFilter,
+} from "@/lib/au-state";
 import {
   getCurrentYear,
   getEventMonth,
@@ -169,6 +174,7 @@ export function EventsExplorer({
   const currentYear = getCurrentYear();
   const currentMonth = new Date().getMonth();
   const [search, setSearch] = useState("");
+  const [locations, setLocations] = useState<LocationFilter[]>([]);
   const [expandedYears, setExpandedYears] = useState<Set<number> | null>(null);
   const [expandedMonths, setExpandedMonths] = useState<Set<string> | null>(
     null
@@ -178,10 +184,12 @@ export function EventsExplorer({
     return events.some((e) => e.id === initialFocusId) ? initialFocusId : null;
   });
 
-  const filteredEvents = useMemo(
-    () => filterEventsBySearch(events, search),
-    [events, search]
-  );
+  const filteredEvents = useMemo(() => {
+    const byLocation = events.filter((event) =>
+      matchesLocationFilter(event.state, event.address, locations)
+    );
+    return filterEventsBySearch(byLocation, search);
+  }, [events, search, locations]);
 
   const yearSections = useMemo(() => {
     const years = [...new Set(filteredEvents.map(getEventYear))].sort(
@@ -335,6 +343,49 @@ export function EventsExplorer({
   return (
     <ExplorerPageShell>
       <ExplorerLayout
+        filterToggle={
+          <LocationFilterMenu
+            value={locations}
+            onChange={setLocations}
+            renderButton={({ active, label, count, onClick, open }) => (
+              <button
+                type="button"
+                aria-expanded={open}
+                aria-haspopup="listbox"
+                onClick={onClick}
+                className={`inline-flex min-h-11 items-center gap-2 rounded-full border bg-surface px-4 py-2.5 text-sm font-medium text-ink transition md:min-h-0 ${
+                  active
+                    ? "border-ink shadow-sm"
+                    : "border-border hover:border-ink/50 hover:bg-white"
+                }`}
+              >
+                <span>{label}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  className="shrink-0 text-ink-muted"
+                  aria-hidden
+                >
+                  <path
+                    d="M4 6l4 4 4-4"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                {count > 0 && (
+                  <span className="rounded-full bg-ink px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                    {count}
+                  </span>
+                )}
+              </button>
+            )}
+          />
+        }
         sidebar={sidebar}
         map={
           <DynamicEventMap

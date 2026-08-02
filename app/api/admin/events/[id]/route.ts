@@ -43,6 +43,7 @@ export async function PATCH(request: Request, { params }: Params) {
     address: d.address,
     lat: schedule.lat,
     lng: schedule.lng,
+    state: schedule.state,
     timezone: schedule.timezone,
     image_url: d.image_url || null,
     external_url: d.external_url || null,

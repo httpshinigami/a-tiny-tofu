@@ -1,10 +1,25 @@
+import { resolveAuState, type AuState } from "./au-state";
 import { MELBOURNE_CENTER } from "./constants";
 import { parseMapLocation } from "./map-location";
 
 export interface GeocodeResult {
   lat: number;
   lng: number;
+  state: AuState | null;
 }
+
+type MapboxForwardFeature = {
+  geometry?: { coordinates?: [number, number] };
+  properties?: {
+    context?: {
+      region?: {
+        name?: string;
+        region_code?: string;
+        region_code_full?: string;
+      };
+    };
+  };
+};
 
 async function geocodeWithMapbox(
   address: string
@@ -28,12 +43,25 @@ async function geocodeWithMapbox(
   try {
     const res = await fetch(url, { next: { revalidate: 86400 } });
     if (!res.ok) return null;
-    const data = (await res.json()) as {
-      features?: { geometry?: { coordinates?: [number, number] } }[];
-    };
-    const coords = data.features?.[0]?.geometry?.coordinates;
+    const data = (await res.json()) as { features?: MapboxForwardFeature[] };
+    const feature = data.features?.[0];
+    const coords = feature?.geometry?.coordinates;
     if (!coords) return null;
-    return { lng: coords[0], lat: coords[1] };
+
+    const region = feature?.properties?.context?.region;
+    const lat = coords[1];
+    const lng = coords[0];
+    return {
+      lng,
+      lat,
+      state: resolveAuState({
+        address,
+        lat,
+        lng,
+        regionHint:
+          region?.region_code_full ?? region?.region_code ?? region?.name,
+      }),
+    };
   } catch {
     return null;
   }
@@ -42,8 +70,8 @@ async function geocodeWithMapbox(
 async function geocodeWithNominatim(
   address: string
 ): Promise<GeocodeResult | null> {
-  const query = encodeURIComponent(`${address}, Melbourne, Australia`);
-  const url = `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`;
+  const query = encodeURIComponent(`${address}, Australia`);
+  const url = `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1&addressdetails=1&countrycodes=au`;
 
   try {
     const res = await fetch(url, {
@@ -51,9 +79,20 @@ async function geocodeWithNominatim(
       next: { revalidate: 86400 },
     });
     if (!res.ok) return null;
-    const data = (await res.json()) as { lat: string; lon: string }[];
+    const data = (await res.json()) as {
+      lat: string;
+      lon: string;
+      address?: { state?: string; state_code?: string };
+    }[];
     if (!data?.length) return null;
-    return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    const lat = parseFloat(data[0].lat);
+    const lng = parseFloat(data[0].lon);
+    const regionHint = data[0].address?.state_code ?? data[0].address?.state;
+    return {
+      lat,
+      lng,
+      state: resolveAuState({ address, lat, lng, regionHint }),
+    };
   } catch {
     return null;
   }
@@ -67,8 +106,14 @@ export async function geocodeAddress(
   );
 }
 
-export function fallbackCoords(): GeocodeResult {
-  return { ...MELBOURNE_CENTER };
+export function fallbackCoords(address?: string): GeocodeResult {
+  const lat = MELBOURNE_CENTER.lat;
+  const lng = MELBOURNE_CENTER.lng;
+  return {
+    lat,
+    lng,
+    state: resolveAuState({ address, lat, lng }) ?? "VIC",
+  };
 }
 
 export async function resolveCoords(
@@ -76,6 +121,15 @@ export async function resolveCoords(
   mapLocation?: string
 ): Promise<GeocodeResult> {
   const parsed = mapLocation ? parseMapLocation(mapLocation) : null;
-  if (parsed) return parsed;
-  return (await geocodeAddress(address)) ?? fallbackCoords();
+  if (parsed) {
+    return {
+      ...parsed,
+      state: resolveAuState({
+        address,
+        lat: parsed.lat,
+        lng: parsed.lng,
+      }),
+    };
+  }
+  return (await geocodeAddress(address)) ?? fallbackCoords(address);
 }
