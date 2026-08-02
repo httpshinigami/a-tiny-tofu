@@ -120,12 +120,14 @@ export function AdminEditShopForm({
       </div>
       <div>
         <label className="kawaii-label" htmlFor="description">
-          Description <span className="font-normal text-ink-muted">(optional)</span>
+          Description{" "}
+          <span className="font-normal text-ink-muted">(optional, max 200)</span>
         </label>
         <textarea
           id="description"
           name="description"
           rows={4}
+          maxLength={200}
           defaultValue={shop.description}
           className="kawaii-input"
         />

@@ -80,9 +80,16 @@ export function AdminCreateShopForm({
       </div>
       <div>
         <label className="kawaii-label" htmlFor="description">
-          Description <span className="font-normal text-ink-muted">(optional)</span>
+          Description{" "}
+          <span className="font-normal text-ink-muted">(optional, max 200)</span>
         </label>
-        <textarea id="description" name="description" rows={3} className="kawaii-input" />
+        <textarea
+          id="description"
+          name="description"
+          rows={3}
+          maxLength={200}
+          className="kawaii-input"
+        />
       </div>
       <div>
         <label className="kawaii-label" htmlFor="address">
