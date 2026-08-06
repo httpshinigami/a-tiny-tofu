@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, type ReactNode } from "react";
 
 type MobileView = "list" | "map";
 
@@ -30,11 +31,26 @@ export function ExplorerLayout({
   hasDetail = false,
   detailKey = null,
 }: Props) {
-  const [mobileView, setMobileView] = useState<MobileView>("map");
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const mobileView: MobileView =
+    searchParams.get("view") === "list" ? "list" : "map";
+
+  function setMobileView(next: MobileView) {
+    if (next === mobileView) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", next);
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
 
   useEffect(() => {
-    if (detailKey) setMobileView("map");
-  }, [detailKey]);
+    // If user selected from list, switch to map and create a history step.
+    if (detailKey && mobileView === "list") {
+      setMobileView("map");
+    }
+  }, [detailKey, mobileView]);
 
   return (
     <div className="flex w-full min-h-full flex-col md:flex-row md:items-start">
