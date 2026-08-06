@@ -94,11 +94,9 @@ export function ShopsExplorer({
     filtered.find((s) => s.id === effectiveSelectedId) ?? null;
 
   function toggleSelectShop(id: string) {
-    setSelectedId((prev) => {
-      const next = prev === id ? null : id;
-      if (next) pushMobileView("map");
-      return next;
-    });
+    const selecting = selectedId !== id;
+    setSelectedId(selecting ? id : null);
+    if (selecting) pushMobileView("map");
   }
 
   function openSearch() {

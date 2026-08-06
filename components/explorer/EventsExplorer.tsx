@@ -271,11 +271,9 @@ export function EventsExplorer({
     filteredEvents.find((e) => e.id === effectiveSelectedId) ?? null;
 
   function toggleSelectEvent(id: string) {
-    setSelectedId((prev) => {
-      const next = prev === id ? null : id;
-      if (next) pushMobileView("map");
-      return next;
-    });
+    const selecting = selectedId !== id;
+    setSelectedId(selecting ? id : null);
+    if (selecting) pushMobileView("map");
   }
 
   function toggleYear(year: number) {
