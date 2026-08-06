@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, type ReactNode } from "react";
 
 type MobileView = "list" | "map";
 
@@ -22,15 +22,15 @@ interface Props {
   detailKey?: string | null;
 }
 
-export function ExplorerLayout({
-  sidebar,
-  map,
-  renderDetail,
-  filterToggle,
-  filterPanel,
-  hasDetail = false,
-  detailKey = null,
-}: Props) {
+export function ExplorerLayout(props: Props) {
+  return (
+    <Suspense fallback={<ExplorerLayoutShell {...props} mobileView="map" />}>
+      <ExplorerLayoutWithSearchParams {...props} />
+    </Suspense>
+  );
+}
+
+function ExplorerLayoutWithSearchParams(props: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -47,11 +47,29 @@ export function ExplorerLayout({
 
   useEffect(() => {
     // If user selected from list, switch to map and create a history step.
-    if (detailKey && mobileView === "list") {
+    if (props.detailKey && mobileView === "list") {
       setMobileView("map");
     }
-  }, [detailKey, mobileView]);
+  }, [props.detailKey, mobileView]);
 
+  return (
+    <ExplorerLayoutShell {...props} mobileView={mobileView} setMobileView={setMobileView} />
+  );
+}
+
+function ExplorerLayoutShell({
+  sidebar,
+  map,
+  renderDetail,
+  filterToggle,
+  filterPanel,
+  hasDetail = false,
+  mobileView,
+  setMobileView,
+}: Props & {
+  mobileView: MobileView;
+  setMobileView?: (view: MobileView) => void;
+}) {
   return (
     <div className="flex w-full min-h-full flex-col md:flex-row md:items-start">
       {/* Desktop list: flush left; stays in view while the page scrolls */}
@@ -79,13 +97,13 @@ export function ExplorerLayout({
         >
           <ViewTab
             active={mobileView === "list"}
-            onClick={() => setMobileView("list")}
+            onClick={() => setMobileView?.("list")}
           >
             List
           </ViewTab>
           <ViewTab
             active={mobileView === "map"}
-            onClick={() => setMobileView("map")}
+            onClick={() => setMobileView?.("map")}
           >
             Map
           </ViewTab>
