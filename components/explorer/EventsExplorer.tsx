@@ -267,6 +267,10 @@ export function EventsExplorer({
   const selected =
     filteredEvents.find((e) => e.id === effectiveSelectedId) ?? null;
 
+  function toggleSelectEvent(id: string) {
+    setSelectedId((prev) => (prev === id ? null : id));
+  }
+
   function toggleYear(year: number) {
     setExpandedYears((prev) => {
       const base = prev ?? defaultExpandedYears;
@@ -329,7 +333,7 @@ export function EventsExplorer({
                     expandedMonths={visibleExpandedMonths}
                     onToggleMonth={toggleMonth}
                     selectedId={effectiveSelectedId}
-                    onSelectEvent={setSelectedId}
+                    onSelectEvent={toggleSelectEvent}
                   />
                 )}
               </div>
@@ -386,7 +390,7 @@ export function EventsExplorer({
           <DynamicEventMap
             events={filteredEvents}
             selectedId={effectiveSelectedId}
-            onSelect={setSelectedId}
+            onSelect={toggleSelectEvent}
           />
         }
         renderDetail={() => (

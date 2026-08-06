@@ -90,6 +90,10 @@ export function ShopsExplorer({
   const selected =
     filtered.find((s) => s.id === effectiveSelectedId) ?? null;
 
+  function toggleSelectShop(id: string) {
+    setSelectedId((prev) => (prev === id ? null : id));
+  }
+
   function openSearch() {
     setFilterOpen(false);
     setSearchOpen(true);
@@ -127,7 +131,7 @@ export function ShopsExplorer({
             <li key={shop.id}>
               <button
                 type="button"
-                onClick={() => setSelectedId(shop.id)}
+                onClick={() => toggleSelectShop(shop.id)}
                 className={`min-h-11 w-full px-2 py-3 text-left transition ${
                   effectiveSelectedId === shop.id
                     ? "bg-pink/50 font-semibold text-pink-dark"
@@ -274,7 +278,7 @@ export function ShopsExplorer({
           <DynamicShopMap
             shops={filtered}
             selectedId={effectiveSelectedId}
-            onSelect={setSelectedId}
+            onSelect={toggleSelectShop}
           />
         }
         renderDetail={() => <ShopDetailPanel shop={selected} />}
