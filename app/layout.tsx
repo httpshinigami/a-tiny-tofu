@@ -32,10 +32,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} h-full`}>
-      <body className="flex h-full min-h-full flex-col bg-surface font-body antialiased">
+    <html lang="en" className={dmSans.variable}>
+      <body className="min-h-screen bg-surface font-body antialiased">
         <Header />
-        <main className="flex min-h-0 flex-1 flex-col overflow-auto">{children}</main>
+        <main className="flex flex-col">{children}</main>
         <PeekingFooter />
         <SpeedInsights />
       </body>

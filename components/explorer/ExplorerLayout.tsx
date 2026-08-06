@@ -48,7 +48,7 @@ export function ExplorerLayout({
 
       {/* Center: map */}
       <div
-        className={`flex min-h-0 min-w-0 flex-1 flex-col px-3 pt-2 pb-4 md:px-8 md:pt-6 md:pb-6 lg:px-10 ${STICKY_PANEL}`}
+        className={`flex min-h-0 min-w-0 flex-col px-3 pt-2 pb-4 md:flex-1 md:px-8 md:pt-6 md:pb-6 lg:px-10 ${STICKY_PANEL}`}
       >
         {filterToggle && (
           <div className="mb-3 flex w-full shrink-0 flex-col gap-2 md:mb-4">
@@ -76,10 +76,10 @@ export function ExplorerLayout({
         </div>
 
         <div
-          className={`relative mx-auto min-h-0 w-full max-w-[68rem] flex-1 grid grid-cols-1 grid-rows-1 gap-0 border-y border-border bg-surface md:border md:border-border ${
+          className={`relative mx-auto w-full max-w-[68rem] grid grid-cols-1 grid-rows-1 gap-0 border-y border-border bg-surface md:min-h-0 md:flex-1 md:border md:border-border ${
             mobileView === "list"
-              ? "min-h-[360px]"
-              : "min-h-[280px] md:min-h-0"
+              ? "h-[min(65dvh,560px)] min-h-[360px]"
+              : "h-[min(36dvh,280px)]"
           }`}
         >
           {/* Filter popup over the map (does not push layout) */}

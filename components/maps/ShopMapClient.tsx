@@ -32,7 +32,7 @@ export function ShopMapClient({
 
   return (
     <MapShell
-      className="h-full min-h-[280px] w-full"
+      className="h-full min-h-0 w-full md:min-h-[280px]"
       center={
         selected
           ? { lat: selected.lat, lng: selected.lng }
