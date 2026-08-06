@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, type ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 type MobileView = "list" | "map";
 
@@ -44,13 +44,6 @@ function ExplorerLayoutWithSearchParams(props: Props) {
     const query = params.toString();
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }
-
-  useEffect(() => {
-    // If user selected from list, switch to map and create a history step.
-    if (props.detailKey && mobileView === "list") {
-      setMobileView("map");
-    }
-  }, [props.detailKey, mobileView]);
 
   return (
     <ExplorerLayoutShell {...props} mobileView={mobileView} setMobileView={setMobileView} />

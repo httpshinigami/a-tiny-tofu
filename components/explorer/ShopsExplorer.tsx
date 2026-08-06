@@ -6,6 +6,7 @@ import { LocationFilterMenu } from "@/components/explorer/LocationFilterMenu";
 import { ShopDetailPanel } from "@/components/explorer/ShopDetailPanel";
 import { ShopFilterPanel } from "@/components/explorer/ShopFilterPanel";
 import { DynamicShopMap } from "@/components/maps/DynamicShopMap";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   matchesLocationFilter,
   type LocationFilter,
@@ -38,6 +39,10 @@ export function ShopsExplorer({
   emptyMessage,
   filterOpenByDefault = false,
 }: Props) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const mobileView = searchParams.get("view") === "list" ? "list" : "map";
   const [activeTags, setActiveTags] = useState<ShopTag[]>([]);
   const [locations, setLocations] = useState<LocationFilter[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -90,8 +95,19 @@ export function ShopsExplorer({
   const selected =
     filtered.find((s) => s.id === effectiveSelectedId) ?? null;
 
+  function pushMapView() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", "map");
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
+
   function toggleSelectShop(id: string) {
-    setSelectedId((prev) => (prev === id ? null : id));
+    setSelectedId((prev) => {
+      const next = prev === id ? null : id;
+      if (next && mobileView === "list") pushMapView();
+      return next;
+    });
   }
 
   function openSearch() {
