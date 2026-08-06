@@ -49,6 +49,7 @@ export function LocationFilterMenu({
 
   function select(id: LocationFilter) {
     onChange(value.includes(id) ? [] : [id]);
+    setOpen(false);
   }
 
   const label =
@@ -104,7 +105,10 @@ export function LocationFilterMenu({
           {value.length > 0 && (
             <button
               type="button"
-              onClick={() => onChange([])}
+              onClick={() => {
+                onChange([]);
+                setOpen(false);
+              }}
               className="mt-2 w-full text-left text-xs font-medium text-sage-dark underline"
             >
               Clear location
