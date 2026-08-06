@@ -87,7 +87,7 @@ function ExplorerLayoutShell({
           className={`relative mx-auto w-full max-w-[68rem] grid grid-cols-1 grid-rows-1 gap-0 border-y border-border bg-surface md:min-h-0 md:flex-1 md:border md:border-border ${
             mobileView === "list"
               ? "h-[min(65dvh,560px)] min-h-[360px]"
-              : "h-[min(36dvh,280px)]"
+              : "h-[45dvh]"
           }`}
         >
           {/* Filter popup over the map (does not push layout) */}
