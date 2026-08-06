@@ -46,8 +46,10 @@ export function AdminCreateEventForm() {
     });
     setBusy(false);
     if (!res.ok) {
-      const data = await res.json();
-      setError(data.error ?? "Failed");
+      const data = await res.json().catch(() => ({}));
+      setError(
+        typeof data.error === "string" ? data.error : "Failed to save event"
+      );
       return;
     }
     router.push("/admin");

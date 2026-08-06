@@ -4,6 +4,14 @@ import { createClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/lib/utils";
 import { adminEventSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
+import { z } from "zod";
+
+function firstZodMessage(error: z.ZodError): string {
+  const issue = error.issues[0];
+  if (!issue) return "Invalid data";
+  const path = issue.path.filter(Boolean).join(".");
+  return path ? `${path}: ${issue.message}` : issue.message;
+}
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -17,7 +25,13 @@ export async function POST(request: Request) {
   const json = await request.json();
   const parsed = adminEventSchema.safeParse(json);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: firstZodMessage(parsed.error),
+        fieldErrors: z.flattenError(parsed.error).fieldErrors,
+      },
+      { status: 400 }
+    );
   }
 
   const d = parsed.data;
@@ -31,8 +45,10 @@ export async function POST(request: Request) {
         end_at: session.end_at || null,
       })),
     });
-  } catch {
-    return NextResponse.json({ error: "Invalid date or time" }, { status: 400 });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Invalid date or time";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 
   const result = await insertEvent({

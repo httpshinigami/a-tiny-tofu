@@ -156,7 +156,7 @@ export function ShopsExplorer({
       value={locations}
       onChange={setLocations}
       onOpen={() => setFilterOpen(false)}
-      renderButton={({ active, label, count, onClick, open }) => (
+      renderButton={({ active, label, onClick, open }) => (
         <PillButton
           active={active}
           aria-expanded={open}
@@ -165,11 +165,6 @@ export function ShopsExplorer({
         >
           <span>{label}</span>
           <ChevronDown />
-          {count > 0 && (
-            <span className="rounded-full bg-ink px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
-              {count}
-            </span>
-          )}
         </PillButton>
       )}
     />

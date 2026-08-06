@@ -1,10 +1,18 @@
-import { updateEvent } from "@/lib/queries";
 import { requireAdmin } from "@/lib/admin-auth";
 import { resolveEventSessions } from "@/lib/event-datetime";
+import { updateEvent } from "@/lib/queries";
 import { adminEventSchema } from "@/lib/validators";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 type Params = { params: Promise<{ id: string }> };
+
+function firstZodMessage(error: z.ZodError): string {
+  const issue = error.issues[0];
+  if (!issue) return "Invalid data";
+  const path = issue.path.filter(Boolean).join(".");
+  return path ? `${path}: ${issue.message}` : issue.message;
+}
 
 export async function PATCH(request: Request, { params }: Params) {
   if (!(await requireAdmin())) {
@@ -15,7 +23,13 @@ export async function PATCH(request: Request, { params }: Params) {
   const json = await request.json();
   const parsed = adminEventSchema.safeParse(json);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: firstZodMessage(parsed.error),
+        fieldErrors: z.flattenError(parsed.error).fieldErrors,
+      },
+      { status: 400 }
+    );
   }
 
   const d = parsed.data;
@@ -29,8 +43,10 @@ export async function PATCH(request: Request, { params }: Params) {
         end_at: session.end_at || null,
       })),
     });
-  } catch {
-    return NextResponse.json({ error: "Invalid date or time" }, { status: 400 });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Invalid date or time";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 
   const result = await updateEvent(id, {

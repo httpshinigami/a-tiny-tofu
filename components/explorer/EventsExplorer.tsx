@@ -347,7 +347,7 @@ export function EventsExplorer({
           <LocationFilterMenu
             value={locations}
             onChange={setLocations}
-            renderButton={({ active, label, count, onClick, open }) => (
+            renderButton={({ active, label, onClick, open }) => (
               <button
                 type="button"
                 aria-expanded={open}
@@ -377,11 +377,6 @@ export function EventsExplorer({
                     strokeLinejoin="round"
                   />
                 </svg>
-                {count > 0 && (
-                  <span className="rounded-full bg-ink px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
-                    {count}
-                  </span>
-                )}
               </button>
             )}
           />

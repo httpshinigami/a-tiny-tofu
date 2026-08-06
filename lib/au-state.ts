@@ -10,15 +10,43 @@ export type AuState =
   | "NT";
 
 /** States exposed in explorer location filters. */
-export type LocationFilter = "VIC" | "NSW";
+export type LocationFilter = "VIC" | "NSW" | "QLD" | "SA" | "WA";
 
 export const LOCATION_FILTER_OPTIONS: {
   id: LocationFilter;
   label: string;
 }[] = [
   { id: "VIC", label: "Victoria" },
-  { id: "NSW", label: "NSW" },
+  { id: "NSW", label: "New South Wales" },
+  { id: "QLD", label: "Queensland" },
+  { id: "SA", label: "South Australia" },
+  { id: "WA", label: "Western Australia" },
 ];
+
+/** Primary IANA timezone for each AU state/territory. */
+export const AU_STATE_TIMEZONES: Record<AuState, string> = {
+  VIC: "Australia/Melbourne",
+  NSW: "Australia/Sydney",
+  ACT: "Australia/Sydney",
+  QLD: "Australia/Brisbane",
+  SA: "Australia/Adelaide",
+  WA: "Australia/Perth",
+  NT: "Australia/Darwin",
+  TAS: "Australia/Hobart",
+};
+
+export function getTimezoneForAuLocation(input: {
+  state?: AuState | null;
+  lat?: number | null;
+  lng?: number | null;
+}): string {
+  if (input.state) return AU_STATE_TIMEZONES[input.state];
+  if (input.lat != null && input.lng != null) {
+    const inferred = inferAuStateFromCoords(input.lat, input.lng);
+    if (inferred) return AU_STATE_TIMEZONES[inferred];
+  }
+  return "Australia/Melbourne";
+}
 
 const CODE_ALIASES: Record<string, AuState> = {
   VIC: "VIC",

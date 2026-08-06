@@ -47,19 +47,15 @@ export function LocationFilterMenu({
     };
   }, [open]);
 
-  function toggle(id: LocationFilter) {
-    onChange(
-      value.includes(id) ? value.filter((l) => l !== id) : [...value, id]
-    );
+  function select(id: LocationFilter) {
+    onChange(value.includes(id) ? [] : [id]);
   }
 
   const label =
     value.length === 0
       ? "Location"
-      : value.length === 1
-        ? (LOCATION_FILTER_OPTIONS.find((o) => o.id === value[0])?.label ??
-          "Location")
-        : `Location · ${value.length}`;
+      : (LOCATION_FILTER_OPTIONS.find((o) => o.id === value[0])?.label ??
+        "Location");
 
   return (
     <div className="relative" ref={menuRef}>
@@ -78,7 +74,7 @@ export function LocationFilterMenu({
       })}
       {open && (
         <div
-          className="absolute left-0 top-full z-30 mt-2 w-52 rounded-2xl border border-border bg-surface p-3 shadow-lg"
+          className="absolute left-0 top-full z-30 mt-2 w-56 max-h-[min(70vh,22rem)] overflow-y-auto rounded-2xl border border-border bg-surface p-3 shadow-lg"
           role="listbox"
           aria-label="Location"
         >
@@ -91,7 +87,7 @@ export function LocationFilterMenu({
                     type="button"
                     role="option"
                     aria-selected={checked}
-                    onClick={() => toggle(option.id)}
+                    onClick={() => select(option.id)}
                     className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${
                       checked
                         ? "bg-pink/40 font-semibold text-ink"

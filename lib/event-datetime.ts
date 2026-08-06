@@ -1,14 +1,18 @@
+import { getTimezoneForAuLocation } from "./au-state";
 import { fromZonedTime } from "date-fns-tz";
-import { find as findTimezone } from "geo-tz";
 import { resolveCoords, type GeocodeResult } from "./geocode";
 import { isNaiveLocalDateTime } from "./naive-local-datetime";
 import type { EventSessionInput } from "./types";
 
 export { isNaiveLocalDateTime } from "./naive-local-datetime";
 
-export function getTimezoneFromCoords(lat: number, lng: number): string {
-  const zones = findTimezone(lat, lng);
-  return zones[0] ?? "UTC";
+/** Resolve venue timezone from AU state / coordinates (no geo-tz disk data). */
+export function getTimezoneFromCoords(
+  lat: number,
+  lng: number,
+  state?: GeocodeResult["state"]
+): string {
+  return getTimezoneForAuLocation({ state, lat, lng });
 }
 
 /** Convert a venue-local wall-clock time to UTC ISO for storage. */
@@ -63,7 +67,7 @@ export async function resolveEventSessions(input: {
   }
 
   const coords = await resolveCoords(input.address, input.mapLocation);
-  const timezone = getTimezoneFromCoords(coords.lat, coords.lng);
+  const timezone = getTimezoneFromCoords(coords.lat, coords.lng, coords.state);
   const sessions = input.sessions
     .map((session) => normalizeSession(session, timezone))
     .sort(

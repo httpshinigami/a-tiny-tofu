@@ -62,13 +62,14 @@ const eventSessionSchema = z
 
 export const MAX_DESCRIPTION_LENGTH = 200;
 
+const optionalDescription = z.preprocess(
+  (value) => (value === null || value === undefined ? "" : value),
+  z.string().max(MAX_DESCRIPTION_LENGTH)
+);
+
 export const eventSubmitSchema = z.object({
   title: z.string().min(1).max(200),
-  description: z
-    .string()
-    .max(MAX_DESCRIPTION_LENGTH)
-    .optional()
-    .or(z.literal("")),
+  description: optionalDescription,
   sessions: z.array(eventSessionSchema).min(1),
   venue_name: z.string().min(1).max(200),
   address: z.string().min(1).max(500),
@@ -80,11 +81,7 @@ export const eventSubmitSchema = z.object({
 
 export const shopSubmitSchema = z.object({
   name: z.string().min(2).max(200),
-  description: z
-    .string()
-    .max(MAX_DESCRIPTION_LENGTH)
-    .optional()
-    .or(z.literal("")),
+  description: optionalDescription,
   address: z.string().min(5).max(500),
   website: optionalSafeHttpUrl,
   hours: z.string().max(200).optional().or(z.literal("")),
