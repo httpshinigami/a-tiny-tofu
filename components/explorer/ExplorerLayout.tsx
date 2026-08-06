@@ -1,9 +1,9 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 type MobileView = "list" | "map";
+const MOBILE_VIEW_EVENT = "tinytofu:mobile-view-change";
 
 /** Approx. header+footer so sticky list/map fill the main area between them. */
 const STICKY_PANEL =
@@ -18,36 +18,38 @@ interface Props {
   filterPanel?: ReactNode;
   /** When true, mobile shows details under the map. */
   hasDetail?: boolean;
-  /** Changes when selection changes — switches mobile view to map. */
-  detailKey?: string | null;
+}
+
+function getMobileViewFromSearch(search: string): MobileView {
+  const params = new URLSearchParams(search);
+  return params.get("view") === "list" ? "list" : "map";
+}
+
+export function pushMobileView(next: MobileView) {
+  if (typeof window === "undefined") return;
+  const params = new URLSearchParams(window.location.search);
+  params.set("view", next);
+  const query = params.toString();
+  const nextUrl = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+  window.history.pushState({ mobileView: next }, "", nextUrl);
+  window.dispatchEvent(new CustomEvent(MOBILE_VIEW_EVENT));
 }
 
 export function ExplorerLayout(props: Props) {
-  return (
-    <Suspense fallback={<ExplorerLayoutShell {...props} mobileView="map" />}>
-      <ExplorerLayoutWithSearchParams {...props} />
-    </Suspense>
-  );
-}
+  const [mobileView, setMobileView] = useState<MobileView>("map");
 
-function ExplorerLayoutWithSearchParams(props: Props) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const mobileView: MobileView =
-    searchParams.get("view") === "list" ? "list" : "map";
+  useEffect(() => {
+    const sync = () => setMobileView(getMobileViewFromSearch(window.location.search));
+    sync();
+    window.addEventListener("popstate", sync);
+    window.addEventListener(MOBILE_VIEW_EVENT, sync as EventListener);
+    return () => {
+      window.removeEventListener("popstate", sync);
+      window.removeEventListener(MOBILE_VIEW_EVENT, sync as EventListener);
+    };
+  }, []);
 
-  function setMobileView(next: MobileView) {
-    if (next === mobileView) return;
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("view", next);
-    const query = params.toString();
-    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  }
-
-  return (
-    <ExplorerLayoutShell {...props} mobileView={mobileView} setMobileView={setMobileView} />
-  );
+  return <ExplorerLayoutShell {...props} mobileView={mobileView} />;
 }
 
 function ExplorerLayoutShell({
@@ -58,10 +60,8 @@ function ExplorerLayoutShell({
   filterPanel,
   hasDetail = false,
   mobileView,
-  setMobileView,
 }: Props & {
   mobileView: MobileView;
-  setMobileView?: (view: MobileView) => void;
 }) {
   return (
     <div className="flex w-full min-h-full flex-col md:flex-row md:items-start">
@@ -82,25 +82,6 @@ function ExplorerLayoutShell({
             {filterToggle}
           </div>
         )}
-
-        <div
-          className="mb-2 flex w-full shrink-0 rounded-md border border-border bg-surface p-1 md:hidden"
-          role="tablist"
-          aria-label="View mode"
-        >
-          <ViewTab
-            active={mobileView === "list"}
-            onClick={() => setMobileView?.("list")}
-          >
-            List
-          </ViewTab>
-          <ViewTab
-            active={mobileView === "map"}
-            onClick={() => setMobileView?.("map")}
-          >
-            Map
-          </ViewTab>
-        </div>
 
         <div
           className={`relative mx-auto w-full max-w-[68rem] grid grid-cols-1 grid-rows-1 gap-0 border-y border-border bg-surface md:min-h-0 md:flex-1 md:border md:border-border ${
@@ -159,30 +140,55 @@ function ExplorerLayoutShell({
       >
         {renderDetail()}
       </aside>
+
+      <MobileViewToggle mobileView={mobileView} />
     </div>
   );
 }
 
-function ViewTab({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
+function MobileViewToggle({ mobileView }: { mobileView: MobileView }) {
+  const nextView: MobileView = mobileView === "list" ? "map" : "list";
+  const label = nextView === "map" ? "Map" : "List";
+
   return (
     <button
       type="button"
-      role="tab"
-      aria-selected={active}
-      onClick={onClick}
-      className={`min-h-11 flex-1 rounded-sm px-3 text-sm font-semibold transition ${
-        active ? "bg-pink text-ink" : "text-ink-muted hover:text-ink"
-      }`}
+      onClick={() => pushMobileView(nextView)}
+      aria-label={`Switch to ${label.toLowerCase()} view`}
+      className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-[max(1rem,env(safe-area-inset-left))] z-50 flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold text-ink shadow-lg transition hover:bg-pink md:hidden"
     >
-      {children}
+      {nextView === "map" ? <MapIcon /> : <ListIcon />}
+      {label}
     </button>
+  );
+}
+
+function ListIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      aria-hidden
+    >
+      <path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z" />
+    </svg>
+  );
+}
+
+function MapIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="18"
+      height="18"
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      aria-hidden
+    >
+      <path d="M128,16a88.1,88.1,0,0,0-88,88c0,75.3,80,132.17,83.41,134.55a8,8,0,0,0,9.18,0C136,236.17,216,179.3,216,104A88.1,88.1,0,0,0,128,16Zm0,56a32,32,0,1,1-32,32A32,32,0,0,1,128,72Z" />
+    </svg>
   );
 }

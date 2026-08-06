@@ -1,12 +1,14 @@
 "use client";
 
 import { EventDetailPanel } from "@/components/explorer/EventDetailPanel";
-import { ExplorerLayout } from "@/components/explorer/ExplorerLayout";
+import {
+  ExplorerLayout,
+  pushMobileView,
+} from "@/components/explorer/ExplorerLayout";
 import { ExplorerPageShell } from "@/components/explorer/ExplorerPageShell";
 import { LocationFilterMenu } from "@/components/explorer/LocationFilterMenu";
 import { InstagramEmbed } from "@/components/events/InstagramEmbed";
 import { DynamicEventMap } from "@/components/maps/DynamicEventMap";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   matchesLocationFilter,
   type LocationFilter,
@@ -172,10 +174,6 @@ export function EventsExplorer({
   events: Event[];
   initialFocusId?: string | null;
 }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const mobileView = searchParams.get("view") === "list" ? "list" : "map";
   const currentYear = getCurrentYear();
   const currentMonth = new Date().getMonth();
   const [search, setSearch] = useState("");
@@ -272,17 +270,10 @@ export function EventsExplorer({
   const selected =
     filteredEvents.find((e) => e.id === effectiveSelectedId) ?? null;
 
-  function pushMapView() {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("view", "map");
-    const query = params.toString();
-    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  }
-
   function toggleSelectEvent(id: string) {
     setSelectedId((prev) => {
       const next = prev === id ? null : id;
-      if (next && mobileView === "list") pushMapView();
+      if (next) pushMobileView("map");
       return next;
     });
   }
@@ -420,7 +411,6 @@ export function EventsExplorer({
           </div>
         )}
         hasDetail={!!selected}
-        detailKey={effectiveSelectedId}
       />
     </ExplorerPageShell>
   );
