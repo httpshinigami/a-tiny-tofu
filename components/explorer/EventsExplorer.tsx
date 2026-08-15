@@ -212,8 +212,11 @@ export function EventsExplorer({
   }, [filteredEvents, currentYear, currentMonth]);
 
   const defaultExpandedYears = useMemo(
-    () => new Set([currentYear]),
-    [currentYear]
+    () =>
+      new Set(
+        yearSections.map((section) => section.year).filter((y) => y >= currentYear)
+      ),
+    [yearSections, currentYear]
   );
 
   const defaultExpandedMonths = useMemo(
@@ -325,11 +328,11 @@ export function EventsExplorer({
                 <button
                   type="button"
                   onClick={() => toggleYear(year)}
-                  className="mb-3 flex w-full items-center gap-2 rounded-md py-0.5 text-left transition hover:opacity-80"
+                  className="mb-3 flex w-full items-center justify-center gap-2 rounded-md py-1 text-center transition hover:opacity-80"
                   aria-expanded={yearOpen}
                 >
+                  <span className="text-xl font-bold text-pink-dark">{year}</span>
                   <Chevron open={yearOpen} />
-                  <span className="text-sm font-semibold text-ink">{year}</span>
                 </button>
                 {yearOpen && (
                   <MonthList
