@@ -68,11 +68,9 @@ export function LocationFilterMenu({
         label,
         count: value.length,
         onClick: () => {
-          setOpen((v) => {
-            const next = !v;
-            if (next) onOpen?.();
-            return next;
-          });
+          const willOpen = !open;
+          setOpen(willOpen);
+          if (willOpen) onOpen?.();
         },
       })}
       {open && (
