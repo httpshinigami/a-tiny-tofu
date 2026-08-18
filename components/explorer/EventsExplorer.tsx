@@ -6,7 +6,7 @@ import {
   pushMobileView,
 } from "@/components/explorer/ExplorerLayout";
 import { ExplorerPageShell } from "@/components/explorer/ExplorerPageShell";
-import { LocationFilterMenu } from "@/components/explorer/LocationFilterMenu";
+import { LocationFilterMenu, type LocationFilterMenuHandle } from "@/components/explorer/LocationFilterMenu";
 import { InstagramEmbed } from "@/components/events/InstagramEmbed";
 import { DynamicEventMap } from "@/components/maps/DynamicEventMap";
 import {
@@ -22,7 +22,7 @@ import {
   type MonthGroup,
 } from "@/lib/group-by-month";
 import type { Event } from "@/lib/types";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 function formatListDate(start: string, timeZone?: string | null): string {
   return new Date(start).toLocaleString("en-AU", {
@@ -187,6 +187,7 @@ export function EventsExplorer({
     if (!initialFocusId) return null;
     return events.some((e) => e.id === initialFocusId) ? initialFocusId : null;
   });
+  const locationMenuRef = useRef<LocationFilterMenuHandle>(null);
 
   const searchFilteredEvents = useMemo(
     () => filterEventsBySearch(events, search),
@@ -376,43 +377,53 @@ export function EventsExplorer({
     <ExplorerPageShell>
       <ExplorerLayout
         filterToggle={
-          <LocationFilterMenu
-            value={locations}
-            onChange={setLocations}
-            optionCounts={locationCounts}
-            renderButton={({ active, label, onClick, open }) => (
-              <button
-                type="button"
-                aria-expanded={open}
-                aria-haspopup="listbox"
-                onClick={onClick}
-                className={`inline-flex min-h-11 items-center gap-2 rounded-full border bg-surface px-4 py-2.5 text-sm font-medium text-ink transition md:min-h-0 ${
-                  active
-                    ? "border-ink shadow-sm"
-                    : "border-border hover:border-ink/50 hover:bg-white"
-                }`}
-              >
-                <span>{label}</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className="shrink-0 text-ink-muted"
-                  aria-hidden
+          <div
+            className="flex w-full"
+            onPointerDown={(e) => {
+              if (e.target === e.currentTarget) {
+                locationMenuRef.current?.close();
+              }
+            }}
+          >
+            <LocationFilterMenu
+              ref={locationMenuRef}
+              value={locations}
+              onChange={setLocations}
+              optionCounts={locationCounts}
+              renderButton={({ active, label, onClick, open }) => (
+                <button
+                  type="button"
+                  aria-expanded={open}
+                  aria-haspopup="listbox"
+                  onClick={onClick}
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-full border bg-surface px-4 py-2.5 text-sm font-medium text-ink transition md:min-h-0 ${
+                    active
+                      ? "border-ink shadow-sm"
+                      : "border-border hover:border-ink/50 hover:bg-white"
+                  }`}
                 >
-                  <path
-                    d="M4 6l4 4 4-4"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            )}
-          />
+                  <span>{label}</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    className="shrink-0 text-ink-muted"
+                    aria-hidden
+                  >
+                    <path
+                      d="M4 6l4 4 4-4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              )}
+            />
+          </div>
         }
         sidebar={sidebar}
         map={

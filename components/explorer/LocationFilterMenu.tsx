@@ -4,7 +4,11 @@ import {
   LOCATION_FILTER_OPTIONS,
   type LocationFilter,
 } from "@/lib/au-state";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useImperativeHandle, useRef, useState, type ReactNode } from "react";
+
+export interface LocationFilterMenuHandle {
+  close: () => void;
+}
 
 interface Props {
   value: LocationFilter[];
@@ -22,14 +26,19 @@ interface Props {
 }
 
 export function LocationFilterMenu({
+  ref,
   value,
   onChange,
   optionCounts,
   onOpen,
   renderButton,
-}: Props) {
+}: Props & { ref?: React.Ref<LocationFilterMenuHandle> }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    close: () => setOpen(false),
+  }));
 
   useEffect(() => {
     if (!open) return;
@@ -42,10 +51,11 @@ export function LocationFilterMenu({
       }
     }
     document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("pointerdown", onPointerDown);
+    // Capture phase so map libraries (e.g. Leaflet) cannot block the event.
+    document.addEventListener("pointerdown", onPointerDown, true);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("pointerdown", onPointerDown, true);
     };
   }, [open]);
 

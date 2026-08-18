@@ -25,6 +25,7 @@ import {
   useState,
   type ButtonHTMLAttributes,
 } from "react";
+import type { LocationFilterMenuHandle } from "@/components/explorer/LocationFilterMenu";
 
 interface Props {
   shops: Shop[];
@@ -65,6 +66,10 @@ export function ShopsExplorer({
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const mobileSearchRef = useRef<HTMLInputElement>(null);
+  const locationFilterRef = useRef<HTMLDivElement>(null);
+  const filtersButtonRef = useRef<HTMLDivElement>(null);
+  const locationMenuRef = useRef<LocationFilterMenuHandle>(null);
+  const filterPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!filterOpenByDefault) return;
@@ -75,6 +80,24 @@ export function ShopsExplorer({
   useEffect(() => {
     if (searchOpen) mobileSearchRef.current?.focus();
   }, [searchOpen]);
+
+  useEffect(() => {
+    if (!filterOpen || searchOpen) return;
+    function onPointerDown(e: PointerEvent) {
+      const target = e.target as Node;
+      if (filterPanelRef.current?.contains(target)) return;
+      if (locationFilterRef.current?.contains(target)) return;
+      if (filtersButtonRef.current?.contains(target)) return;
+      setFilterOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown, true);
+    return () => document.removeEventListener("pointerdown", onPointerDown, true);
+  }, [filterOpen, searchOpen]);
+
+  function closeFilterChrome() {
+    locationMenuRef.current?.close();
+    setFilterOpen(false);
+  }
 
   const categories = useMemo(
     () =>
@@ -191,6 +214,7 @@ export function ShopsExplorer({
 
   const locationButton = (
     <LocationFilterMenu
+      ref={locationMenuRef}
       value={locations}
       onChange={setLocations}
       optionCounts={locationCounts}
@@ -230,7 +254,12 @@ export function ShopsExplorer({
 
   const filterToggle = (
     <div className="flex w-full flex-col gap-2">
-      <div className="flex w-full items-center gap-2">
+      <div
+        className="flex w-full items-center gap-2"
+        onPointerDown={(e) => {
+          if (e.target === e.currentTarget) closeFilterChrome();
+        }}
+      >
         {searchOpen ? (
           <div className="flex w-full items-center gap-2 md:hidden">
             <label htmlFor="shop-search-mobile" className="sr-only">
@@ -259,8 +288,8 @@ export function ShopsExplorer({
           </div>
         ) : (
           <>
-            {locationButton}
-            {filtersButton}
+            <div ref={locationFilterRef}>{locationButton}</div>
+            <div ref={filtersButtonRef}>{filtersButton}</div>
             <button
               type="button"
               onClick={openSearch}
@@ -300,12 +329,14 @@ export function ShopsExplorer({
         filterToggle={filterToggle}
         filterPanel={
           filterOpen && !searchOpen ? (
-            <ShopFilterPanel
-              categories={categories}
-              selected={activeTags}
-              onChange={setActiveTags}
-              onClose={() => setFilterOpen(false)}
-            />
+            <div ref={filterPanelRef}>
+              <ShopFilterPanel
+                categories={categories}
+                selected={activeTags}
+                onChange={setActiveTags}
+                onClose={() => setFilterOpen(false)}
+              />
+            </div>
           ) : null
         }
         sidebar={sidebar}
