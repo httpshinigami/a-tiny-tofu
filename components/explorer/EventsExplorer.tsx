@@ -10,6 +10,7 @@ import { LocationFilterMenu } from "@/components/explorer/LocationFilterMenu";
 import { InstagramEmbed } from "@/components/events/InstagramEmbed";
 import { DynamicEventMap } from "@/components/maps/DynamicEventMap";
 import {
+  LOCATION_FILTER_OPTIONS,
   matchesLocationFilter,
   type LocationFilter,
 } from "@/lib/au-state";
@@ -187,12 +188,31 @@ export function EventsExplorer({
     return events.some((e) => e.id === initialFocusId) ? initialFocusId : null;
   });
 
-  const filteredEvents = useMemo(() => {
-    const byLocation = events.filter((event) =>
-      matchesLocationFilter(event.state, event.address, locations)
-    );
-    return filterEventsBySearch(byLocation, search);
-  }, [events, search, locations]);
+  const searchFilteredEvents = useMemo(
+    () => filterEventsBySearch(events, search),
+    [events, search]
+  );
+
+  const locationCounts = useMemo(
+    () =>
+      Object.fromEntries(
+        LOCATION_FILTER_OPTIONS.map((option) => [
+          option.id,
+          searchFilteredEvents.filter((event) =>
+            matchesLocationFilter(event.state, event.address, [option.id])
+          ).length,
+        ])
+      ) as Partial<Record<LocationFilter, number>>,
+    [searchFilteredEvents]
+  );
+
+  const filteredEvents = useMemo(
+    () =>
+      searchFilteredEvents.filter((event) =>
+        matchesLocationFilter(event.state, event.address, locations)
+      ),
+    [searchFilteredEvents, locations]
+  );
 
   const yearSections = useMemo(() => {
     const years = [...new Set(filteredEvents.map(getEventYear))].sort(
@@ -359,6 +379,7 @@ export function EventsExplorer({
           <LocationFilterMenu
             value={locations}
             onChange={setLocations}
+            optionCounts={locationCounts}
             renderButton={({ active, label, onClick, open }) => (
               <button
                 type="button"

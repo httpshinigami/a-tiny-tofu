@@ -9,6 +9,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 interface Props {
   value: LocationFilter[];
   onChange: (next: LocationFilter[]) => void;
+  optionCounts?: Partial<Record<LocationFilter, number>>;
   /** Called when the menu opens (e.g. to close sibling panels). */
   onOpen?: () => void;
   renderButton: (props: {
@@ -23,6 +24,7 @@ interface Props {
 export function LocationFilterMenu({
   value,
   onChange,
+  optionCounts,
   onOpen,
   renderButton,
 }: Props) {
@@ -82,6 +84,7 @@ export function LocationFilterMenu({
           <ul className="space-y-1">
             {LOCATION_FILTER_OPTIONS.map((option) => {
               const checked = value.includes(option.id);
+              const optionCount = optionCounts?.[option.id] ?? 0;
               return (
                 <li key={option.id}>
                   <button
@@ -95,7 +98,12 @@ export function LocationFilterMenu({
                         : "text-ink hover:bg-surface/80"
                     }`}
                   >
-                    {option.label}
+                    <span>
+                      {option.label}{" "}
+                      <span className="font-normal text-ink-muted tabular-nums">
+                        ({optionCount})
+                      </span>
+                    </span>
                     {checked && <span aria-hidden>✓</span>}
                   </button>
                 </li>

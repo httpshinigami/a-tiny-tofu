@@ -10,6 +10,7 @@ import { ShopDetailPanel } from "@/components/explorer/ShopDetailPanel";
 import { ShopFilterPanel } from "@/components/explorer/ShopFilterPanel";
 import { DynamicShopMap } from "@/components/maps/DynamicShopMap";
 import {
+  LOCATION_FILTER_OPTIONS,
   matchesLocationFilter,
   type LocationFilter,
 } from "@/lib/au-state";
@@ -32,6 +33,22 @@ interface Props {
   emptyMessage: string;
   /** Open filters by default on desktop only; mobile always starts closed. */
   filterOpenByDefault?: boolean;
+}
+
+function filterShopsBySearch(shops: Shop[], query: string): Shop[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return shops;
+  return shops.filter((shop) => {
+    const tagLabels = shop.shop_tags
+      .map((t) => SHOP_TAG_LABELS[t])
+      .join(" ")
+      .toLowerCase();
+    return (
+      shop.name.toLowerCase().includes(q) ||
+      shop.address.toLowerCase().includes(q) ||
+      tagLabels.includes(q)
+    );
+  });
 }
 
 export function ShopsExplorer({
@@ -66,24 +83,36 @@ export function ShopsExplorer({
     [filterCategories, filterTags]
   );
 
-  const filtered = useMemo(() => {
-    let list = filterShopsByAllTags(shops, activeTags).filter((shop) =>
-      matchesLocationFilter(shop.state, shop.address, locations)
-    );
-    const q = search.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter((shop) => {
-      const tagLabels = shop.shop_tags
-        .map((t) => SHOP_TAG_LABELS[t])
-        .join(" ")
-        .toLowerCase();
-      return (
-        shop.name.toLowerCase().includes(q) ||
-        shop.address.toLowerCase().includes(q) ||
-        tagLabels.includes(q)
-      );
-    });
-  }, [shops, activeTags, locations, search]);
+  const tagFiltered = useMemo(
+    () => filterShopsByAllTags(shops, activeTags),
+    [shops, activeTags]
+  );
+
+  const searchFiltered = useMemo(
+    () => filterShopsBySearch(tagFiltered, search),
+    [tagFiltered, search]
+  );
+
+  const locationCounts = useMemo(
+    () =>
+      Object.fromEntries(
+        LOCATION_FILTER_OPTIONS.map((option) => [
+          option.id,
+          searchFiltered.filter((shop) =>
+            matchesLocationFilter(shop.state, shop.address, [option.id])
+          ).length,
+        ])
+      ) as Partial<Record<LocationFilter, number>>,
+    [searchFiltered]
+  );
+
+  const filtered = useMemo(
+    () =>
+      searchFiltered.filter((shop) =>
+        matchesLocationFilter(shop.state, shop.address, locations)
+      ),
+    [searchFiltered, locations]
+  );
 
   const effectiveSelectedId =
     selectedId && filtered.some((s) => s.id === selectedId)
@@ -164,6 +193,7 @@ export function ShopsExplorer({
     <LocationFilterMenu
       value={locations}
       onChange={setLocations}
+      optionCounts={locationCounts}
       onOpen={() => setFilterOpen(false)}
       renderButton={({ active, label, onClick, open }) => (
         <PillButton
